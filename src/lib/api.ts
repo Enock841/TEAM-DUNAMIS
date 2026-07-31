@@ -238,6 +238,13 @@ export type ServiceLengthOption = {
   sortOrder: number
 }
 
+export type ServiceCategoryRecord = {
+  id: string
+  name: string
+  dailyCap: number
+  imageUrl?: string
+}
+
 export const api = {
   newsletterSubscribe(email: string) {
     return request<{ message: string }>('/newsletter/subscribe', {
@@ -495,9 +502,34 @@ export const api = {
     })
   },
   categories() {
-    return request<Array<{ id: string; name: string; dailyCap: number }>>(
-      '/categories',
-    )
+    return request<ServiceCategoryRecord[]>('/categories')
+  },
+  createCategory(
+    token: string,
+    body: { name: string; dailyCap: number; imageUrl?: string },
+  ) {
+    return request<{ category: ServiceCategoryRecord }>('/categories', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(body),
+    })
+  },
+  updateCategory(
+    token: string,
+    id: string,
+    body: Partial<Omit<ServiceCategoryRecord, 'id'>>,
+  ) {
+    return request<{ category: ServiceCategoryRecord }>(`/categories/${id}`, {
+      method: 'PUT',
+      token,
+      body: JSON.stringify(body),
+    })
+  },
+  deleteCategory(token: string, id: string) {
+    return request<null>(`/categories/${id}`, {
+      method: 'DELETE',
+      token,
+    })
   },
   createService(token: string, body: Omit<Service, 'id' | 'category'> & {
     categoryId: string

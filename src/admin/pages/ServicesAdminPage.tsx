@@ -11,6 +11,9 @@ export function ServicesAdminPage() {
   const token = appData.token
 
   const [categories, setCategories] = useState([])
+  const [editingCategory, setEditingCategory] = useState(null)
+  const [showCategoryForm, setShowCategoryForm] = useState(false)
+  const [categoryImageUrl, setCategoryImageUrl] = useState('')
   const [editing, setEditing] = useState(null)
   const [showForm, setShowForm] = useState(false)
   const [message, setMessage] = useState('')
@@ -24,6 +27,53 @@ export function ServicesAdminPage() {
   }, [])
 
   useEffect(function () { loadCategories() }, [loadCategories])
+
+  function openCategoryForm(category) {
+    setEditingCategory(category)
+    setCategoryImageUrl(category ? category.imageUrl || '' : '')
+    setShowCategoryForm(true)
+  }
+
+  async function submitCategory(event) {
+    event.preventDefault()
+    if (!token) return
+    const form = new FormData(event.currentTarget)
+    const body = {
+      name: String(form.get('name')),
+      dailyCap: Number(form.get('dailyCap')),
+      imageUrl: categoryImageUrl,
+    }
+    try {
+      if (editingCategory) {
+        await api.updateCategory(token, editingCategory.id, body)
+      } else {
+        await api.createCategory(token, body)
+      }
+      setEditingCategory(null)
+      setCategoryImageUrl('')
+      setShowCategoryForm(false)
+      setMessage('Service category saved.')
+      await Promise.all([loadCategories(), refreshCatalog()])
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : 'Unable to save category.')
+    }
+  }
+
+  async function removeCategory(category) {
+    if (
+      !token ||
+      !window.confirm(
+        `Archive ${category.name}? Services in this category will no longer appear publicly.`,
+      )
+    ) return
+    try {
+      await api.deleteCategory(token, category.id)
+      setMessage('Service category archived.')
+      await Promise.all([loadCategories(), refreshCatalog()])
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : 'Unable to archive category.')
+    }
+  }
 
   function openForm(service) {
     setEditing(service)
@@ -147,6 +197,100 @@ export function ServicesAdminPage() {
         action={<PrimaryButton onClick={function () { openForm(null) }}>Add service</PrimaryButton>}
       />
       {message && <div className="mt-6"><Notice>{message}</Notice></div>}
+
+      <Panel className="mt-6">
+        <div className="flex flex-wrap items-center justify-between gap-4">
+          <div>
+            <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#984667]">
+              Navigation tabs
+            </p>
+            <h2 className="mt-2 font-serif text-2xl text-[#1d171a]">
+              Service categories
+            </h2>
+          </div>
+          <PrimaryButton onClick={function () { openCategoryForm(null) }}>
+            Add category
+          </PrimaryButton>
+        </div>
+
+        {showCategoryForm && (
+          <form onSubmit={submitCategory} className="mt-6 grid gap-4 border-t border-[#ead3dd] pt-6 md:grid-cols-2">
+            <input
+              name="name"
+              required
+              defaultValue={editingCategory ? editingCategory.name : ''}
+              placeholder="Category name"
+              className={fieldClass}
+            />
+            <input
+              name="dailyCap"
+              required
+              type="number"
+              min="1"
+              defaultValue={editingCategory ? editingCategory.dailyCap : ''}
+              placeholder="Daily booking limit"
+              className={fieldClass}
+            />
+            <div className="md:col-span-2">
+              <ImageUploadField
+                label="Category image"
+                value={categoryImageUrl}
+                onChange={setCategoryImageUrl}
+              />
+            </div>
+            <div className="flex gap-3 md:col-span-2">
+              <PrimaryButton type="submit">Save category</PrimaryButton>
+              <button
+                type="button"
+                onClick={function () {
+                  setShowCategoryForm(false)
+                  setEditingCategory(null)
+                  setCategoryImageUrl('')
+                }}
+                className="text-sm"
+              >
+                Cancel
+              </button>
+            </div>
+          </form>
+        )}
+
+        <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {categories.map(function (category) {
+            return (
+              <div key={category.id} className="flex gap-4 border border-[#ead3dd] bg-[#fff9fb] p-3">
+                <img
+                  src={category.imageUrl}
+                  alt=""
+                  className="h-20 w-20 bg-[#ead2dd] object-cover"
+                />
+                <div className="min-w-0 flex-1">
+                  <p className="font-serif text-lg text-[#1d171a]">{category.name}</p>
+                  <p className="mt-1 text-xs text-[#75636b]">
+                    Up to {category.dailyCap} bookings daily
+                  </p>
+                  <div className="mt-3 flex gap-4 text-[10px] font-bold uppercase tracking-[0.1em]">
+                    <button
+                      type="button"
+                      onClick={function () { openCategoryForm(category) }}
+                      className="text-[#984667]"
+                    >
+                      Edit
+                    </button>
+                    <button
+                      type="button"
+                      onClick={function () { removeCategory(category) }}
+                      className="text-red-600"
+                    >
+                      Archive
+                    </button>
+                  </div>
+                </div>
+              </div>
+            )
+          })}
+        </div>
+      </Panel>
 
       {showForm && (
         <Panel className="mt-6">

@@ -20,10 +20,12 @@ export async function listServices() {
      order by
        case c.name
          when 'Braiding' then 1
-         when 'Makeup' then 2
-         when 'Nails' then 3
-         when 'Lashes' then 4
-         else 5
+         when 'Nails' then 2
+         when 'Piercings' then 3
+         when 'Lash & Brows' then 4
+         when 'Wigs' then 5
+         when 'Others' then 6
+         else 7
        end,
        s.name`
   );
