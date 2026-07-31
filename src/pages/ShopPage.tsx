@@ -96,19 +96,24 @@ export function ShopPage({ onAdd }: ShopPageProps) {
               </button>
             ))}
           </div>
-          <div className="mt-10 grid gap-x-2 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid grid-cols-2 gap-x-2 gap-y-7 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
             {catalogLoading ? (
-              <p className="sm:col-span-2 lg:col-span-3">Loading products…</p>
+              <p className="col-span-full">Loading products…</p>
             ) : catalogError ? (
-              <p className="sm:col-span-2 lg:col-span-3 text-[#8b435f]">
+              <p className="col-span-full text-[#8b435f]">
                 {catalogError}
               </p>
             ) : visibleProducts.length ? (
               visibleProducts.map((product) => (
-                <ProductCard key={product.id} product={product} onAdd={onAdd} />
+                <ProductCard
+                  key={product.id}
+                  product={product}
+                  onAdd={onAdd}
+                  compact
+                />
               ))
             ) : (
-              <p className="sm:col-span-2 lg:col-span-3">
+              <p className="col-span-full">
                 No products match this selection.
               </p>
             )}
