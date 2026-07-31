@@ -267,7 +267,7 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
       </section>
 
       <section className="grid bg-[#fffdfd] lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="hidden items-center px-6 py-16 sm:px-10 sm:py-20 lg:flex lg:px-12 lg:py-24 xl:px-24">
+        <div className="flex items-center px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24 xl:px-24">
           <div className="max-w-xl">
             <p className="editorial-kicker text-[#984667]">Kumasi salon</p>
             <h2 className="mt-4 font-serif text-5xl font-light uppercase leading-[0.92] text-[#1d171a] sm:text-6xl">
@@ -276,7 +276,7 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
             <p className="mt-6 text-base leading-8 text-[#5f5157]">
               From braiding and makeup to nails and lashes, every appointment begins with the look you want and the details that matter to you.
             </p>
-            <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4">
+            <div className="mt-8 hidden grid-cols-2 gap-x-6 gap-y-4 lg:grid">
               {serviceCategories.map(function (category) {
                 return (
                   <a key={category.id} href={'#/services?section=' + category.name.toLowerCase()} className="border-t border-[#cdb8c1] pt-4">
