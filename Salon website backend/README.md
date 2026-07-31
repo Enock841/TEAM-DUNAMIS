@@ -61,6 +61,22 @@ Product responses include:
 All database, JWT and payment credentials must be configured in `.env`. The
 server does not provide a fallback JWT secret.
 
+## Resend email configuration
+
+The newsletter welcome email uses these backend-only environment variables:
+
+```text
+RESEND_API_KEY=re_your_api_key
+RESEND_FROM_EMAIL=Beryl's Beauty Mark <updates@your-verified-domain.com>
+RESEND_REPLY_TO_EMAIL=hello@your-verified-domain.com
+FRONTEND_URL=http://localhost:3000
+```
+
+`RESEND_FROM_EMAIL` must be either a plain email address or a display name
+followed by an address in angle brackets. For live subscribers, its domain must
+be verified in the Resend dashboard. For account-owner testing only, Resend
+provides `Beryl's Beauty Mark <onboarding@resend.dev>`.
+
 ## Backend structure
 
 ```text

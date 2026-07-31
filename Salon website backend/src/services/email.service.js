@@ -3,9 +3,23 @@ import { env } from "../config/env.js";
 
 let resendClient;
 
+function configurationError(message) {
+  const error = new Error(message);
+  error.name = "EmailConfigurationError";
+  error.status = 503;
+  return error;
+}
+
+function hasValidSenderFormat(value) {
+  const trimmed = value.trim();
+  const namedAddress = trimmed.match(/^[^<>\r\n]+\s<([^<>\s]+)>$/);
+  const address = namedAddress ? namedAddress[1] : trimmed;
+  return /^[^\s@<>]+@[^\s@<>]+\.[^\s@<>]+$/.test(address);
+}
+
 function getResendClient() {
   if (!env.resendApiKey) {
-    throw new Error("Email is not configured: RESEND_API_KEY is missing");
+    throw configurationError("Email is not configured: RESEND_API_KEY is missing");
   }
 
   if (!resendClient) {
@@ -30,7 +44,13 @@ export async function sendEmail({
   tags
 }) {
   if (!env.resendFromEmail) {
-    throw new Error("Email is not configured: RESEND_FROM_EMAIL is missing");
+    throw configurationError("Email is not configured: RESEND_FROM_EMAIL is missing");
+  }
+
+  if (!hasValidSenderFormat(env.resendFromEmail)) {
+    throw configurationError(
+      "Email is not configured: RESEND_FROM_EMAIL must use sender@example.com or Name <sender@example.com>"
+    );
   }
 
   if (!to || !subject || (!html && !text)) {
@@ -50,6 +70,7 @@ export async function sendEmail({
   if (error) {
     const sendError = new Error(`Resend could not send the email: ${error.message}`);
     sendError.name = "EmailDeliveryError";
+    sendError.status = 502;
     sendError.cause = error;
     throw sendError;
   }
@@ -58,5 +79,9 @@ export async function sendEmail({
 }
 
 export function isEmailConfigured() {
-  return Boolean(env.resendApiKey && env.resendFromEmail);
+  return Boolean(
+    env.resendApiKey &&
+    env.resendFromEmail &&
+    hasValidSenderFormat(env.resendFromEmail)
+  );
 }

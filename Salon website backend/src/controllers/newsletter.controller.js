@@ -6,6 +6,7 @@ import {
   subscribeNewsletterEmail
 } from "../models/newsletterSubscriber.model.js";
 import { sendEmail } from "../services/email.service.js";
+import { HttpError } from "../utils/httpError.js";
 
 const subscribeSchema = z.object({
   email: z.string().trim().toLowerCase().email().max(254)
@@ -17,11 +18,19 @@ export async function subscribe(req, res) {
 
   if (!subscriber.welcomeEmailSentAt) {
     const message = newsletterWelcomeEmail({ appUrl: env.frontendUrl });
-    await sendEmail({
-      to: email,
-      ...message,
-      tags: [{ name: "function", value: "newsletter-welcome" }]
-    });
+    try {
+      await sendEmail({
+        to: email,
+        ...message,
+        tags: [{ name: "function", value: "newsletter-welcome" }]
+      });
+    } catch (error) {
+      console.error("Newsletter welcome email failed:", error);
+      throw new HttpError(
+        503,
+        "Email signup is temporarily unavailable. Please try again shortly."
+      );
+    }
     await markNewsletterWelcomeSent(subscriber.id);
   }
 
