@@ -69,7 +69,7 @@ export function Footer() {
                 }}
                 placeholder="Email address"
                 disabled={signupState === 'submitting'}
-                className="h-[56px] w-full flex-1 border border-[#1d171a] bg-transparent px-5 text-sm text-[#1d171a] outline-none placeholder:text-[#4f3e46] focus:bg-white/25 disabled:cursor-wait disabled:opacity-70"
+                className="h-[56px] w-full shrink-0 border border-[#1d171a] bg-transparent px-5 text-sm text-[#1d171a] outline-none placeholder:text-[#4f3e46] focus:bg-white/25 disabled:cursor-wait disabled:opacity-70 sm:flex-1"
               />
               <button
                 type="submit"
