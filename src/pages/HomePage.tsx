@@ -35,7 +35,7 @@ function HeroBanner() {
 
   return (
     <section data-home-hero className="relative grid min-h-[680px] overflow-hidden bg-[#d8aabd] lg:grid-cols-[1.12fr_0.88fr]">
-      <div className="absolute inset-0 overflow-hidden opacity-55 lg:relative lg:min-h-[680px] lg:opacity-100">
+      <div className="absolute inset-0 overflow-hidden opacity-70 lg:relative lg:min-h-[680px] lg:opacity-100">
         {slides.map(function (item, itemIndex) {
           return (
             <img
@@ -47,9 +47,9 @@ function HeroBanner() {
             />
           )
         })}
-        <div className="absolute inset-0 bg-[#d8aabd]/35 lg:bg-[linear-gradient(180deg,transparent_55%,rgba(29,23,26,0.22)_100%)]" />
+        <div className="absolute inset-0 bg-[#d8aabd]/20 lg:bg-[linear-gradient(180deg,transparent_55%,rgba(29,23,26,0.22)_100%)]" />
       </div>
-      <div className="campaign-grid relative z-[1] flex min-h-[680px] items-center bg-[#d8aabd]/45 px-7 py-16 text-[#1d171a] backdrop-blur-[1px] sm:px-12 lg:min-h-0 lg:border-l lg:border-[#b7839b] lg:bg-transparent lg:px-16 lg:backdrop-blur-none xl:px-20">
+      <div className="campaign-grid relative z-[1] flex min-h-[680px] items-center bg-[#d8aabd]/30 px-7 py-16 text-[#1d171a] backdrop-blur-[1px] sm:px-12 lg:min-h-0 lg:border-l lg:border-[#b7839b] lg:bg-transparent lg:px-16 lg:backdrop-blur-none xl:px-20">
         <div key={slide.id} className="max-w-xl">
           <p className="editorial-kicker text-[#6f354f]">{slide.eyebrow}</p>
           <h1 className="mt-5 font-serif text-[clamp(4.4rem,8vw,7.8rem)] font-light uppercase leading-[0.78] tracking-[-0.035em]">
