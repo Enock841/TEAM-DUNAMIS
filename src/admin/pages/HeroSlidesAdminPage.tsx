@@ -1,6 +1,6 @@
 import { useCallback, useState, type FormEvent } from 'react'
 import { api, type HeroSlide } from '../../lib/api'
-import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
+import { EmptyState, fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
 import { useAdminResource } from '../hooks/useAdminResource'
 import { ImageUploadField } from '../components/ImageUploadField'
 
@@ -77,12 +77,14 @@ export function HeroSlidesAdminPage() {
         <Panel className="mt-6">
           <form onSubmit={submit} className="grid gap-4 md:grid-cols-2">
             <input
+              aria-label="Slide eyebrow"
               name="eyebrow"
               defaultValue={editing?.eyebrow}
               placeholder="Small label above the headline"
               className={fieldClass}
             />
             <input
+              aria-label="Slide order"
               name="sortOrder"
               type="number"
               defaultValue={editing?.sortOrder ?? 0}
@@ -90,6 +92,7 @@ export function HeroSlidesAdminPage() {
               className={fieldClass}
             />
             <input
+              aria-label="Slide headline"
               name="title"
               required
               defaultValue={editing?.title}
@@ -97,6 +100,7 @@ export function HeroSlidesAdminPage() {
               className={`${fieldClass} md:col-span-2`}
             />
             <textarea
+              aria-label="Slide supporting text"
               name="subtitle"
               defaultValue={editing?.subtitle}
               placeholder="Supporting text under the headline"
@@ -117,6 +121,12 @@ export function HeroSlidesAdminPage() {
 
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
         {loading && <Notice>Loading slides...</Notice>}
+        {!loading && !error && (data ?? []).length === 0 && (
+          <EmptyState
+            title="No hero slides yet"
+            description="Add a slide to create the homepage campaign banner."
+          />
+        )}
         {(data ?? []).map((slide) => (
           <Panel key={slide.id}>
             <div className="flex gap-4">

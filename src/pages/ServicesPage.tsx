@@ -160,7 +160,7 @@ export function ServicesPage() {
         <h1 className="text-on-blush mt-3 font-serif text-[clamp(4.5rem,10vw,8rem)] font-light uppercase leading-[0.82]">
           Salon services
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#55434b] sm:text-lg">
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#44343b] sm:text-lg">
           Explore braiding, nails, piercings, lash and brow services, wigs, and
           more. We confirm the details and final price before your appointment.
         </p>
@@ -168,8 +168,8 @@ export function ServicesPage() {
 
       <section className="px-5 py-12 sm:px-8 sm:py-16 lg:px-12">
         <div className="mx-auto max-w-[1480px]">
-          {catalogLoading && <p>Loading salon services…</p>}
-          {catalogError && <p className="text-[#8b435f]">{catalogError}</p>}
+          {catalogLoading && <p role="status">Loading salon services…</p>}
+          {catalogError && <p role="alert" className="text-[#8b435f]">{catalogError}</p>}
           {normalizedSearch && (
             <div className="mb-12 flex flex-col items-center justify-between gap-4 bg-[#ead2dd] px-5 py-4 text-center sm:flex-row sm:text-left">
               <p className="text-sm text-[#5f5157]">
@@ -252,7 +252,7 @@ export function ServicesPage() {
                       <p className="mt-2 max-w-2xl text-sm leading-6 text-[#5f5157]">
                         {service.description}
                       </p>
-                      <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-[#9a7183]">
+                      <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-[#765762]">
                         {formatDuration(service.durationMinutes)} · Up to{' '}
                         {service.category.dailyCap} bookings per day
                       </p>

@@ -37,19 +37,28 @@ function centerSlide(container: HTMLDivElement, index: number) {
 function HeroBanner() {
   const [slides, setSlides] = useState<HeroSlide[]>([])
   const [index, setIndex] = useState(0)
+  const [failed, setFailed] = useState(false)
 
   useEffect(function () {
     let cancelled = false
-    api.heroSlides().then(function (data) {
-      if (!cancelled) setSlides(data)
-    })
+    api
+      .heroSlides()
+      .then(function (data) {
+        if (!cancelled) setSlides(data)
+      })
+      .catch(function () {
+        if (!cancelled) setFailed(true)
+      })
     return function () {
       cancelled = true
     }
   }, [])
 
   useEffect(function () {
-    if (slides.length < 2) return
+    if (
+      slides.length < 2 ||
+      window.matchMedia('(prefers-reduced-motion: reduce)').matches
+    ) return
     const timer = setInterval(function () {
       setIndex(function (current) {
         return (current + 1) % slides.length
@@ -60,7 +69,40 @@ function HeroBanner() {
     }
   }, [slides])
 
-  if (slides.length === 0) return null
+  if (slides.length === 0) {
+    return (
+      <section
+        data-home-hero
+        aria-busy={!failed}
+        className="campaign-grid flex min-h-[620px] items-center bg-[#d8aabd] px-7 py-16 sm:px-12 lg:px-20"
+      >
+        {failed ? (
+          <div className="max-w-3xl">
+            <p className="editorial-kicker text-[#6f354f]">
+              Beryl&apos;s Beauty Mark
+            </p>
+            <h1 className="mt-5 font-serif text-[clamp(4.4rem,9vw,8rem)] font-light uppercase leading-[0.8] tracking-[-0.035em] text-[#342b2f]">
+              Beauty, made entirely your own.
+            </h1>
+            <p className="mt-7 max-w-lg text-base leading-7 text-[#44343b]">
+              Explore premium hair, considered salon services and appointments
+              designed around you.
+            </p>
+            <a
+              href="#/services"
+              className="mt-8 inline-flex min-h-11 items-center border border-[#1d171a] bg-[#1d171a] px-8 py-3 text-[9px] font-bold uppercase tracking-[0.18em] text-white"
+            >
+              Explore services
+            </a>
+          </div>
+        ) : (
+          <p role="status" className="text-sm text-[#44343b]">
+            Loading the latest campaign…
+          </p>
+        )}
+      </section>
+    )
+  }
   const slide = slides[index]
 
   return (
@@ -85,7 +127,7 @@ function HeroBanner() {
           <h1 className="mt-5 font-serif text-[clamp(4.4rem,8vw,7.8rem)] font-light uppercase leading-[0.78] tracking-[-0.035em]">
             {slide.title}
           </h1>
-          <p className="mt-7 max-w-md text-sm leading-7 text-[#5b4a52] sm:text-base">
+          <p className="mt-7 max-w-md text-sm leading-7 text-[#44343b] sm:text-base">
             {slide.subtitle}
           </p>
           <div className="mt-9 flex flex-wrap gap-3">
@@ -133,11 +175,19 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
   const [activeMoodIndex, setActiveMoodIndex] = useState(0)
 
   const [categoryTiles, setCategoryTiles] = useState<ShopCategoryTile[]>([])
+  const [tilesError, setTilesError] = useState('')
   useEffect(function () {
     let cancelled = false
-    api.shopCategoryTiles().then(function (data) {
-      if (!cancelled) setCategoryTiles(data)
-    })
+    api
+      .shopCategoryTiles()
+      .then(function (data) {
+        if (!cancelled) setCategoryTiles(data)
+      })
+      .catch(function () {
+        if (!cancelled) {
+          setTilesError('Unable to load the featured collections right now.')
+        }
+      })
     return function () {
       cancelled = true
     }
@@ -148,7 +198,7 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
     if (productCount === 0) return
     setActiveProductIndex(0)
     const frame = requestAnimationFrame(function () {
-      if (window.matchMedia('(max-width: 767px)').matches && productsSliderRef.current) {
+      if (window.matchMedia('(max-width: 1023px)').matches && productsSliderRef.current) {
         centerSlide(productsSliderRef.current, 0)
       }
     })
@@ -161,7 +211,7 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
     if (categoryTiles.length === 0) return
     setActiveMoodIndex(0)
     const frame = requestAnimationFrame(function () {
-      if (window.matchMedia('(max-width: 767px)').matches && moodSliderRef.current) {
+      if (window.matchMedia('(max-width: 1023px)').matches && moodSliderRef.current) {
         centerSlide(moodSliderRef.current, 0)
       }
     })
@@ -178,9 +228,21 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
       imageUrl: service.category.imageUrl || service.images[0] || '',
     })
   }
-  const orderList = ['Braiding', 'Makeup', 'Nails', 'Lashes']
+  const orderList = [
+    'Braiding',
+    'Nails',
+    'Piercings',
+    'Lash & Brows',
+    'Wigs',
+    'Others',
+  ]
   const serviceCategories = Array.from(categoryMap.values()).sort(function (first, second) {
-    return orderList.indexOf(first.name) - orderList.indexOf(second.name)
+    const firstRank = orderList.indexOf(first.name)
+    const secondRank = orderList.indexOf(second.name)
+    return (
+      (firstRank === -1 ? orderList.length : firstRank) -
+      (secondRank === -1 ? orderList.length : secondRank)
+    )
   })
 
   return (
@@ -200,18 +262,24 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
           </div>
           <div
             ref={productsSliderRef}
+            role="region"
             aria-label="New arrivals products"
             onScroll={function (event) {
               setActiveProductIndex(centeredSlideIndex(event.currentTarget))
             }}
-            className="mt-8 -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-[14vw] py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-8 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:py-0 lg:grid-cols-3 xl:grid-cols-5"
+            className="mt-8 -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-[14vw] py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-8 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0 lg:py-0 xl:grid-cols-5"
           >
-            {catalogLoading && <p className="md:col-span-2 lg:col-span-3 xl:col-span-5">Loading client favourites...</p>}
+            {catalogLoading && <p className="lg:col-span-3 xl:col-span-5">Loading client favourites...</p>}
+            {!catalogLoading && catalogError && (
+              <p role="alert" className="lg:col-span-3 xl:col-span-5">
+                {catalogError}
+              </p>
+            )}
             {!catalogLoading && !catalogError && products.slice(0, 5).map(function (product, productIndex) {
               return (
                 <div
                   key={product.id}
-                  className={`relative w-[72vw] max-w-[300px] shrink-0 snap-center transition-[transform,opacity,box-shadow] duration-500 ease-out md:w-auto md:max-w-none md:scale-100 md:opacity-100 md:shadow-none ${
+                  className={`relative w-[72vw] max-w-[300px] shrink-0 snap-center transition-[transform,opacity,box-shadow] duration-500 ease-out lg:w-auto lg:max-w-none lg:scale-100 lg:opacity-100 lg:shadow-none ${
                     activeProductIndex === productIndex
                       ? 'z-10 scale-100 opacity-100 shadow-[0_10px_28px_rgba(29,23,26,0.10)]'
                       : 'z-0 scale-[0.94] opacity-70'
@@ -235,18 +303,24 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
           </div>
           <div
             ref={moodSliderRef}
+            role="region"
             aria-label="Shop your mood collections"
             onScroll={function (event) {
               setActiveMoodIndex(centeredSlideIndex(event.currentTarget))
             }}
-            className="mt-10 -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-[14vw] py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-8 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:py-0"
+            className="mt-10 -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-[14vw] py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-8 lg:mx-0 lg:grid lg:grid-cols-3 lg:overflow-visible lg:px-0 lg:py-0"
           >
+            {tilesError && (
+              <p role="alert" className="text-center text-sm text-[#44343b]">
+                {tilesError}
+              </p>
+            )}
             {categoryTiles.map(function (category, categoryIndex) {
               return (
                 <a
                   key={category.id}
                   href={category.href}
-                  className={`group relative min-h-[420px] w-[72vw] max-w-[320px] shrink-0 snap-center overflow-hidden bg-[#3f3037] transition-[transform,opacity,box-shadow] duration-500 ease-out md:w-auto md:max-w-none md:scale-100 md:opacity-100 md:shadow-none ${
+                  className={`group relative min-h-[420px] w-[72vw] max-w-[320px] shrink-0 snap-center overflow-hidden bg-[#3f3037] transition-[transform,opacity,box-shadow] duration-500 ease-out lg:w-auto lg:max-w-none lg:scale-100 lg:opacity-100 lg:shadow-none ${
                     activeMoodIndex === categoryIndex
                       ? 'z-10 scale-100 opacity-100 shadow-[0_10px_28px_rgba(29,23,26,0.12)]'
                       : 'z-0 scale-[0.94] opacity-70'

@@ -54,6 +54,18 @@ export function Header({
   }, [profileOpen])
 
   useEffect(() => {
+    if (!menuOpen && !searchOpen && !profileOpen) return
+    const closeOnEscape = (event: KeyboardEvent) => {
+      if (event.key !== 'Escape') return
+      setMenuOpen(false)
+      setSearchOpen(false)
+      setProfileOpen(false)
+    }
+    document.addEventListener('keydown', closeOnEscape)
+    return () => document.removeEventListener('keydown', closeOnEscape)
+  }, [menuOpen, profileOpen, searchOpen])
+
+  useEffect(() => {
     const updateHeroState = () => {
       if (!isHome) {
         setOverHero(false)
@@ -96,6 +108,9 @@ export function Header({
   }, [isHome, menuOpen])
 
   const blendsWithHero = false
+  const currentSection =
+    window.location.hash.replace(/^#\//, '').split('?')[0].split('/')[0] ||
+    'home'
   const normalizedQuery = searchQuery.trim().toLowerCase()
   const searchItems = [
     ...products.map((product) => ({
@@ -131,7 +146,7 @@ export function Header({
         visible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
       } shadow-[0_6px_24px_rgba(29,23,26,0.05)] backdrop-blur-xl`}
     >
-      <div className="flex h-8 items-center justify-between bg-[#c992aa] px-5 text-[8px] font-bold uppercase tracking-[0.22em] text-[#44343b] sm:px-8 lg:px-12">
+      <div className="flex h-8 items-center justify-between bg-[#c992aa] px-5 text-[9px] font-bold uppercase tracking-[0.2em] text-[#44343b] sm:px-8 lg:px-12">
         <span className="hidden sm:inline">Kumasi, Ghana</span>
         <span>Welcome to Beryl&apos;s Beauty Mark</span>
         <a href="#/appointments" className="hidden border-b border-current sm:inline">
@@ -158,7 +173,13 @@ export function Header({
             <a
               key={label}
               href={href}
-              className="text-[9px] font-bold uppercase tracking-[0.14em] text-[#342a2f] transition duration-300 hover:text-[#984667]"
+              aria-current={
+                currentSection ===
+                (href === '#/' ? 'home' : href.replace('#/', ''))
+                  ? 'page'
+                  : undefined
+              }
+              className="flex min-h-10 items-center text-[9px] font-bold uppercase tracking-[0.14em] text-[#342a2f] transition duration-300 hover:text-[#984667]"
             >
               {label}
             </a>
@@ -174,7 +195,8 @@ export function Header({
             }}
             aria-label={searchOpen ? 'Close search' : 'Search products and services'}
             aria-expanded={searchOpen}
-            className={`flex h-9 items-center justify-center gap-2 rounded-full border px-2.5 transition duration-300 xl:min-w-32 xl:justify-start xl:px-3 ${
+            aria-controls="site-search-panel"
+            className={`flex h-10 items-center justify-center gap-2 rounded-full border px-2.5 transition duration-300 xl:min-w-32 xl:justify-start xl:px-3 ${
               blendsWithHero
                 ? 'border-white/25 bg-white/5 text-[#eee3e7] hover:border-white/50 hover:bg-white/10'
                 : 'border-[#cdb8c1] bg-white/65 text-[#5f5157] hover:border-[#984667] hover:text-[#984667]'
@@ -194,7 +216,7 @@ export function Header({
             onClick={onOpenCart}
             aria-label={`Open shopping bag with ${cartCount} items`}
             title="Shopping bag"
-            className={`relative flex h-9 w-9 items-center justify-center rounded-full border transition duration-300 ${
+            className={`relative flex h-10 w-10 items-center justify-center rounded-full border transition duration-300 ${
               blendsWithHero
                 ? 'border-white/25 bg-white/5 text-[#eee3e7] hover:border-white/50 hover:bg-white/10'
                 : 'border-[#cdb8c1] text-[#5f5157] hover:border-[#984667] hover:bg-[#f8e3ec] hover:text-[#984667]'
@@ -210,7 +232,7 @@ export function Header({
           <a
             href="#/appointments"
             title="Book an appointment"
-            className="hidden h-9 items-center justify-center rounded-full border border-[#1d171a] bg-[#1d171a] px-4 text-[9px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#984667] md:flex"
+            className="hidden h-10 items-center justify-center rounded-full border border-[#1d171a] bg-[#1d171a] px-4 text-[9px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#984667] md:flex"
           >
             Book
           </a>
@@ -225,7 +247,7 @@ export function Header({
               aria-label={user ? `Open profile menu for ${user.name}` : 'Open account'}
               aria-expanded={user ? profileOpen : undefined}
               title={user ? user.name : 'Account'}
-              className={`flex h-9 items-center justify-center gap-1 rounded-full border transition duration-300 ${
+              className={`flex h-10 items-center justify-center gap-1 rounded-full border transition duration-300 ${
                 user ? 'w-auto px-3' : 'w-11'
               } ${
                 blendsWithHero
@@ -306,8 +328,9 @@ export function Header({
               setSearchOpen(false)
             }}
             aria-expanded={menuOpen}
+            aria-controls="mobile-navigation"
             aria-label="Toggle menu"
-            className={`flex h-9 w-9 flex-col items-center justify-center gap-1.5 rounded-full transition-colors duration-300 lg:hidden ${
+            className={`flex h-10 w-10 flex-col items-center justify-center gap-1.5 rounded-full transition-colors duration-300 lg:hidden ${
               blendsWithHero ? 'text-[#eee3e7]' : 'text-[#8f3862]'
             }`}
           >
@@ -319,7 +342,10 @@ export function Header({
       </div>
 
       {searchOpen && (
-        <div className="border-t border-[#d9c7cf] bg-[#fffdfd]/98 px-5 py-5 shadow-[0_18px_45px_rgba(71,35,51,0.12)] backdrop-blur-xl sm:px-8 lg:px-12">
+        <div
+          id="site-search-panel"
+          className="border-t border-[#d9c7cf] bg-[#fffdfd]/98 px-5 py-5 shadow-[0_18px_45px_rgba(71,35,51,0.12)] backdrop-blur-xl sm:px-8 lg:px-12"
+        >
           <div className="mx-auto max-w-3xl">
             <label htmlFor="site-search" className="sr-only">
               Search products and services
@@ -376,12 +402,21 @@ export function Header({
       )}
 
       {menuOpen && (
-        <div className="border-t border-[#d9c7cf] bg-[#fffdfd] px-5 py-6 lg:hidden">
+        <div
+          id="mobile-navigation"
+          className="border-t border-[#d9c7cf] bg-[#fffdfd] px-5 py-6 lg:hidden"
+        >
           <nav className="mx-auto grid max-w-7xl gap-1">
             {links.map(([label, href]) => (
               <a
                 key={label}
                 href={href}
+                aria-current={
+                  currentSection ===
+                  (href === '#/' ? 'home' : href.replace('#/', ''))
+                    ? 'page'
+                    : undefined
+                }
                 onClick={() => setMenuOpen(false)}
                 className="rounded-xl px-4 py-3 font-serif text-xl text-[#1d171a] transition hover:bg-[#f8e3ec]"
               >

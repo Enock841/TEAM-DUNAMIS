@@ -149,15 +149,34 @@ export function BookingPage(props) {
           </p>
         </div>
 
-        <div className="mt-10 flex items-center justify-center">
+        <div
+          role="list"
+          aria-label={`Booking progress, step ${step} of 3`}
+          className="mt-10 flex items-center justify-center"
+        >
           {[1, 2, 3].map(function (item) {
+            const stepLabel =
+              item === 1
+                ? 'Choose service'
+                : item === 2
+                  ? 'Choose date and time'
+                  : 'Review and submit'
             const circleClass = 'flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold ' +
               (step >= item ? 'bg-[#984667] text-white' : 'border border-[#c992aa] bg-white text-[#75636b]')
             const lineClass = 'h-px w-12 sm:w-24 ' + (step > item ? 'bg-[#984667]' : 'bg-[#c992aa]')
             return (
-              <div key={item} className="flex items-center">
-                <span className={circleClass}>{item}</span>
-                {item < 3 && <span className={lineClass} />}
+              <div key={item} role="listitem" className="flex items-center">
+                <span
+                  className={circleClass}
+                  aria-current={step === item ? 'step' : undefined}
+                >
+                  <span aria-hidden="true">{item}</span>
+                  <span className="sr-only">
+                    Step {item}: {stepLabel}
+                    {step === item ? ', current step' : ''}
+                  </span>
+                </span>
+                {item < 3 && <span aria-hidden="true" className={lineClass} />}
               </div>
             )
           })}

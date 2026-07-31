@@ -2,7 +2,7 @@ import { useState, type FormEvent } from 'react'
 import { useAppData } from '../../context/appData'
 import type { Product } from '../../data/catalog'
 import { api } from '../../lib/api'
-import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
+import { EmptyState, fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
 
 export function ProductsAdminPage() {
   const { products, refreshCatalog, token } = useAppData()
@@ -40,22 +40,31 @@ export function ProductsAdminPage() {
       {showForm && (
         <Panel className="mt-6">
           <form onSubmit={submit} className="grid gap-4 md:grid-cols-2">
-            <input name="name" required defaultValue={editing?.name} placeholder="Product name" className={fieldClass} />
-            <input name="category" required defaultValue={editing?.category} placeholder="Category" className={fieldClass} />
-            <textarea name="description" required defaultValue={editing?.description} placeholder="Description" className={`${fieldClass} h-24 py-3 md:col-span-2`} />
-            <input name="price" required type="number" min="0" defaultValue={editing?.price} placeholder="Price" className={fieldClass} />
-            <input name="stockQty" required type="number" min="0" defaultValue={editing?.stockQty} placeholder="Stock quantity" className={fieldClass} />
-            <input name="image" defaultValue={editing?.images[0]} placeholder="Image URL or /images/path.jpg" className={`${fieldClass} md:col-span-2`} />
+            <input aria-label="Product name" name="name" required defaultValue={editing?.name} placeholder="Product name" className={fieldClass} />
+            <input aria-label="Product category" name="category" required defaultValue={editing?.category} placeholder="Category" className={fieldClass} />
+            <textarea aria-label="Product description" name="description" required defaultValue={editing?.description} placeholder="Description" className={`${fieldClass} h-24 py-3 md:col-span-2`} />
+            <input aria-label="Product price" name="price" required type="number" min="0" defaultValue={editing?.price} placeholder="Price" className={fieldClass} />
+            <input aria-label="Stock quantity" name="stockQty" required type="number" min="0" defaultValue={editing?.stockQty} placeholder="Stock quantity" className={fieldClass} />
+            <input aria-label="Product image URL" name="image" defaultValue={editing?.images[0]} placeholder="Image URL or /images/path.jpg" className={`${fieldClass} md:col-span-2`} />
             <div className="flex gap-3 md:col-span-2"><PrimaryButton type="submit">Save product</PrimaryButton><button type="button" onClick={() => setShowForm(false)} className="text-sm">Cancel</button></div>
           </form>
         </Panel>
       )}
+      {products.length === 0 ? (
+        <div className="mt-8">
+          <EmptyState
+            title="No products yet"
+            description="Add the first product to begin building the shop catalogue."
+          />
+        </div>
+      ) : (
       <div className="mt-8 overflow-x-auto rounded-2xl border border-[#d9c7cf] bg-white">
         <table className="w-full min-w-[760px] text-left text-sm">
           <thead className="bg-[#f3e3ea] text-xs uppercase text-[#76515f]"><tr><th className="p-4">Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
           <tbody>{products.map((product) => <tr key={product.id} className="border-t border-[#e6d9df]"><td className="p-4 font-semibold">{product.name}</td><td>{product.category}</td><td>GH₵{product.price}</td><td><span className={product.stockQty <= 5 ? 'font-bold text-amber-600' : ''}>{product.stockQty}</span></td><td><div className="flex gap-4 text-xs font-bold uppercase"><button onClick={() => { setEditing(product); setShowForm(true) }} className="text-[#984667]">Edit</button><button onClick={() => remove(product)} className="text-red-600">Delete</button></div></td></tr>)}</tbody>
         </table>
       </div>
+      )}
     </>
   )
 }

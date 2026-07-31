@@ -182,7 +182,12 @@ export function AccountPage(props: { onRequireAuth: () => void }) {
                 ? 'shrink-0 rounded-xl px-4 py-3 text-sm font-semibold transition bg-[#1d171a] text-white'
                 : 'shrink-0 rounded-xl px-4 py-3 text-sm font-semibold transition border border-[#d9c7cf] bg-white text-[#5f5157] hover:border-[#984667]'
               return (
-                <a key={value} href={linkHref} className={linkClass}>
+                <a
+                  key={value}
+                  href={linkHref}
+                  aria-current={activeTab === value ? 'page' : undefined}
+                  className={`${linkClass} inline-flex min-h-11 items-center`}
+                >
                   {label}
                 </a>
               )

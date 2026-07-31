@@ -59,14 +59,14 @@ export function FaqPage() {
           <div className="divide-y divide-[#d9c7cf] border-y border-[#d9c7cf]">
             {faqs.map((faq, index) => (
               <details key={faq.question} className="group py-6 sm:py-7">
-                <summary className="flex cursor-pointer list-none items-start justify-between gap-5 font-serif text-xl text-[#1d171a] sm:text-2xl">
+                <summary className="flex min-h-11 cursor-pointer list-none items-center justify-between gap-5 font-serif text-xl text-[#1d171a] sm:text-2xl">
                   <span>
                     <span className="mr-4 text-sm text-[#984667]">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     {faq.question}
                   </span>
-                  <span className="mt-1 text-2xl font-light text-[#984667] transition group-open:rotate-45">
+                  <span aria-hidden="true" className="mt-1 text-2xl font-light text-[#984667] transition group-open:rotate-45">
                     +
                   </span>
                 </summary>

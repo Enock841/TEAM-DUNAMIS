@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { AuthPanel } from './components/AuthPanel'
 import { AdminRoute } from './components/AdminRoute'
 import { AdminApp } from './admin/AdminApp'
@@ -31,6 +31,7 @@ function App() {
   const [cart, setCart] = useState<Product[]>([])
   const [cartOpen, setCartOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
+  const mainContentRef = useRef<HTMLDivElement>(null)
 
   useEffect(() => {
     const syncRoute = () => {
@@ -40,8 +41,17 @@ function App() {
         window.location.hash.split('?')[1],
       )
       if (!routeParams.has('section')) {
-        window.scrollTo({ top: 0, behavior: 'smooth' })
+        const reduceMotion = window.matchMedia(
+          '(prefers-reduced-motion: reduce)',
+        ).matches
+        window.scrollTo({
+          top: 0,
+          behavior: reduceMotion ? 'auto' : 'smooth',
+        })
       }
+      requestAnimationFrame(() => {
+        mainContentRef.current?.focus({ preventScroll: true })
+      })
     }
     window.addEventListener('hashchange', syncRoute)
     return () => window.removeEventListener('hashchange', syncRoute)
@@ -102,8 +112,16 @@ function App() {
     return (
       <>
         <PaymentVerifier />
+        <a
+          href="#main-content"
+          className="fixed left-4 top-4 z-[120] -translate-y-24 bg-[#1d171a] px-4 py-3 text-sm font-bold text-white transition focus:translate-y-0"
+        >
+          Skip to main content
+        </a>
         <div key={locationKey} className="admin-editorial min-h-screen bg-[#f4e7ec] text-[#4f4248]">
-          {page}
+          <div id="main-content" ref={mainContentRef} tabIndex={-1} className="outline-none">
+            {page}
+          </div>
         </div>
       </>
     )
@@ -112,6 +130,12 @@ function App() {
   return (
     <>
       <PaymentVerifier />
+      <a
+        href="#main-content"
+        className="fixed left-4 top-4 z-[120] -translate-y-24 bg-[#1d171a] px-4 py-3 text-sm font-bold text-white transition focus:translate-y-0"
+      >
+        Skip to main content
+      </a>
       <div className="editorial-storefront min-h-screen bg-[#fff9fb] text-[#5f5157]">
         <Header
           key={route}
@@ -121,8 +145,11 @@ function App() {
           onOpenAccount={() => setAuthOpen(true)}
         />
         <div
+          id="main-content"
+          ref={mainContentRef}
+          tabIndex={-1}
           key={locationKey}
-          className="pt-[106px]"
+          className="pt-[106px] outline-none"
         >
           {page}
         </div>

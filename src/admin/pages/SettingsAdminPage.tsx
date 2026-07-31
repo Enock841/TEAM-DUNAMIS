@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { api, type AdminSettings, type AdminStaff } from '../../lib/api'
-import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
+import { EmptyState, fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
 import { useAdminResource } from '../hooks/useAdminResource'
 
 export function SettingsAdminPage() {
@@ -94,14 +94,22 @@ export function SettingsAdminPage() {
       <div className="mt-8 grid gap-6 xl:grid-cols-2">
         <Panel>
           <h2 className="font-serif text-2xl text-[#1d171a]">Staff accounts</h2>
-          <div className="mt-5 space-y-3">{staff.map((member) => <div key={member.id} className="flex items-center justify-between rounded-xl bg-[#f7e8ee] p-3"><div><strong className="text-sm">{member.name}</strong><span className="block text-xs text-[#6b5a62]">{member.phone}</span></div><button onClick={() => toggle(member)} className={`text-xs font-bold ${member.isActive ? 'text-red-600' : 'text-emerald-700'}`}>{member.isActive ? 'Deactivate' : 'Activate'}</button></div>)}</div>
+          <div className="mt-5 space-y-3">
+            {staff.length === 0 && (
+              <EmptyState
+                title="No additional staff"
+                description="Create an administrator account when another team member needs access."
+              />
+            )}
+            {staff.map((member) => <div key={member.id} className="flex items-center justify-between rounded-xl bg-[#f7e8ee] p-3"><div><strong className="text-sm">{member.name}</strong><span className="block text-xs text-[#6b5a62]">{member.phone}</span></div><button onClick={() => toggle(member)} className={`min-h-9 text-xs font-bold ${member.isActive ? 'text-red-600' : 'text-emerald-700'}`}>{member.isActive ? 'Deactivate' : 'Activate'}</button></div>)}
+          </div>
         </Panel>
         <Panel>
           <h2 className="font-serif text-2xl text-[#1d171a]">Add administrator</h2>
           <form onSubmit={addStaff} className="mt-5 grid gap-3">
-            <input name="name" required placeholder="Full name" className={fieldClass} />
-            <input name="phone" required placeholder="Phone number" className={fieldClass} />
-            <input name="password" required type="password" minLength={8} placeholder="Temporary password" className={fieldClass} />
+            <input aria-label="Staff full name" name="name" required placeholder="Full name" className={fieldClass} />
+            <input aria-label="Staff phone number" name="phone" required placeholder="Phone number" className={fieldClass} />
+            <input aria-label="Temporary staff password" name="password" required type="password" minLength={8} placeholder="Temporary password" className={fieldClass} />
             <PrimaryButton type="submit">Create staff account</PrimaryButton>
           </form>
         </Panel>

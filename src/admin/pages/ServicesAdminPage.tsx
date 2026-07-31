@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useAppData } from '../../context/appData'
 import { api } from '../../lib/api'
-import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
+import { EmptyState, fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
 import { ImageUploadField } from '../components/ImageUploadField'
 
 export function ServicesAdminPage() {
@@ -216,6 +216,7 @@ export function ServicesAdminPage() {
         {showCategoryForm && (
           <form onSubmit={submitCategory} className="mt-6 grid gap-4 border-t border-[#ead3dd] pt-6 md:grid-cols-2">
             <input
+              aria-label="Category name"
               name="name"
               required
               defaultValue={editingCategory ? editingCategory.name : ''}
@@ -223,6 +224,7 @@ export function ServicesAdminPage() {
               className={fieldClass}
             />
             <input
+              aria-label="Daily booking limit"
               name="dailyCap"
               required
               type="number"
@@ -256,6 +258,12 @@ export function ServicesAdminPage() {
         )}
 
         <div className="mt-6 grid gap-3 md:grid-cols-2 xl:grid-cols-3">
+          {categories.length === 0 && (
+            <EmptyState
+              title="No service categories"
+              description="Add a category to create the storefront service navigation."
+            />
+          )}
           {categories.map(function (category) {
             return (
               <div key={category.id} className="flex gap-4 border border-[#ead3dd] bg-[#fff9fb] p-3">
@@ -295,19 +303,19 @@ export function ServicesAdminPage() {
       {showForm && (
         <Panel className="mt-6">
           <form onSubmit={submit} className="grid gap-4 md:grid-cols-2">
-            <input name="name" required defaultValue={editing ? editing.name : ''} placeholder="Service name" className={fieldClass} />
-            <select name="categoryId" required defaultValue={editing ? editing.category.id : ''} className={fieldClass}>
+            <input aria-label="Service name" name="name" required defaultValue={editing ? editing.name : ''} placeholder="Service name" className={fieldClass} />
+            <select aria-label="Service category" name="categoryId" required defaultValue={editing ? editing.category.id : ''} className={fieldClass}>
               {categories.map(function (category) {
                 return <option key={category.id} value={category.id}>{category.name}</option>
               })}
             </select>
-            <textarea name="description" required defaultValue={editing ? editing.description : ''} placeholder="Description" className={fieldClass + ' h-24 py-3 md:col-span-2'} />
-            <input name="durationMinutes" required type="number" min="1" defaultValue={editing ? editing.durationMinutes : ''} placeholder="Duration in minutes" className={fieldClass} />
+            <textarea aria-label="Service description" name="description" required defaultValue={editing ? editing.description : ''} placeholder="Description" className={fieldClass + ' h-24 py-3 md:col-span-2'} />
+            <input aria-label="Duration in minutes" name="durationMinutes" required type="number" min="1" defaultValue={editing ? editing.durationMinutes : ''} placeholder="Duration in minutes" className={fieldClass} />
             <div className="md:col-span-2">
               <ImageUploadField label="Service photo" value={imageUrl} onChange={setImageUrl} />
             </div>
-            <input name="priceMin" required type="number" min="0" defaultValue={editing ? editing.priceMin : ''} placeholder="Minimum price" className={fieldClass} />
-            <input name="priceMax" required type="number" min="0" defaultValue={editing ? editing.priceMax : ''} placeholder="Maximum price" className={fieldClass} />
+            <input aria-label="Minimum price" name="priceMin" required type="number" min="0" defaultValue={editing ? editing.priceMin : ''} placeholder="Minimum price" className={fieldClass} />
+            <input aria-label="Maximum price" name="priceMax" required type="number" min="0" defaultValue={editing ? editing.priceMax : ''} placeholder="Maximum price" className={fieldClass} />
             <div className="flex gap-3 md:col-span-2">
               <PrimaryButton type="submit">Save service</PrimaryButton>
               <button type="button" onClick={function () { setShowForm(false) }} className="text-sm">Cancel</button>
@@ -317,6 +325,12 @@ export function ServicesAdminPage() {
       )}
 
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
+        {services.length === 0 && (
+          <EmptyState
+            title="No services yet"
+            description="Add a service to make it available for appointments."
+          />
+        )}
         {services.map(function (service) {
           const lengths = lengthsByService[service.id]
           const draft = lengthForms[service.id] || { label: '', priceMin: '', priceMax: '' }
@@ -356,12 +370,14 @@ export function ServicesAdminPage() {
                   })}
                   <div className="mt-3 grid gap-2 sm:grid-cols-4">
                     <input
+                      aria-label={`${service.name} length label`}
                       value={draft.label}
                       onChange={function (e) { updateLengthForm(service.id, 'label', e.target.value) }}
                       placeholder="e.g. Neck length"
                       className={fieldClass}
                     />
                     <input
+                      aria-label={`${service.name} minimum length price`}
                       value={draft.priceMin}
                       onChange={function (e) { updateLengthForm(service.id, 'priceMin', e.target.value) }}
                       type="number"
@@ -369,6 +385,7 @@ export function ServicesAdminPage() {
                       className={fieldClass}
                     />
                     <input
+                      aria-label={`${service.name} maximum length price`}
                       value={draft.priceMax}
                       onChange={function (e) { updateLengthForm(service.id, 'priceMax', e.target.value) }}
                       type="number"

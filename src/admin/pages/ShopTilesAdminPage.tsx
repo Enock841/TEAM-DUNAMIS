@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { api } from '../../lib/api'
-import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
+import { EmptyState, fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
 import { useAdminResource } from '../hooks/useAdminResource'
 import { ImageUploadField } from '../components/ImageUploadField'
 
@@ -85,11 +85,11 @@ export function ShopTilesAdminPage() {
       {showForm && (
         <Panel className="mt-6">
           <form onSubmit={submit} className="grid gap-4 md:grid-cols-2">
-            <input name="title" required defaultValue={editing ? editing.title : ''} placeholder="Title, e.g. Signature Wigs" className={fieldClass} />
-            <input name="label" defaultValue={editing ? editing.label : ''} placeholder="Small label, e.g. Wigs" className={fieldClass} />
-            <input name="sortOrder" type="number" defaultValue={editing ? editing.sortOrder : 0} placeholder="Order, lower shows first" className={fieldClass} />
-            <input name="href" defaultValue={editing ? editing.href : '#/shop'} placeholder="Link, e.g. #/shop?category=Wigs" className={fieldClass} />
-            <textarea name="copy" defaultValue={editing ? editing.copy : ''} placeholder="One line description" className={fieldClass + ' h-20 py-3 md:col-span-2'} />
+            <input aria-label="Tile title" name="title" required defaultValue={editing ? editing.title : ''} placeholder="Title, e.g. Signature Wigs" className={fieldClass} />
+            <input aria-label="Tile label" name="label" defaultValue={editing ? editing.label : ''} placeholder="Small label, e.g. Wigs" className={fieldClass} />
+            <input aria-label="Tile order" name="sortOrder" type="number" defaultValue={editing ? editing.sortOrder : 0} placeholder="Order, lower shows first" className={fieldClass} />
+            <input aria-label="Tile destination link" name="href" defaultValue={editing ? editing.href : '#/shop'} placeholder="Link, e.g. #/shop?category=Wigs" className={fieldClass} />
+            <textarea aria-label="Tile description" name="copy" defaultValue={editing ? editing.copy : ''} placeholder="One line description" className={fieldClass + ' h-20 py-3 md:col-span-2'} />
             <div className="md:col-span-2">
               <ImageUploadField label="Tile photo" value={imageUrl} onChange={setImageUrl} />
             </div>
@@ -103,6 +103,12 @@ export function ShopTilesAdminPage() {
 
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
         {loading && <Notice>Loading tiles...</Notice>}
+        {!loading && !error && tiles.length === 0 && (
+          <EmptyState
+            title="No shop tiles yet"
+            description="Add a tile to feature a category on the homepage."
+          />
+        )}
         {tiles.map(function (tile) {
           return (
             <Panel key={tile.id}>

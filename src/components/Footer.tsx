@@ -9,9 +9,14 @@ export function Footer() {
 
   useEffect(function () {
     let cancelled = false
-    api.businessInfo().then(function (data) {
-      if (!cancelled) setInfo(data)
-    })
+    api
+      .businessInfo()
+      .then(function (data) {
+        if (!cancelled) setInfo(data)
+      })
+      .catch(function () {
+        // The static contact details below remain available as a safe fallback.
+      })
     return function () {
       cancelled = true
     }
@@ -81,7 +86,7 @@ export function Footer() {
             </form>
             <p
               className={`mt-3 min-h-5 text-sm ${
-                signupState === 'error' ? 'text-[#7f173f]' : 'text-[#4f3e46]'
+                signupState === 'error' ? 'text-[#7f173f]' : 'text-[#44343b]'
               }`}
               role="status"
               aria-live="polite"
@@ -97,7 +102,7 @@ export function Footer() {
           <h2 className="font-serif text-5xl font-light uppercase tracking-[0.08em]">
             Beryl's
           </h2>
-          <p className="mt-5 max-w-xs text-sm leading-7 text-[#4f3e46]">
+          <p className="mt-5 max-w-xs text-sm leading-7 text-[#44343b]">
             Quality raw hair, ready-to-wear wigs and professional salon services in Kumasi.
           </p>
         </div>
@@ -119,10 +124,10 @@ export function Footer() {
           <h3 className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[#4b313d]">
             Explore
           </h3>
-          <div className="mt-5 grid gap-3.5 text-sm text-[#4f3e46]">
-            <a href="#/shop" className="w-fit transition hover:text-[#2f252a]">Shop</a>
-            <a href="#/services" className="w-fit transition hover:text-[#2f252a]">Services</a>
-            <a href="#/appointments" className="w-fit transition hover:text-[#2f252a]">Appointments</a>
+          <div className="mt-5 grid gap-3.5 text-sm text-[#44343b]">
+            <a href="#/shop" className="inline-flex min-h-7 w-fit items-center transition hover:text-[#2f252a]">Shop</a>
+            <a href="#/services" className="inline-flex min-h-7 w-fit items-center transition hover:text-[#2f252a]">Services</a>
+            <a href="#/appointments" className="inline-flex min-h-7 w-fit items-center transition hover:text-[#2f252a]">Appointments</a>
           </div>
         </nav>
 
@@ -131,16 +136,16 @@ export function Footer() {
           <h3 className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[#4b313d]">
             Information
           </h3>
-          <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3.5 text-sm text-[#4f3e46] lg:grid-cols-1">
-            <a href="#/about" className="w-fit transition hover:text-[#2f252a]">About</a>
-            <a href="#/reviews" className="w-fit transition hover:text-[#2f252a]">Reviews</a>
-            <a href="#/privacy" className="w-fit transition hover:text-[#2f252a]">Privacy policy</a>
-            <a href="#/faqs" className="w-fit transition hover:text-[#2f252a]">FAQs</a>
-            <a href="#/terms" className="w-fit transition hover:text-[#2f252a]">Terms of service</a>
-            <a href={info ? "tel:" + info.phone.replace(/\s/g, "") : "tel:0591911212"} className="w-fit transition hover:text-[#2f252a]">{info ? info.phone : "059 191 1212"}</a>
+          <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3.5 text-sm text-[#44343b] lg:grid-cols-1">
+            <a href="#/about" className="inline-flex min-h-7 w-fit items-center transition hover:text-[#2f252a]">About</a>
+            <a href="#/reviews" className="inline-flex min-h-7 w-fit items-center transition hover:text-[#2f252a]">Reviews</a>
+            <a href="#/privacy" className="inline-flex min-h-7 w-fit items-center transition hover:text-[#2f252a]">Privacy policy</a>
+            <a href="#/faqs" className="inline-flex min-h-7 w-fit items-center transition hover:text-[#2f252a]">FAQs</a>
+            <a href="#/terms" className="inline-flex min-h-7 w-fit items-center transition hover:text-[#2f252a]">Terms of service</a>
+            <a href={info ? "tel:" + info.phone.replace(/\s/g, "") : "tel:0591911212"} className="inline-flex min-h-7 w-fit items-center transition hover:text-[#2f252a]">{info ? info.phone : "059 191 1212"}</a>
               <a
               href="#/staff-login"
-              className="col-span-2 mt-3 w-fit border-t border-[#5e4650]/25 pt-4 font-semibold text-[#4b313d] transition hover:text-[#2f252a] lg:col-span-1"
+              className="col-span-2 mt-3 inline-flex min-h-11 w-fit items-center border-t border-[#5e4650]/25 pt-4 font-semibold text-[#4b313d] transition hover:text-[#2f252a] lg:col-span-1"
             >
               Staff Portal
             </a>

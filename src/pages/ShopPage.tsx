@@ -49,7 +49,7 @@ export function ShopPage({ onAdd }: ShopPageProps) {
         <h1 className="text-on-blush mt-3 font-serif text-[clamp(4.5rem,10vw,8rem)] font-light uppercase leading-[0.82]">
           Luxury hair care
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#55434b] sm:text-lg">
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#44343b] sm:text-lg">
           Shop wigs, bundles and hair-care products selected for quality,
           everyday use and long-lasting results.
         </p>
@@ -98,9 +98,9 @@ export function ShopPage({ onAdd }: ShopPageProps) {
           </div>
           <div className="mt-10 grid grid-cols-2 gap-x-2 gap-y-7 md:grid-cols-3 lg:grid-cols-4 2xl:grid-cols-5">
             {catalogLoading ? (
-              <p className="col-span-full">Loading products…</p>
+              <p role="status" className="col-span-full">Loading products…</p>
             ) : catalogError ? (
-              <p className="col-span-full text-[#8b435f]">
+              <p role="alert" className="col-span-full text-[#8b435f]">
                 {catalogError}
               </p>
             ) : visibleProducts.length ? (
@@ -113,7 +113,7 @@ export function ShopPage({ onAdd }: ShopPageProps) {
                 />
               ))
             ) : (
-              <p className="col-span-full">
+              <p role="status" className="col-span-full">
                 No products match this selection.
               </p>
             )}

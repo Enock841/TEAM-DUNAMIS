@@ -57,13 +57,30 @@ export function Notice({
 }) {
   return (
     <p
-      role="status"
+      role={error ? 'alert' : 'status'}
       className={`rounded-xl px-4 py-3 text-sm ${
         error ? 'bg-red-50 text-red-700' : 'bg-[#f3e3ea] text-[#7a4259]'
       }`}
     >
       {children}
     </p>
+  )
+}
+
+export function EmptyState({
+  title,
+  description,
+}: {
+  title: string
+  description: string
+}) {
+  return (
+    <div className="border border-dashed border-[#cdb8c1] bg-[#fff9fb] px-5 py-10 text-center">
+      <p className="font-serif text-2xl text-[#1d171a]">{title}</p>
+      <p className="mx-auto mt-2 max-w-md text-sm leading-6 text-[#6b5a62]">
+        {description}
+      </p>
+    </div>
   )
 }
 
@@ -74,7 +91,7 @@ export function PrimaryButton({
   return (
     <button
       {...props}
-      className={`border border-[#1d171a] bg-[#1d171a] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#984667] disabled:opacity-50 ${props.className ?? ''}`}
+      className={`min-h-11 border border-[#1d171a] bg-[#1d171a] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#984667] disabled:cursor-not-allowed disabled:opacity-50 ${props.className ?? ''}`}
     >
       {children}
     </button>

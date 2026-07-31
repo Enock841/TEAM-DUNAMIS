@@ -1,7 +1,9 @@
 import { useState } from 'react'
+import { FiX } from 'react-icons/fi'
 import { useAppData } from '../context/appData'
 import type { Product } from '../data/catalog'
 import { productImage } from '../data/catalog'
+import { useDialogAccessibility } from '../hooks/useDialogAccessibility'
 import { api } from '../lib/api'
 
 type CartDrawerProps = {
@@ -28,6 +30,7 @@ export function CartDrawer({
   const [notes, setNotes] = useState('')
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
+  const dialogRef = useDialogAccessibility(open, onClose)
 
   if (!open) return null
 
@@ -87,20 +90,30 @@ export function CartDrawer({
         onClick={onClose}
         className="absolute inset-0 h-full w-full"
       />
-      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col overflow-y-auto bg-[#fffdfd] p-6 shadow-2xl sm:p-8">
+      <aside
+        ref={dialogRef}
+        tabIndex={-1}
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="cart-title"
+        className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col overflow-y-auto bg-[#fffdfd] p-6 shadow-2xl sm:p-8"
+      >
         <div className="flex items-center justify-between">
           <div>
             <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#984667]">
               Your bag
             </p>
-            <h2 className="mt-2 font-serif text-3xl text-[#1d171a]">Shopping bag</h2>
+            <h2 id="cart-title" className="mt-2 font-serif text-3xl text-[#1d171a]">
+              Shopping bag
+            </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
+            aria-label="Close shopping bag"
             className="flex h-10 w-10 items-center justify-center rounded-full bg-[#f5e1e9] text-2xl"
           >
-            x
+            <FiX aria-hidden="true" />
           </button>
         </div>
 
@@ -145,33 +158,56 @@ export function CartDrawer({
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#765b67]">
               Delivery details
             </p>
-            <input
-              type="text"
-              value={name}
-              onChange={function (e) { setName(e.target.value) }}
-              placeholder="Full name"
-              className="h-12 w-full rounded-xl border border-[#cdb8c1] bg-white px-4 text-sm outline-none focus:border-[#984667]"
-            />
-            <input
-              type="tel"
-              value={phone}
-              onChange={function (e) { setPhone(e.target.value) }}
-              placeholder={user ? user.phone : '024 000 0000'}
-              className="h-12 w-full rounded-xl border border-[#cdb8c1] bg-white px-4 text-sm outline-none focus:border-[#984667]"
-            />
-            <input
-              type="text"
-              value={address}
-              onChange={function (e) { setAddress(e.target.value) }}
-              placeholder="Your location, e.g. Ayeduase, near the market"
-              className="h-12 w-full rounded-xl border border-[#cdb8c1] bg-white px-4 text-sm outline-none focus:border-[#984667]"
-            />
-            <textarea
-              value={notes}
-              onChange={function (e) { setNotes(e.target.value) }}
-              placeholder="Any notes for delivery, optional"
-              className="h-20 w-full rounded-xl border border-[#cdb8c1] bg-white p-4 text-sm outline-none focus:border-[#984667]"
-            />
+            <label className="block">
+              <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.12em] text-[#654656]">
+                Full name
+              </span>
+              <input
+                type="text"
+                autoComplete="name"
+                value={name}
+                onChange={function (e) { setName(e.target.value) }}
+                placeholder="Your full name"
+                className="h-12 w-full rounded-xl border border-[#cdb8c1] bg-white px-4 text-sm outline-none focus:border-[#984667]"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.12em] text-[#654656]">
+                Phone number
+              </span>
+              <input
+                type="tel"
+                autoComplete="tel"
+                value={phone}
+                onChange={function (e) { setPhone(e.target.value) }}
+                placeholder={user ? user.phone : '024 000 0000'}
+                className="h-12 w-full rounded-xl border border-[#cdb8c1] bg-white px-4 text-sm outline-none focus:border-[#984667]"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.12em] text-[#654656]">
+                Delivery location
+              </span>
+              <input
+                type="text"
+                autoComplete="street-address"
+                value={address}
+                onChange={function (e) { setAddress(e.target.value) }}
+                placeholder="e.g. Ayeduase, near the market"
+                className="h-12 w-full rounded-xl border border-[#cdb8c1] bg-white px-4 text-sm outline-none focus:border-[#984667]"
+              />
+            </label>
+            <label className="block">
+              <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.12em] text-[#654656]">
+                Delivery notes <span className="font-normal normal-case">(optional)</span>
+              </span>
+              <textarea
+                value={notes}
+                onChange={function (e) { setNotes(e.target.value) }}
+                placeholder="Landmark, preferred contact, or other details"
+                className="h-20 w-full rounded-xl border border-[#cdb8c1] bg-white p-4 text-sm outline-none focus:border-[#984667]"
+              />
+            </label>
           </div>
         )}
 

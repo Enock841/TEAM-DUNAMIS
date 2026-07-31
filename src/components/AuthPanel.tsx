@@ -1,5 +1,7 @@
 import { useState, type FormEvent } from 'react'
+import { FiX } from 'react-icons/fi'
 import { useAppData } from '../context/appData'
+import { useDialogAccessibility } from '../hooks/useDialogAccessibility'
 
 type AuthPanelProps = {
   open: boolean
@@ -12,6 +14,7 @@ export function AuthPanel({ open, onClose }: AuthPanelProps) {
   const [mode, setMode] = useState<'login' | 'signup'>('login')
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
+  const dialogRef = useDialogAccessibility(open, onClose)
 
   if (!open) return null
 
@@ -48,8 +51,15 @@ export function AuthPanel({ open, onClose }: AuthPanelProps) {
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-[#24131b]/60 px-5 py-10 backdrop-blur-sm">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-[#24131b]/60 px-5 py-10 backdrop-blur-sm"
+      onMouseDown={(event) => {
+        if (event.target === event.currentTarget) onClose()
+      }}
+    >
       <section
+        ref={dialogRef}
+        tabIndex={-1}
         role="dialog"
         aria-modal="true"
         aria-labelledby="auth-title"
@@ -61,7 +71,7 @@ export function AuthPanel({ open, onClose }: AuthPanelProps) {
           aria-label="Close account panel"
           className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/45 text-2xl text-[#4d2838]"
         >
-          x
+          <FiX aria-hidden="true" />
         </button>
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#984667]">
           Client account
@@ -172,7 +182,7 @@ export function AuthPanel({ open, onClose }: AuthPanelProps) {
             className="min-h-13 w-full rounded-full bg-[#984667] px-6 py-3 font-serif text-xl font-bold text-white transition hover:bg-[#71334f] disabled:opacity-60"
           >
             {busy
-              ? 'Please waitÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦'
+              ? 'Please wait…'
               : mode === 'login'
                 ? 'Login'
                 : 'Create account'}

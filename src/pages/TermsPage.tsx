@@ -50,7 +50,7 @@ export function TermsPage() {
           <p className="mt-5 max-w-2xl text-base leading-8 text-[#5f5157]">
             These terms explain the basics of using our website, booking appointments and shopping with Beryl's Beauty Mark.
           </p>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.12em] text-[#9a7183]">
+          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.12em] text-[#765762]">
             Last updated: July 2026
           </p>
         </div>

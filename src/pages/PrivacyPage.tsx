@@ -46,7 +46,7 @@ export function PrivacyPage() {
             This policy explains how Beryl&apos;s Beauty Mark handles information
             provided through our website, salon bookings and online shop.
           </p>
-          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.12em] text-[#9a7183]">
+          <p className="mt-4 text-xs font-semibold uppercase tracking-[0.12em] text-[#765762]">
             Last updated: July 2026
           </p>
         </div>

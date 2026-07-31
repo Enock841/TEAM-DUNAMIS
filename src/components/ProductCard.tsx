@@ -71,7 +71,7 @@ export function ProductCard({
             type="button"
             onClick={() => onAdd(product)}
             disabled={!product.inStock}
-            className={`border-b border-[#1d171a] pb-0.5 font-bold uppercase tracking-[0.14em] text-[#1d171a] transition hover:text-[#984667] disabled:cursor-not-allowed disabled:opacity-40 ${
+            className={`inline-flex min-h-9 items-center border-b border-[#1d171a] font-bold uppercase tracking-[0.14em] text-[#1d171a] transition hover:text-[#984667] disabled:cursor-not-allowed disabled:opacity-40 ${
               compact ? 'text-[8px]' : 'text-[9px]'
             }`}
           >

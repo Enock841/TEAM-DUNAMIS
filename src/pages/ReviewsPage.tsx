@@ -169,15 +169,103 @@ export function ReviewsPage({ onRequireAuth }: ReviewsPageProps) {
           <h1 className="text-display-soft mt-4 font-serif text-6xl font-light uppercase leading-[0.9] sm:text-7xl">
             Real results, real clients
           </h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[#55434b]">
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-[#44343b]">
             Share your Beryl&apos;s experience once you are signed in. Every
             review is moderated before it appears publicly.
           </p>
         </div>
       </section>
 
-      <div className="flex flex-col">
-        <section className="order-2 border-b border-[#e4cbd5] bg-[#f7e4ec] px-6 py-14 sm:px-10 lg:px-12">
+      <div>
+        <section className="border-b border-[#e2c7d2] px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24">
+          <div className="mx-auto max-w-6xl">
+            <div className="mb-10 flex items-end justify-between gap-5 border-b border-[#e2c7d2] pb-5">
+              <div>
+                <p className="editorial-kicker text-[#984667]">
+                  Published stories
+                </p>
+                <h2 className="text-display-soft mt-2 font-serif text-4xl uppercase sm:text-5xl">
+                  What clients are saying
+                </h2>
+              </div>
+              {!loading && !error && (
+                <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#765762]">
+                  {reviews.length}{' '}
+                  {reviews.length === 1 ? 'review' : 'reviews'}
+                </p>
+              )}
+            </div>
+
+            {loading && (
+              <p className="text-center text-sm text-[#5f5157]">
+                Loading reviews…
+              </p>
+            )}
+          {error && (
+              <p role="alert" className="text-center text-sm text-[#8b435f]">{error}</p>
+            )}
+            {!loading && !error && reviews.length === 0 && (
+              <p className="border border-[#e2c7d2] px-6 py-12 text-center text-sm text-[#5f5157]">
+                No published reviews yet. Sign in below to share your
+                experience.
+              </p>
+            )}
+
+            <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+              {reviews.map((review) => (
+                <article
+                  key={review.id}
+                  className="overflow-hidden border border-[#d9c7cf] bg-white"
+                >
+                  {review.mediaUrl && review.mediaType === 'photo' && (
+                    <img
+                      src={review.mediaUrl}
+                      alt=""
+                      className="h-56 w-full object-cover"
+                    />
+                  )}
+                  {review.mediaUrl && review.mediaType === 'video' && (
+                    <video
+                      src={review.mediaUrl}
+                      controls
+                      className="h-56 w-full object-cover"
+                    />
+                  )}
+                  <div className="p-6">
+                    <div
+                      className="flex gap-1"
+                      aria-label={`${review.rating} out of 5 stars`}
+                    >
+                      {[1, 2, 3, 4, 5].map((star) => (
+                        <span
+                          key={star}
+                          className={
+                            star <= review.rating
+                              ? 'text-[#984667]'
+                              : 'text-[#e6d3da]'
+                          }
+                          aria-hidden="true"
+                        >
+                          ★
+                        </span>
+                      ))}
+                    </div>
+                    {review.comment && (
+                      <p className="mt-4 text-sm leading-7 text-[#5b4750]">
+                        {review.comment}
+                      </p>
+                    )}
+                    <p className="mt-5 border-t border-[#ecd6df] pt-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[#654656]">
+                      {review.customerName} · {review.serviceName}
+                    </p>
+                  </div>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+
+        <section className="border-b border-[#e4cbd5] bg-[#f7e4ec] px-6 py-14 sm:px-10 lg:px-12">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
           <div>
             <p className="editorial-kicker text-[#984667]">Your review</p>
@@ -366,89 +454,6 @@ export function ReviewsPage({ onRequireAuth }: ReviewsPageProps) {
         </div>
         </section>
 
-        <section className="order-1 px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24">
-        <div className="mx-auto max-w-6xl">
-          <div className="mb-10 flex items-end justify-between gap-5 border-b border-[#e2c7d2] pb-5">
-            <div>
-              <p className="editorial-kicker text-[#984667]">Published stories</p>
-              <h2 className="text-display-soft mt-2 font-serif text-4xl uppercase sm:text-5xl">
-                What clients are saying
-              </h2>
-            </div>
-            {!loading && !error && (
-              <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#765762]">
-                {reviews.length} {reviews.length === 1 ? 'review' : 'reviews'}
-              </p>
-            )}
-          </div>
-
-          {loading && (
-            <p className="text-center text-sm text-[#5f5157]">
-              Loading reviews…
-            </p>
-          )}
-          {error && (
-            <p className="text-center text-sm text-[#8b435f]">{error}</p>
-          )}
-          {!loading && !error && reviews.length === 0 && (
-            <p className="border border-[#e2c7d2] px-6 py-12 text-center text-sm text-[#5f5157]">
-              No published reviews yet. Sign in above to share your experience.
-            </p>
-          )}
-
-          <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-            {reviews.map((review) => (
-              <article
-                key={review.id}
-                className="overflow-hidden border border-[#d9c7cf] bg-white"
-              >
-                {review.mediaUrl && review.mediaType === 'photo' && (
-                  <img
-                    src={review.mediaUrl}
-                    alt=""
-                    className="h-56 w-full object-cover"
-                  />
-                )}
-                {review.mediaUrl && review.mediaType === 'video' && (
-                  <video
-                    src={review.mediaUrl}
-                    controls
-                    className="h-56 w-full object-cover"
-                  />
-                )}
-                <div className="p-6">
-                  <div
-                    className="flex gap-1"
-                    aria-label={`${review.rating} out of 5 stars`}
-                  >
-                    {[1, 2, 3, 4, 5].map((star) => (
-                      <span
-                        key={star}
-                        className={
-                          star <= review.rating
-                            ? 'text-[#984667]'
-                            : 'text-[#e6d3da]'
-                        }
-                        aria-hidden="true"
-                      >
-                        ★
-                      </span>
-                    ))}
-                  </div>
-                  {review.comment && (
-                    <p className="mt-4 text-sm leading-7 text-[#5b4750]">
-                      {review.comment}
-                    </p>
-                  )}
-                  <p className="mt-5 border-t border-[#ecd6df] pt-4 text-[10px] font-bold uppercase tracking-[0.12em] text-[#654656]">
-                    {review.customerName} · {review.serviceName}
-                  </p>
-                </div>
-              </article>
-            ))}
-          </div>
-        </div>
-        </section>
       </div>
     </main>
   )

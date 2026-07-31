@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { api, type AdminBooking } from '../../lib/api'
-import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
+import { EmptyState, fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
 import { useAdminResource } from '../hooks/useAdminResource'
 
 const statusStyle: Record<string, string> = {
@@ -49,6 +49,12 @@ export function AppointmentsAdminPage() {
       <div className="mt-8 space-y-4">
         {loading && <Notice>Loading appointments...</Notice>}
         {error && <Notice error>{error}</Notice>}
+        {!loading && !error && data.length === 0 && (
+          <EmptyState
+            title="No appointments yet"
+            description="New customer booking requests will appear here."
+          />
+        )}
 
         {data?.map((booking) => {
           const style = statusStyle[booking.status] ?? statusStyle.pending
@@ -110,6 +116,7 @@ export function AppointmentsAdminPage() {
                       New date
                     </span>
                     <input
+                      aria-label={`New appointment date for ${booking.user.name}`}
                       type="date"
                       className={fieldClass}
                       value={drafts[booking.id]?.date ?? booking.date.slice(0, 10)}
@@ -129,6 +136,7 @@ export function AppointmentsAdminPage() {
                       New time
                     </span>
                     <input
+                      aria-label={`New appointment time for ${booking.user.name}`}
                       type="time"
                       className={fieldClass}
                       value={drafts[booking.id]?.time ?? booking.timeSlot}

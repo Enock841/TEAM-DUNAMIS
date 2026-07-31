@@ -1,6 +1,6 @@
 import { useCallback, useState } from 'react'
 import { api, type AdminCustomer } from '../../lib/api'
-import { Notice, PageHeader, Panel } from '../components/AdminUi'
+import { EmptyState, Notice, PageHeader, Panel } from '../components/AdminUi'
 import { useAdminResource } from '../hooks/useAdminResource'
 
 type Details = Awaited<ReturnType<typeof api.adminCustomer>>
@@ -25,10 +25,17 @@ export function CustomersAdminPage() {
       {detailError && <div className="mt-8"><Notice error>{detailError}</Notice></div>}
       <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_0.8fr]">
         <Panel className="overflow-x-auto">
+          {!loading && !error && data.length === 0 ? (
+            <EmptyState
+              title="No customers yet"
+              description="Customer profiles will appear after registration."
+            />
+          ) : (
           <table className="w-full min-w-[620px] text-left text-sm">
             <thead className="text-xs uppercase text-[#75636b]"><tr><th className="pb-3">Customer</th><th>Bookings</th><th>Orders</th><th>Spent</th><th></th></tr></thead>
             <tbody>{data?.map((customer) => <tr key={customer.id} className="border-t border-[#e6d9df]"><td className="py-4"><strong>{customer.name}</strong><span className="block text-xs text-[#6b5a62]">{customer.phone}</span></td><td>{customer.bookingCount}</td><td>{customer.orderCount}</td><td>GH₵{Number(customer.totalSpent).toLocaleString()}</td><td><button onClick={() => open(customer)} className="font-bold text-[#984667]">View</button></td></tr>)}</tbody>
           </table>
+          )}
         </Panel>
         <Panel>
           {selected ? (

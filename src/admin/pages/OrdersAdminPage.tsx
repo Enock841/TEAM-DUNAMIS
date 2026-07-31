@@ -1,6 +1,6 @@
 import { useCallback } from 'react'
 import { api } from '../../lib/api'
-import { Notice, PageHeader, Panel } from '../components/AdminUi'
+import { EmptyState, Notice, PageHeader, Panel } from '../components/AdminUi'
 import { useAdminResource } from '../hooks/useAdminResource'
 
 const statusStyle: Record<string, string> = {
@@ -41,6 +41,12 @@ export function OrdersAdminPage() {
       <div className="mt-8 space-y-4">
         {loading && <Notice>Loading orders...</Notice>}
         {error && <Notice error>{error}</Notice>}
+        {!loading && !error && data.length === 0 && (
+          <EmptyState
+            title="No orders yet"
+            description="Customer purchases will appear here once checkout begins."
+          />
+        )}
 
         {data?.map((order) => {
           const style = statusStyle[order.status] ?? statusStyle.pending_payment

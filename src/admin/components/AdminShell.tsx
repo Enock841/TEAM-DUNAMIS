@@ -22,6 +22,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
         <button
           type="button"
           aria-label="Toggle admin navigation"
+          aria-expanded={open}
+          aria-controls="admin-navigation-panel"
           onClick={() => setOpen((value) => !value)}
           className="flex h-10 w-10 items-center justify-center rounded-full border border-[#cdb8c1]"
         >
@@ -30,6 +32,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
       </header>
 
       <aside
+        id="admin-navigation-panel"
         className={`${open ? 'fixed inset-x-0 top-16 z-30 flex' : 'hidden'} bottom-0 flex-col border-r border-[#8f6175] bg-[#1d171a] p-5 text-white lg:sticky lg:top-0 lg:flex lg:h-screen lg:p-5`}
       >
         <a href="#/" className="border-b border-white/15 pb-5 font-serif text-3xl font-medium uppercase tracking-[0.08em]">
@@ -44,7 +47,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
               key={id}
               href={id === 'overview' ? '#/dashboard' : `#/dashboard/${id}`}
               onClick={() => setOpen(false)}
-              className={`flex items-center gap-3 border-l-2 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.08em] transition ${
+              aria-current={active === id ? 'page' : undefined}
+              className={`flex min-h-11 items-center gap-3 border-l-2 px-3 py-2.5 text-xs font-semibold uppercase tracking-[0.08em] transition ${
                 active === id
                   ? 'border-[#d9abbf] bg-[#c992aa]/20 text-white'
                   : 'border-transparent text-white/60 hover:border-white/30 hover:bg-white/5 hover:text-white'
@@ -61,7 +65,7 @@ export function AdminShell({ children }: { children: ReactNode }) {
           <button
             type="button"
             onClick={signOut}
-            className="mt-4 flex items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[#d9abbf]"
+            className="mt-4 flex min-h-11 items-center gap-2 text-xs font-bold uppercase tracking-[0.12em] text-[#d9abbf]"
           >
             <FiLogOut /> Sign out
           </button>

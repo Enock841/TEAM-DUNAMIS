@@ -137,7 +137,7 @@ export function StaffLoginPage() {
             </p>
           )}
 
-          <p className="mt-7 border-t border-[#d9c7cf] pt-5 text-xs leading-6 text-[#937b85]">
+          <p className="mt-7 border-t border-[#d9c7cf] pt-5 text-xs leading-6 text-[#6b5a62]">
             Access is verified by the salon API. Customer accounts are rejected
             before the management dashboard is opened.
           </p>

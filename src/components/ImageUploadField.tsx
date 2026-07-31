@@ -56,7 +56,7 @@ export function ImageUploadField({ label, value, onChange }: ImageUploadFieldPro
       )}
 
       <label className="flex h-13 w-full cursor-pointer items-center justify-center rounded-xl border border-dashed border-[#d99eb7] bg-[#fff9fb] text-sm font-semibold text-[#9f205f] hover:bg-[#fdeef4]">
-        {uploading ? 'Uploadingâ€¦' : value ? 'Replace photo' : 'Upload a photo'}
+        {uploading ? 'Uploading…' : value ? 'Replace photo' : 'Upload a photo'}
         <input
           type="file"
           accept="image/*"

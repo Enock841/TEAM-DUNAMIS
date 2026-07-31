@@ -57,6 +57,12 @@ a {
     color, background-color, border-color, opacity, transform, box-shadow;
 }
 
+.editorial-storefront button,
+.admin-editorial button {
+  min-width: 44px;
+  min-height: 44px;
+}
+
 ::selection {
   color: #fff;
   background: var(--pink-600);
