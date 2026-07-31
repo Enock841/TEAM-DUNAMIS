@@ -102,7 +102,7 @@ function App() {
     return (
       <>
         <PaymentVerifier />
-        <div key={locationKey} className="min-h-screen bg-[#f8f3f5] text-[#604c55]">
+        <div key={locationKey} className="admin-editorial min-h-screen bg-[#f4e7ec] text-[#4f4248]">
           {page}
         </div>
       </>
@@ -112,7 +112,7 @@ function App() {
   return (
     <>
       <PaymentVerifier />
-      <div className="min-h-screen bg-[#fffaf8] text-[#604c55]">
+      <div className="editorial-storefront min-h-screen bg-[#fff9fb] text-[#5f5157]">
         <Header
           key={route}
           cartCount={cart.length}
@@ -122,7 +122,7 @@ function App() {
         />
         <div
           key={locationKey}
-          className={route === 'home' ? '' : 'pt-20 sm:pt-24'}
+          className="pt-[106px]"
         >
           {page}
         </div>

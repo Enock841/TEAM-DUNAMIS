@@ -50,10 +50,10 @@ export function ProductsAdminPage() {
           </form>
         </Panel>
       )}
-      <div className="mt-8 overflow-x-auto rounded-2xl border border-[#ead7df] bg-white">
+      <div className="mt-8 overflow-x-auto rounded-2xl border border-[#d9c7cf] bg-white">
         <table className="w-full min-w-[760px] text-left text-sm">
-          <thead className="bg-[#f8e7ee] text-xs uppercase text-[#76515f]"><tr><th className="p-4">Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
-          <tbody>{products.map((product) => <tr key={product.id} className="border-t border-[#f0e2e8]"><td className="p-4 font-semibold">{product.name}</td><td>{product.category}</td><td>GH₵{product.price}</td><td><span className={product.stockQty <= 5 ? 'font-bold text-amber-600' : ''}>{product.stockQty}</span></td><td><div className="flex gap-4 text-xs font-bold uppercase"><button onClick={() => { setEditing(product); setShowForm(true) }} className="text-[#a52261]">Edit</button><button onClick={() => remove(product)} className="text-red-600">Delete</button></div></td></tr>)}</tbody>
+          <thead className="bg-[#f3e3ea] text-xs uppercase text-[#76515f]"><tr><th className="p-4">Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
+          <tbody>{products.map((product) => <tr key={product.id} className="border-t border-[#e6d9df]"><td className="p-4 font-semibold">{product.name}</td><td>{product.category}</td><td>GH₵{product.price}</td><td><span className={product.stockQty <= 5 ? 'font-bold text-amber-600' : ''}>{product.stockQty}</span></td><td><div className="flex gap-4 text-xs font-bold uppercase"><button onClick={() => { setEditing(product); setShowForm(true) }} className="text-[#984667]">Edit</button><button onClick={() => remove(product)} className="text-red-600">Delete</button></div></td></tr>)}</tbody>
         </table>
       </div>
     </>

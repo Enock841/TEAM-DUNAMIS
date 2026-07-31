@@ -181,14 +181,14 @@ export function ServicesAdminPage() {
               <div className="flex gap-4">
                 <img src={service.images[0]} alt="" className="h-20 w-20 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
-                  <p className="font-serif text-xl text-[#3e2530]">{service.name}</p>
-                  <p className="mt-1 text-xs text-[#8f7480]">
+                  <p className="font-serif text-xl text-[#1d171a]">{service.name}</p>
+                  <p className="mt-1 text-xs text-[#75636b]">
                     {service.category.name + ' - ' + service.durationMinutes + ' min - GHC ' + service.priceMin + '-' + service.priceMax}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-4 text-xs font-bold uppercase">
-                    <button onClick={function () { openForm(service) }} className="text-[#a52261]">Edit</button>
+                    <button onClick={function () { openForm(service) }} className="text-[#984667]">Edit</button>
                     <button onClick={function () { remove(service) }} className="text-red-600">Delete</button>
-                    <button onClick={function () { toggleLengths(service.id) }} className="text-[#604c55]">
+                    <button onClick={function () { toggleLengths(service.id) }} className="text-[#5f5157]">
                       {lengths ? 'Hide lengths' : 'Manage lengths'}
                     </button>
                   </div>
@@ -196,9 +196,9 @@ export function ServicesAdminPage() {
               </div>
 
               {lengths && (
-                <div className="mt-4 rounded-2xl bg-[#fff7fa] p-4">
+                <div className="mt-4 rounded-2xl bg-[#fff9fb] p-4">
                   {lengths.length === 0 && (
-                    <p className="text-xs text-[#8f7480]">No length options yet, price stays as a single range above.</p>
+                    <p className="text-xs text-[#75636b]">No length options yet, price stays as a single range above.</p>
                   )}
                   {lengths.map(function (option) {
                     return (
@@ -233,7 +233,7 @@ export function ServicesAdminPage() {
                     />
                     <button
                       onClick={function () { addLength(service.id) }}
-                      className="rounded-full bg-[#dc2d83] px-4 py-2 text-xs font-bold uppercase text-white"
+                      className="rounded-full bg-[#984667] px-4 py-2 text-xs font-bold uppercase text-white"
                     >
                       Add
                     </button>

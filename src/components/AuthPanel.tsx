@@ -63,10 +63,10 @@ export function AuthPanel({ open, onClose }: AuthPanelProps) {
         >
           x
         </button>
-        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#d92c83]">
+        <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#984667]">
           Client account
         </p>
-        <h2 id="auth-title" className="mt-3 font-serif text-4xl text-[#3e2530]">
+        <h2 id="auth-title" className="mt-3 font-serif text-4xl text-[#1d171a]">
           {mode === 'login' ? 'Welcome back' : 'Create your account'}
         </h2>
         <p className="mt-3 text-sm leading-6 text-[#765c68]">
@@ -86,7 +86,7 @@ export function AuthPanel({ open, onClose }: AuthPanelProps) {
                 name="name"
                 minLength={2}
                 autoComplete="name"
-                className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#d92c83]"
+                className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#984667]"
               />
             </label>
           )}
@@ -100,7 +100,7 @@ export function AuthPanel({ open, onClose }: AuthPanelProps) {
                 name="email"
                 type="email"
                 autoComplete="email"
-                className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#d92c83]"
+                className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#984667]"
               />
             </label>
           )}
@@ -113,7 +113,7 @@ export function AuthPanel({ open, onClose }: AuthPanelProps) {
                 name="area"
                 type="text"
                 placeholder="e.g. Ayeduase, Bantama"
-                className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#d92c83]"
+                className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#984667]"
               />
             </label>
           )}
@@ -131,7 +131,7 @@ export function AuthPanel({ open, onClose }: AuthPanelProps) {
               minLength={7}
               maxLength={20}
               autoComplete="tel"
-              className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#d92c83]"
+              className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#984667]"
             />
           </label>
           <label className="block">
@@ -146,7 +146,7 @@ export function AuthPanel({ open, onClose }: AuthPanelProps) {
               pattern={mode === 'signup' ? '(?=.*[A-Za-z])(?=.*\\d).{8,}' : undefined}
               title={mode === 'signup' ? 'At least 8 characters, including a letter and a number' : undefined}
               autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-              className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#d92c83]"
+              className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#984667]"
             />
           </label>
           {mode === 'signup' && (
@@ -162,14 +162,14 @@ export function AuthPanel({ open, onClose }: AuthPanelProps) {
                 autoComplete="new-password"
                 value={confirmPassword}
                 onChange={(event) => setConfirmPassword(event.target.value)}
-                className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#d92c83]"
+                className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#984667]"
               />
             </label>
           )}
           <button
             type="submit"
             disabled={busy}
-            className="min-h-13 w-full rounded-full bg-[#d92c83] px-6 py-3 font-serif text-xl font-bold text-white transition hover:bg-[#b92068] disabled:opacity-60"
+            className="min-h-13 w-full rounded-full bg-[#984667] px-6 py-3 font-serif text-xl font-bold text-white transition hover:bg-[#71334f] disabled:opacity-60"
           >
             {busy
               ? 'Please waitÃƒÆ’Ã‚Â¢ÃƒÂ¢Ã¢â‚¬Å¡Ã‚Â¬Ãƒâ€šÃ‚Â¦'

@@ -41,37 +41,37 @@ export function ShopPage({ onAdd }: ShopPageProps) {
   )
 
   return (
-    <main className="bg-[#fffaf8]">
-      <section className="border-b border-[#edd4df] bg-[#f7e4ec] px-6 py-16 text-center sm:px-10 sm:py-20">
-        <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#d92c83]">
+    <main className="bg-[#fffdfd]">
+      <section className="campaign-grid border-b border-[#bfaab3] bg-[#c992aa] px-6 py-14 text-center sm:px-10 sm:py-18">
+        <p className="editorial-kicker text-[#6f354f]">
           Shop
         </p>
-        <h1 className="mt-4 font-serif text-5xl text-[#3e2530] sm:text-6xl">
+        <h1 className="mt-3 font-serif text-[clamp(4.5rem,10vw,8rem)] font-light uppercase leading-[0.82] text-[#1d171a]">
           Luxury hair care
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#745f68] sm:text-lg">
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#5f5157] sm:text-lg">
           Shop wigs, bundles and hair-care products selected for quality,
           everyday use and long-lasting results.
         </p>
       </section>
 
-      <section className="px-6 py-16 sm:px-10 sm:py-20 lg:px-12">
-        <div className="mx-auto max-w-7xl">
+      <section className="px-5 py-12 sm:px-8 sm:py-16 lg:px-12">
+        <div className="mx-auto max-w-[1480px]">
           {searchTerm && (
-            <div className="mb-8 flex flex-col items-center justify-between gap-4 rounded-2xl bg-[#f7e4ec] px-5 py-4 text-center sm:flex-row sm:text-left">
-              <p className="text-sm text-[#604c55]">
+            <div className="mb-8 flex flex-col items-center justify-between gap-4 rounded-2xl bg-[#ead2dd] px-5 py-4 text-center sm:flex-row sm:text-left">
+              <p className="text-sm text-[#5f5157]">
                 Showing the closest product match for your search.
               </p>
               <button
                 type="button"
                 onClick={() => setSearchTerm('')}
-                className="text-xs font-bold uppercase tracking-[0.14em] text-[#d92c83]"
+                className="text-xs font-bold uppercase tracking-[0.14em] text-[#984667]"
               >
                 View all products
               </button>
             </div>
           )}
-          <div className="flex flex-wrap justify-center gap-2">
+          <div className="flex flex-wrap justify-center gap-0 border-y border-[#cdb8c1]">
             {categories.map((item) => (
               <button
                 key={item}
@@ -80,17 +80,17 @@ export function ShopPage({ onAdd }: ShopPageProps) {
                   setCategory(item)
                   setSearchTerm('')
                 }}
-                className={`rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-[0.13em] transition ${
+                className={`border-x border-[#cdb8c1] px-5 py-3 text-[9px] font-bold uppercase tracking-[0.13em] transition ${
                   category === item
-                    ? 'bg-[#dc2d83] text-white'
-                    : 'border border-[#e4bdce] bg-white text-[#624956] hover:border-[#dc2d83]'
+                    ? 'bg-[#984667] text-white'
+                    : 'border border-[#cdb8c1] bg-white text-[#624956] hover:border-[#984667]'
                 }`}
               >
                 {item}
               </button>
             ))}
           </div>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-10 grid gap-x-2 gap-y-9 sm:grid-cols-2 lg:grid-cols-3">
             {catalogLoading ? (
               <p className="sm:col-span-2 lg:col-span-3">Loading products…</p>
             ) : catalogError ? (

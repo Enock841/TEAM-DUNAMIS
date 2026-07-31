@@ -26,21 +26,21 @@ export function CustomersAdminPage() {
       <div className="mt-8 grid gap-6 xl:grid-cols-[1fr_0.8fr]">
         <Panel className="overflow-x-auto">
           <table className="w-full min-w-[620px] text-left text-sm">
-            <thead className="text-xs uppercase text-[#8f7480]"><tr><th className="pb-3">Customer</th><th>Bookings</th><th>Orders</th><th>Spent</th><th></th></tr></thead>
-            <tbody>{data?.map((customer) => <tr key={customer.id} className="border-t border-[#f0e2e8]"><td className="py-4"><strong>{customer.name}</strong><span className="block text-xs text-[#806b74]">{customer.phone}</span></td><td>{customer.bookingCount}</td><td>{customer.orderCount}</td><td>GH₵{Number(customer.totalSpent).toLocaleString()}</td><td><button onClick={() => open(customer)} className="font-bold text-[#a52261]">View</button></td></tr>)}</tbody>
+            <thead className="text-xs uppercase text-[#75636b]"><tr><th className="pb-3">Customer</th><th>Bookings</th><th>Orders</th><th>Spent</th><th></th></tr></thead>
+            <tbody>{data?.map((customer) => <tr key={customer.id} className="border-t border-[#e6d9df]"><td className="py-4"><strong>{customer.name}</strong><span className="block text-xs text-[#6b5a62]">{customer.phone}</span></td><td>{customer.bookingCount}</td><td>{customer.orderCount}</td><td>GH₵{Number(customer.totalSpent).toLocaleString()}</td><td><button onClick={() => open(customer)} className="font-bold text-[#984667]">View</button></td></tr>)}</tbody>
           </table>
         </Panel>
         <Panel>
           {selected ? (
             <>
-              <h2 className="font-serif text-2xl text-[#3e2530]">{selected.name}</h2>
+              <h2 className="font-serif text-2xl text-[#1d171a]">{selected.name}</h2>
               <p className="mt-1 text-sm">{selected.phone}</p>
-              <h3 className="mt-6 text-xs font-bold uppercase tracking-wider text-[#a52261]">Booking history</h3>
-              <div className="mt-3 space-y-2">{selected.bookings.map((item) => <p key={item.id} className="rounded-lg bg-[#fbf4f7] p-3 text-sm">{item.serviceName} · {String(item.date).slice(0,10)} · {item.status}</p>)}</div>
-              <h3 className="mt-6 text-xs font-bold uppercase tracking-wider text-[#a52261]">Purchase history</h3>
-              <div className="mt-3 space-y-2">{selected.orders.map((item) => <p key={item.id} className="rounded-lg bg-[#fbf4f7] p-3 text-sm">GH₵{Number(item.totalAmount).toLocaleString()} · {item.status}</p>)}</div>
+              <h3 className="mt-6 text-xs font-bold uppercase tracking-wider text-[#984667]">Booking history</h3>
+              <div className="mt-3 space-y-2">{selected.bookings.map((item) => <p key={item.id} className="rounded-lg bg-[#f7e8ee] p-3 text-sm">{item.serviceName} · {String(item.date).slice(0,10)} · {item.status}</p>)}</div>
+              <h3 className="mt-6 text-xs font-bold uppercase tracking-wider text-[#984667]">Purchase history</h3>
+              <div className="mt-3 space-y-2">{selected.orders.map((item) => <p key={item.id} className="rounded-lg bg-[#f7e8ee] p-3 text-sm">GH₵{Number(item.totalAmount).toLocaleString()} · {item.status}</p>)}</div>
             </>
-          ) : <p className="text-sm text-[#806b74]">Select a customer to view their history.</p>}
+          ) : <p className="text-sm text-[#6b5a62]">Select a customer to view their history.</p>}
         </Panel>
       </div>
     </>

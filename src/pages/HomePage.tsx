@@ -1,14 +1,8 @@
 import { useEffect, useState } from 'react'
 import { ProductCard } from '../components/ProductCard'
 import { useAppData } from '../context/appData'
-import { imageBase, type Product } from '../data/catalog'
+import type { Product } from '../data/catalog'
 import { api, type HeroSlide, type ShopCategoryTile } from '../lib/api'
-
-type HomePageProps = {
-  onAdd: (product: Product) => void
-}
-
-
 
 function HeroBanner() {
   const [slides, setSlides] = useState<HeroSlide[]>([])
@@ -40,52 +34,52 @@ function HeroBanner() {
   const slide = slides[index]
 
   return (
-    <section data-home-hero className="relative isolate min-h-screen overflow-hidden bg-[#22171b] text-white">
-      {slides.map(function (item, itemIndex) {
-        return (
-          <img
-            key={item.id}
-            src={item.imageUrl}
-            alt=""
-            className="absolute inset-0 -z-20 h-full w-full object-cover object-[60%_center] transition-opacity duration-1000 ease-in-out sm:object-[64%_center] lg:object-center"
-            style={{ opacity: itemIndex === index ? 1 : 0 }}
-          />
-        )
-      })}
-      <div className="absolute inset-0 -z-10 bg-[linear-gradient(90deg,rgba(18,12,14,0.92)_0%,rgba(35,20,27,0.73)_44%,rgba(154,46,99,0.12)_78%,rgba(18,12,14,0.25)_100%)]" />
-      <div className="mx-auto flex min-h-screen max-w-7xl items-center px-6 pb-20 pt-28 sm:px-10 sm:pb-24 sm:pt-32 lg:px-12">
-        <div key={slide.id} className="max-w-3xl">
-          <p className="text-xs font-bold uppercase tracking-[0.32em] text-[#f4a7cb] sm:text-sm">
-            {slide.eyebrow}
-          </p>
-          <h1 className="mt-6 max-w-2xl font-serif text-[clamp(3.25rem,9vw,6rem)] leading-[0.95] tracking-[-0.04em]">
+    <section data-home-hero className="relative grid min-h-[680px] overflow-hidden bg-[#d8aabd] lg:grid-cols-[1.12fr_0.88fr]">
+      <div className="relative min-h-[440px] overflow-hidden lg:min-h-[680px]">
+        {slides.map(function (item, itemIndex) {
+          return (
+            <img
+              key={item.id}
+              src={item.imageUrl}
+              alt=""
+              className="absolute inset-0 h-full w-full object-cover object-[68%_center] transition-opacity duration-1000 ease-in-out"
+              style={{ opacity: itemIndex === index ? 1 : 0 }}
+            />
+          )
+        })}
+        <div className="absolute inset-0 bg-[linear-gradient(180deg,transparent_55%,rgba(29,23,26,0.22)_100%)]" />
+      </div>
+      <div className="campaign-grid flex items-center border-l border-[#b7839b] px-7 py-16 text-[#1d171a] sm:px-12 lg:px-16 xl:px-20">
+        <div key={slide.id} className="max-w-xl">
+          <p className="editorial-kicker text-[#6f354f]">{slide.eyebrow}</p>
+          <h1 className="mt-5 font-serif text-[clamp(4.4rem,8vw,7.8rem)] font-light uppercase leading-[0.78] tracking-[-0.035em]">
             {slide.title}
           </h1>
-          <p className="mt-7 max-w-xl text-base leading-7 text-white/80 sm:text-lg sm:leading-8">
+          <p className="mt-7 max-w-md text-sm leading-7 text-[#503f47] sm:text-base">
             {slide.subtitle}
           </p>
-          <div className="mt-10 flex flex-col gap-3 sm:flex-row">
-            <a href="#/shop" className="inline-flex min-h-13 items-center justify-center rounded-full bg-[#dc2d83] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.16em] text-white transition hover:bg-[#ef4d9a]">
+          <div className="mt-9 flex flex-wrap gap-3">
+            <a href="#/shop" className="inline-flex min-h-11 items-center justify-center border border-[#1d171a] bg-[#1d171a] px-8 py-3 text-[9px] font-bold uppercase tracking-[0.18em] text-white transition hover:bg-[#984667]">
               Shop the collection
             </a>
-            <a href="#/appointments" className="inline-flex min-h-13 items-center justify-center rounded-full border border-white/55 bg-white/5 px-8 py-3.5 text-xs font-bold uppercase tracking-[0.16em] text-white backdrop-blur-sm transition hover:bg-white hover:text-[#3e2530]">
-              Book an appointment
+            <a href="#/appointments" className="inline-flex min-h-11 items-center justify-center border border-[#1d171a] px-8 py-3 text-[9px] font-bold uppercase tracking-[0.18em] text-[#1d171a] transition hover:bg-[#fffdfd]">
+              Book a visit
             </a>
           </div>
         </div>
       </div>
       {slides.length > 1 && (
-        <div className="absolute bottom-8 left-1/2 z-10 flex -translate-x-1/2 gap-2">
+        <div className="absolute bottom-5 left-5 z-10 flex gap-1.5">
           {slides.map(function (item, dotIndex) {
             return (
               <button
                 key={item.id}
                 aria-label={'Show slide ' + (dotIndex + 1)}
                 onClick={function () { setIndex(dotIndex) }}
-                className="h-2 rounded-full transition-all duration-300"
+                className="h-1.5 transition-all duration-300"
                 style={{
                   width: dotIndex === index ? 24 : 8,
-                  backgroundColor: dotIndex === index ? '#ffffff' : 'rgba(255,255,255,0.5)',
+                  backgroundColor: dotIndex === index ? '#1d171a' : 'rgba(29,23,26,0.35)',
                 }}
               />
             )
@@ -96,7 +90,7 @@ function HeroBanner() {
   )
 }
 
-export function HomePage(props) {
+export function HomePage(props: { onAdd: (product: Product) => void }) {
   const onAdd = props.onAdd
   const appData = useAppData()
   const products = appData.products
@@ -132,52 +126,18 @@ export function HomePage(props) {
     <>
       <HeroBanner />
 
-      <section className="bg-[#fffaf8] px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-28">
-        <div className="mx-auto max-w-7xl">
-          <div className="max-w-2xl">
-            <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#d92c83]">Shop by category</p>
-            <h2 className="mt-4 font-serif text-4xl leading-tight text-[#3e2530] sm:text-5xl">
-              Hair that looks beautiful and feels like you.
-            </h2>
-            <p className="mt-5 text-base leading-7 text-[#745f68] sm:text-lg">
-              Shop by how you wear, care for and celebrate your hair.
-            </p>
-          </div>
-
-          <div className="mt-10 grid gap-6 md:grid-cols-2 lg:mt-12 lg:grid-cols-3">
-            {categoryTiles.map(function (category, categoryIndex) {
-              const spanClass = categoryIndex === 2 ? 'md:col-span-2 lg:col-span-1' : ''
-              return (
-                <a key={category.id} href={category.href} className={'group relative min-h-[420px] overflow-hidden rounded-[2rem] bg-[#5e3447] sm:min-h-[450px] ' + spanClass}>
-                  <img src={category.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105" />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#24131b]/90 via-[#24131b]/15 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-7 text-white">
-                    <p className="text-[11px] font-bold uppercase tracking-[0.22em] text-[#f5b0d0]">{category.label}</p>
-                    <h3 className="mt-2 font-serif text-3xl">{category.title}</h3>
-                    <p className="mt-3 max-w-xs text-sm leading-6 text-white/80">{category.copy}</p>
-                    <span className="mt-5 inline-block border-b border-white pb-1 text-xs font-bold uppercase tracking-[0.16em]">
-                      Explore collection
-                    </span>
-                  </div>
-                </a>
-              )
-            })}
-          </div>
-        </div>
-      </section>
-
-      <section className="bg-[#f7e4ec] px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-28">
-        <div className="mx-auto max-w-7xl">
+      <section className="bg-[#fffdfd] px-5 py-12 sm:px-8 sm:py-16 lg:px-12 lg:py-20">
+        <div className="mx-auto max-w-[1480px]">
           <div className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
             <div>
-              <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#d92c83]">Popular picks</p>
-              <h2 className="mt-4 font-serif text-4xl text-[#3e2530] sm:text-5xl">Client favourites</h2>
+              <p className="editorial-kicker text-[#984667]">Just landed</p>
+              <h2 className="mt-2 font-serif text-4xl font-normal uppercase text-[#1d171a] sm:text-5xl">New arrivals</h2>
             </div>
-            <a href="#/shop" className="w-fit border-b border-[#3e2530] pb-1 text-xs font-bold uppercase tracking-[0.16em] text-[#3e2530]">
-              View all products
+            <a href="#/shop" className="w-fit border border-[#1d171a] px-5 py-2.5 text-[9px] font-bold uppercase tracking-[0.16em] text-[#1d171a]">
+              View all
             </a>
           </div>
-          <div className="mt-12 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+          <div className="mt-8 grid gap-x-2 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
             {catalogLoading && <p className="sm:col-span-2 lg:col-span-3">Loading client favourites...</p>}
             {!catalogLoading && !catalogError && products.slice(0, 3).map(function (product) {
               return <ProductCard key={product.id} product={product} onAdd={onAdd} />
@@ -186,27 +146,53 @@ export function HomePage(props) {
         </div>
       </section>
 
-      <section className="grid bg-[#fffaf8] lg:grid-cols-[0.85fr_1.15fr]">
+      <section className="bg-[#d6a8bb] px-5 py-14 sm:px-8 lg:px-12 lg:py-20">
+        <div className="mx-auto max-w-[1480px]">
+          <div className="text-center">
+            <p className="editorial-kicker text-[#6f354f]">Shop your mood</p>
+            <h2 className="mt-3 font-serif text-[clamp(4rem,9vw,8rem)] font-light uppercase leading-[0.82] text-[#1d171a]">
+              The Beryl&apos;s edit
+            </h2>
+          </div>
+          <div className="mt-10 grid gap-2 md:grid-cols-3">
+            {categoryTiles.map(function (category) {
+              return (
+                <a key={category.id} href={category.href} className="group relative min-h-[420px] overflow-hidden bg-[#3f3037]">
+                  <img src={category.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#1d171a]/85 via-transparent to-transparent" />
+                  <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+                    <p className="editorial-kicker text-[#f2c5d7]">{category.label}</p>
+                    <h3 className="mt-1 font-serif text-4xl font-light uppercase">{category.title}</h3>
+                    <p className="mt-2 max-w-xs text-xs leading-5 text-white/80">{category.copy}</p>
+                  </div>
+                </a>
+              )
+            })}
+          </div>
+        </div>
+      </section>
+
+      <section className="grid bg-[#fffdfd] lg:grid-cols-[0.85fr_1.15fr]">
         <div className="flex items-center px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24 xl:px-24">
           <div className="max-w-xl">
-            <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#d92c83]">Kumasi salon</p>
-            <h2 className="mt-4 font-serif text-4xl leading-tight text-[#3e2530] sm:text-5xl">
+            <p className="editorial-kicker text-[#984667]">Kumasi salon</p>
+            <h2 className="mt-4 font-serif text-5xl font-light uppercase leading-[0.92] text-[#1d171a] sm:text-6xl">
               Careful beauty services with enough time for every client.
             </h2>
-            <p className="mt-6 text-base leading-8 text-[#745f68]">
+            <p className="mt-6 text-base leading-8 text-[#5f5157]">
               From braiding and makeup to nails and lashes, every appointment begins with the look you want and the details that matter to you.
             </p>
             <div className="mt-8 grid grid-cols-2 gap-x-6 gap-y-4">
               {serviceCategories.map(function (category) {
                 return (
-                  <a key={category.id} href={'#/services?section=' + category.name.toLowerCase()} className="border-t border-[#e2b8ca] pt-4">
-                    <p className="font-serif text-lg text-[#3e2530]">{category.name}</p>
-                    <p className="mt-1 text-xs uppercase tracking-[0.12em] text-[#8f707d]">Explore services</p>
+                  <a key={category.id} href={'#/services?section=' + category.name.toLowerCase()} className="border-t border-[#cdb8c1] pt-4">
+                    <p className="font-serif text-lg text-[#1d171a]">{category.name}</p>
+                    <p className="mt-1 text-xs uppercase tracking-[0.12em] text-[#75636b]">Explore services</p>
                   </a>
                 )
               })}
             </div>
-            <a href="#/services" className="mt-9 inline-flex rounded-full bg-[#dc2d83] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.16em] text-white">
+            <a href="#/services" className="mt-9 inline-flex border border-[#1d171a] bg-[#1d171a] px-8 py-3.5 text-[9px] font-bold uppercase tracking-[0.16em] text-white">
               Explore services
             </a>
           </div>
@@ -214,7 +200,7 @@ export function HomePage(props) {
         <div className="grid min-h-[600px] grid-cols-2">
           {serviceCategories.map(function (category) {
             return (
-              <a key={category.id} href={'#/services?section=' + category.name.toLowerCase()} className="group relative min-h-[300px] overflow-hidden bg-[#4b2637]">
+              <a key={category.id} href={'#/services?section=' + category.name.toLowerCase()} className="group relative min-h-[300px] overflow-hidden bg-[#1d171a]">
                 <img src={category.imageUrl} alt={category.name + ' service'} className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-105" />
                 <div className="absolute inset-0 bg-gradient-to-t from-[#29151f]/80 via-transparent to-transparent" />
                 <p className="absolute inset-x-0 bottom-0 p-5 font-serif text-2xl text-white sm:p-7">{category.name}</p>
@@ -224,11 +210,12 @@ export function HomePage(props) {
         </div>
       </section>
 
-      <section className="bg-[#4b2637] px-6 py-16 text-center text-white sm:px-10 sm:py-20 lg:py-24">
-        <blockquote className="mx-auto max-w-4xl font-serif text-3xl leading-snug sm:text-4xl lg:text-5xl">
+      <section className="campaign-grid bg-[#c992aa] px-6 py-16 text-center text-[#1d171a] sm:px-10 sm:py-20 lg:py-24">
+        <p className="editorial-kicker">The Beryl&apos;s experience</p>
+        <blockquote className="mx-auto mt-5 max-w-5xl font-serif text-5xl font-light uppercase leading-[0.9] sm:text-6xl lg:text-7xl">
           Every appointment starts with listening to what you want and ends with a style that feels right for you.
         </blockquote>
-        <p className="mt-7 text-xs font-bold uppercase tracking-[0.24em] text-[#f2a7c9]">Beryl Vance - Founder</p>
+        <p className="mt-7 text-[10px] font-bold uppercase tracking-[0.24em]">Beryl Vance — Founder</p>
       </section>
     </>
   )

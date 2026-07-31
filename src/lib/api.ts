@@ -238,6 +238,12 @@ export type ServiceLengthOption = {
 }
 
 export const api = {
+  newsletterSubscribe(email: string) {
+    return request<{ message: string }>('/newsletter/subscribe', {
+      method: 'POST',
+      body: JSON.stringify({ email }),
+    })
+  },
   serviceLengthOptions(serviceId: string) {
     return request<ServiceLengthOption[]>('/service-length-options/service/' + serviceId)
   },

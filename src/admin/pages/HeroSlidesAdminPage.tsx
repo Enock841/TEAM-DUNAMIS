@@ -1,5 +1,4 @@
 import { useCallback, useState, type FormEvent } from 'react'
-import { useAppData } from '../../context/appData'
 import { api, type HeroSlide } from '../../lib/api'
 import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
 import { useAdminResource } from '../hooks/useAdminResource'
@@ -123,15 +122,15 @@ export function HeroSlidesAdminPage() {
             <div className="flex gap-4">
               <img src={slide.imageUrl} alt="" className="h-20 w-28 rounded-xl object-cover" />
               <div className="min-w-0 flex-1">
-                <p className="font-serif text-lg text-[#3e2530]">{slide.title}</p>
-                <p className="mt-1 text-xs text-[#8f7480]">
+                <p className="font-serif text-lg text-[#1d171a]">{slide.title}</p>
+                <p className="mt-1 text-xs text-[#75636b]">
                   Order {slide.sortOrder} - {slide.isActive ? 'Visible' : 'Hidden'}
                 </p>
                 <div className="mt-4 flex flex-wrap gap-4 text-xs font-bold uppercase">
-                  <button onClick={() => openForm(slide)} className="text-[#a52261]">
+                  <button onClick={() => openForm(slide)} className="text-[#984667]">
                     Edit
                   </button>
-                  <button onClick={() => toggleActive(slide)} className="text-[#8f7480]">
+                  <button onClick={() => toggleActive(slide)} className="text-[#75636b]">
                     {slide.isActive ? 'Hide' : 'Show'}
                   </button>
                   <button onClick={() => remove(slide)} className="text-red-600">

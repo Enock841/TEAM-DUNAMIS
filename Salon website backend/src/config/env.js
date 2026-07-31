@@ -15,6 +15,10 @@ export const env = {
   databaseUrl: required("DATABASE_URL"),
   jwtSecret: required("JWT_SECRET"),
   corsOrigin: process.env.CORS_ORIGIN || "http://localhost:3000",
+  frontendUrl: process.env.FRONTEND_URL || process.env.CORS_ORIGIN || "http://localhost:3000",
   momoApiKey: process.env.MOMO_API_KEY || "",
-  momoApiSecret: process.env.MOMO_API_SECRET || ""
+  momoApiSecret: process.env.MOMO_API_SECRET || "",
+  resendApiKey: process.env.RESEND_API_KEY || "",
+  resendFromEmail: process.env.RESEND_FROM_EMAIL || "",
+  resendReplyToEmail: process.env.RESEND_REPLY_TO_EMAIL || ""
 };

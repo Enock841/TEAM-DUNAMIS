@@ -7,7 +7,7 @@ const statusStyle: Record<string, string> = {
   pending_payment: 'bg-[#fbe7d0] text-[#8a5a1f]',
   paid: 'bg-[#dcefe3] text-[#2f7d55]',
   fulfilled: 'bg-[#e4e1f0] text-[#5a4e8a]',
-  cancelled: 'bg-[#f3ecee] text-[#8f7480]',
+  cancelled: 'bg-[#f3ecee] text-[#75636b]',
 }
 
 const statusLabel: Record<string, string> = {
@@ -50,14 +50,14 @@ export function OrdersAdminPage() {
             <Panel key={order.id}>
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="font-serif text-xl text-[#3e2530]">{order.user.name}</p>
-                  <p className="mt-1 text-xs text-[#806b74]">
+                  <p className="font-serif text-xl text-[#1d171a]">{order.user.name}</p>
+                  <p className="mt-1 text-xs text-[#6b5a62]">
                     {order.user.phone} - Order {order.id.slice(0, 8)}
                   </p>
                   <p className="mt-3 text-sm">
                     {order.items.map((item) => `${item.quantity}x ${item.name}`).join(', ')}
                   </p>
-                  <p className="mt-3 font-semibold text-[#a52261]">
+                  <p className="mt-3 font-semibold text-[#984667]">
                     GHC {Number(order.totalAmount).toLocaleString()}
                   </p>
                 </div>
@@ -69,13 +69,13 @@ export function OrdersAdminPage() {
               </div>
 
               {order.deliveryName && (
-                <div className="mt-4 rounded-2xl bg-[#fff7fa] p-4">
+                <div className="mt-4 rounded-2xl bg-[#fff9fb] p-4">
                   <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#956f80]">
                     Deliver to
                   </p>
-                  <p className="mt-1.5 text-sm text-[#3e2530]">{order.deliveryName}</p>
-                  <p className="text-sm text-[#745f68]">{order.deliveryPhone}</p>
-                  <p className="text-sm text-[#745f68]">{order.deliveryAddress}</p>
+                  <p className="mt-1.5 text-sm text-[#1d171a]">{order.deliveryName}</p>
+                  <p className="text-sm text-[#5f5157]">{order.deliveryPhone}</p>
+                  <p className="text-sm text-[#5f5157]">{order.deliveryAddress}</p>
                   {order.deliveryNotes && (
                     <p className="mt-2 text-xs italic text-[#8c747e]">{order.deliveryNotes}</p>
                   )}
@@ -94,7 +94,7 @@ export function OrdersAdminPage() {
                 {order.status === 'paid' && (
                   <button
                     onClick={() => change(order.id, 'fulfilled')}
-                    className="rounded-full bg-[#dc2d83] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-white"
+                    className="rounded-full bg-[#984667] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-white"
                   >
                     Mark fulfilled
                   </button>

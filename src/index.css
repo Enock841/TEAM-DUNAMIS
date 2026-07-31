@@ -1,10 +1,20 @@
 @import "tailwindcss";
 
 :root {
-  font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont,
-    "Segoe UI", sans-serif;
-  color: #604c55;
-  background: #fffaf8;
+  --pink-50: #fff9fb;
+  --pink-100: #f7e8ee;
+  --pink-200: #eccfdc;
+  --pink-300: #d9abbf;
+  --pink-400: #c986a5;
+  --pink-500: #b96088;
+  --pink-600: #984667;
+  --ink: #1d171a;
+  --ink-soft: #5f5157;
+  --paper: #fffdfd;
+  --line: #d9c7cf;
+  font-family: "Manrope Variable", ui-sans-serif, system-ui, sans-serif;
+  color: var(--ink-soft);
+  background: var(--pink-50);
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
@@ -23,11 +33,13 @@ body {
   margin: 0;
   min-width: 320px;
   min-height: 100vh;
-  background: #fffaf8;
+  background: var(--pink-50);
 }
 
 button,
-input {
+input,
+textarea,
+select {
   font-family: inherit;
 }
 
@@ -44,5 +56,119 @@ a {
 
 ::selection {
   color: #fff;
-  background: #d92c83;
+  background: var(--pink-600);
+}
+
+.font-serif,
+.editorial-display {
+  font-family: "Barlow Condensed", "Arial Narrow", sans-serif !important;
+}
+
+.editorial-storefront {
+  background: var(--pink-50);
+  color: var(--ink-soft);
+}
+
+.editorial-storefront :where(h1, h2, h3) {
+  text-wrap: balance;
+}
+
+.editorial-storefront :where(button, a, input, textarea, select):focus-visible,
+.admin-editorial :where(button, a, input, textarea, select):focus-visible {
+  outline: 2px solid var(--ink);
+  outline-offset: 3px;
+}
+
+.editorial-storefront [class*="rounded-"]:not(.keep-round),
+.admin-editorial [class*="rounded-"]:not(.keep-round) {
+  border-radius: 2px !important;
+}
+
+.editorial-storefront [class*="shadow-"],
+.admin-editorial [class*="shadow-"] {
+  box-shadow: 0 8px 24px rgb(29 23 26 / 7%) !important;
+}
+
+.editorial-storefront input,
+.editorial-storefront textarea,
+.editorial-storefront select,
+.admin-editorial input,
+.admin-editorial textarea,
+.admin-editorial select {
+  border-radius: 0 !important;
+}
+
+.editorial-kicker {
+  font-size: 0.65rem;
+  font-weight: 700;
+  letter-spacing: 0.26em;
+  text-transform: uppercase;
+}
+
+.campaign-grid {
+  background-image:
+    linear-gradient(rgb(29 23 26 / 5%) 1px, transparent 1px),
+    linear-gradient(90deg, rgb(29 23 26 / 5%) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.editorial-storefront main > section:first-child h1,
+.editorial-storefront main > div:first-child h1 {
+  font-weight: 300;
+  line-height: 0.9;
+  text-transform: uppercase;
+  letter-spacing: -0.025em;
+}
+
+.editorial-storefront :where(button, a)[class*="uppercase"] {
+  letter-spacing: 0.15em;
+}
+
+.editorial-storefront :where(button, a)[class*="bg-[#984667]"] {
+  border: 1px solid var(--ink);
+  background: var(--ink);
+}
+
+.editorial-storefront :where(button, a)[class*="bg-[#984667]"]:hover {
+  background: var(--pink-600);
+}
+
+.admin-editorial table {
+  border-collapse: collapse;
+}
+
+.admin-editorial thead {
+  background: var(--pink-200);
+}
+
+.admin-editorial th {
+  color: var(--ink);
+  font-size: 0.65rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.admin-editorial tbody tr {
+  border-color: var(--line);
+}
+
+.admin-editorial tbody tr:hover {
+  background: var(--pink-50);
+}
+
+.admin-editorial h2,
+.admin-editorial h3 {
+  color: var(--ink);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    scroll-behavior: auto !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
 }

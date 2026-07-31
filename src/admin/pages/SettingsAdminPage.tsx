@@ -69,7 +69,7 @@ export function SettingsAdminPage() {
       {data && (
         <form onSubmit={save} className="mt-8 grid gap-6 xl:grid-cols-2">
           <Panel>
-            <h2 className="font-serif text-2xl text-[#3e2530]">Business information</h2>
+            <h2 className="font-serif text-2xl text-[#1d171a]">Business information</h2>
             <div className="mt-5 grid gap-4">
               <input name="businessName" required defaultValue={data.businessName} className={fieldClass} aria-label="Business name" />
               <input name="phone" required defaultValue={data.phone} className={fieldClass} aria-label="Business phone" />
@@ -77,27 +77,27 @@ export function SettingsAdminPage() {
             </div>
           </Panel>
           <Panel>
-            <h2 className="font-serif text-2xl text-[#3e2530]">Operating hours</h2>
+            <h2 className="font-serif text-2xl text-[#1d171a]">Operating hours</h2>
             <div className="mt-5 grid gap-3 sm:grid-cols-2">{Object.entries(data.openingHours).map(([day, hours]) => <label key={day} className="text-xs font-bold capitalize text-[#76515f]">{day}<input name={`hours-${day}`} defaultValue={hours} className={`${fieldClass} mt-1 font-normal`} /></label>)}</div>
           </Panel>
           <Panel>
-            <h2 className="font-serif text-2xl text-[#3e2530]">Notifications</h2>
-            <div className="mt-5 grid gap-3">{[['bookingEmail','Booking updates'],['orderEmail','Order updates'],['lowStock','Low-stock alerts']].map(([key,label]) => <label key={key} className="flex items-center gap-3 text-sm"><input name={key} type="checkbox" defaultChecked={data.notifications[key]} className="h-4 w-4 accent-[#d92c83]" />{label}</label>)}</div>
+            <h2 className="font-serif text-2xl text-[#1d171a]">Notifications</h2>
+            <div className="mt-5 grid gap-3">{[['bookingEmail','Booking updates'],['orderEmail','Order updates'],['lowStock','Low-stock alerts']].map(([key,label]) => <label key={key} className="flex items-center gap-3 text-sm"><input name={key} type="checkbox" defaultChecked={data.notifications[key]} className="h-4 w-4 accent-[#984667]" />{label}</label>)}</div>
           </Panel>
           <Panel>
-            <h2 className="font-serif text-2xl text-[#3e2530]">Payment methods</h2>
-            <div className="mt-5 grid gap-3">{[['mobileMoney','Mobile Money'],['cash','Cash'],['card','Card']].map(([key,label]) => <label key={key} className="flex items-center gap-3 text-sm"><input name={key} type="checkbox" defaultChecked={data.paymentMethods[key]} className="h-4 w-4 accent-[#d92c83]" />{label}</label>)}</div>
+            <h2 className="font-serif text-2xl text-[#1d171a]">Payment methods</h2>
+            <div className="mt-5 grid gap-3">{[['mobileMoney','Mobile Money'],['cash','Cash'],['card','Card']].map(([key,label]) => <label key={key} className="flex items-center gap-3 text-sm"><input name={key} type="checkbox" defaultChecked={data.paymentMethods[key]} className="h-4 w-4 accent-[#984667]" />{label}</label>)}</div>
           </Panel>
           <div className="xl:col-span-2"><PrimaryButton type="submit">Save all settings</PrimaryButton></div>
         </form>
       )}
       <div className="mt-8 grid gap-6 xl:grid-cols-2">
         <Panel>
-          <h2 className="font-serif text-2xl text-[#3e2530]">Staff accounts</h2>
-          <div className="mt-5 space-y-3">{staff.map((member) => <div key={member.id} className="flex items-center justify-between rounded-xl bg-[#fbf4f7] p-3"><div><strong className="text-sm">{member.name}</strong><span className="block text-xs text-[#806b74]">{member.phone}</span></div><button onClick={() => toggle(member)} className={`text-xs font-bold ${member.isActive ? 'text-red-600' : 'text-emerald-700'}`}>{member.isActive ? 'Deactivate' : 'Activate'}</button></div>)}</div>
+          <h2 className="font-serif text-2xl text-[#1d171a]">Staff accounts</h2>
+          <div className="mt-5 space-y-3">{staff.map((member) => <div key={member.id} className="flex items-center justify-between rounded-xl bg-[#f7e8ee] p-3"><div><strong className="text-sm">{member.name}</strong><span className="block text-xs text-[#6b5a62]">{member.phone}</span></div><button onClick={() => toggle(member)} className={`text-xs font-bold ${member.isActive ? 'text-red-600' : 'text-emerald-700'}`}>{member.isActive ? 'Deactivate' : 'Activate'}</button></div>)}</div>
         </Panel>
         <Panel>
-          <h2 className="font-serif text-2xl text-[#3e2530]">Add administrator</h2>
+          <h2 className="font-serif text-2xl text-[#1d171a]">Add administrator</h2>
           <form onSubmit={addStaff} className="mt-5 grid gap-3">
             <input name="name" required placeholder="Full name" className={fieldClass} />
             <input name="phone" required placeholder="Phone number" className={fieldClass} />

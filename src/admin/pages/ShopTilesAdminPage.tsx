@@ -109,13 +109,13 @@ export function ShopTilesAdminPage() {
               <div className="flex gap-4">
                 <img src={tile.imageUrl} alt="" className="h-20 w-28 rounded-xl object-cover" />
                 <div className="min-w-0 flex-1">
-                  <p className="font-serif text-lg text-[#3e2530]">{tile.title}</p>
-                  <p className="mt-1 text-xs text-[#8f7480]">
+                  <p className="font-serif text-lg text-[#1d171a]">{tile.title}</p>
+                  <p className="mt-1 text-xs text-[#75636b]">
                     Order {tile.sortOrder} - {tile.isActive ? 'Visible' : 'Hidden'}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-4 text-xs font-bold uppercase">
-                    <button onClick={function () { openForm(tile) }} className="text-[#a52261]">Edit</button>
-                    <button onClick={function () { toggleActive(tile) }} className="text-[#8f7480]">
+                    <button onClick={function () { openForm(tile) }} className="text-[#984667]">Edit</button>
+                    <button onClick={function () { toggleActive(tile) }} className="text-[#75636b]">
                       {tile.isActive ? 'Hide' : 'Show'}
                     </button>
                     <button onClick={function () { remove(tile) }} className="text-red-600">Delete</button>

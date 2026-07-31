@@ -51,11 +51,11 @@ export function ImageUploadField({ label, value, onChange }: ImageUploadFieldPro
         <img
           src={value}
           alt=""
-          className="mb-3 h-32 w-full rounded-xl object-cover border border-[#ecd8e1]"
+          className="mb-3 h-32 w-full rounded-xl object-cover border border-[#d9c7cf]"
         />
       )}
 
-      <label className="flex h-13 w-full cursor-pointer items-center justify-center rounded-xl border border-dashed border-[#d99eb7] bg-[#fff7fa] text-sm font-semibold text-[#9f205f] hover:bg-[#fdeef4]">
+      <label className="flex h-13 w-full cursor-pointer items-center justify-center rounded-xl border border-dashed border-[#d99eb7] bg-[#fff9fb] text-sm font-semibold text-[#9f205f] hover:bg-[#fdeef4]">
         {uploading ? 'Uploading...' : value ? 'Replace photo' : 'Upload a photo'}
         <input
           type="file"
@@ -66,7 +66,7 @@ export function ImageUploadField({ label, value, onChange }: ImageUploadFieldPro
         />
       </label>
 
-      {error && <p className="mt-2 text-xs text-[#b32269]">{error}</p>}
+      {error && <p className="mt-2 text-xs text-[#984667]">{error}</p>}
     </div>
   )
 }

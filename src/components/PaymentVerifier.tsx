@@ -41,7 +41,7 @@ export function PaymentVerifier() {
   if (!notice) return null
 
   return (
-    <div className="fixed inset-x-0 top-0 z-[100] bg-[#3e2530] px-4 py-3 text-center text-sm text-white">
+    <div className="fixed inset-x-0 top-0 z-[100] bg-[#1d171a] px-4 py-3 text-center text-sm text-white">
       {notice}
       <button
         type="button"

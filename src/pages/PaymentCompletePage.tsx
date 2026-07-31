@@ -36,7 +36,7 @@ export function PaymentCompletePage() {
   if (status === 'checking') {
     return (
       <main className="mx-auto flex min-h-[70vh] max-w-lg flex-col items-center justify-center px-6 text-center">
-        <p className="text-sm text-[#745f68]" role="status">
+        <p className="text-sm text-[#5f5157]" role="status">
           Confirming your payment...
         </p>
       </main>
@@ -46,18 +46,18 @@ export function PaymentCompletePage() {
   if (status === 'success') {
     return (
       <main className="mx-auto flex min-h-[70vh] max-w-lg flex-col items-center justify-center px-6 text-center">
-        <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#d92c83]">
+        <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#984667]">
           Payment confirmed
         </p>
-        <h1 className="mt-4 font-serif text-4xl text-[#3e2530]">Thank you</h1>
-        <p className="mt-4 text-sm text-[#745f68]">
+        <h1 className="mt-4 font-serif text-4xl text-[#1d171a]">Thank you</h1>
+        <p className="mt-4 text-sm text-[#5f5157]">
           {amount
             ? 'Your payment of GHC ' + amount.toLocaleString() + ' was successful.'
             : 'Your payment was successful.'}
         </p>
           <a
           href="#/account"
-          className="mt-8 rounded-full bg-[#dc2d83] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.16em] text-white"
+          className="mt-8 rounded-full bg-[#984667] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.16em] text-white"
         >
           View my account
         </a>
@@ -67,16 +67,16 @@ export function PaymentCompletePage() {
 
   return (
     <main className="mx-auto flex min-h-[70vh] max-w-lg flex-col items-center justify-center px-6 text-center">
-      <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#d92c83]">
+      <p className="text-xs font-bold uppercase tracking-[0.22em] text-[#984667]">
         Payment not confirmed
       </p>
-      <h1 className="mt-4 font-serif text-4xl text-[#3e2530]">Something went wrong</h1>
-      <p className="mt-4 text-sm text-[#745f68]">
+      <h1 className="mt-4 font-serif text-4xl text-[#1d171a]">Something went wrong</h1>
+      <p className="mt-4 text-sm text-[#5f5157]">
         We could not confirm this payment. If money left your account, please contact the salon directly.
       </p>
         <a
         href="#/account"
-        className="mt-8 rounded-full border border-[#d92c83] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.16em] text-[#d92c83]"
+        className="mt-8 rounded-full border border-[#984667] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.16em] text-[#984667]"
       >
         Go to my account
       </a>

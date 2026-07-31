@@ -1,7 +1,7 @@
 import type { ReactNode } from 'react'
 
 export const fieldClass =
-  'h-11 w-full rounded-xl border border-[#dfcbd4] bg-white px-3 text-sm text-[#3e2530] outline-none focus:border-[#d92c83] focus:ring-4 focus:ring-[#d92c83]/10'
+  'h-11 w-full border border-[#bfaab3] bg-[#fffdfd] px-3 text-sm text-[#1d171a] outline-none focus:border-[#1d171a] focus:ring-2 focus:ring-[#c992aa]/30'
 
 export function PageHeader({
   eyebrow,
@@ -17,13 +17,13 @@ export function PageHeader({
   return (
     <header className="flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
       <div>
-        <p className="text-[11px] font-bold uppercase tracking-[0.2em] text-[#d92c83]">
+        <p className="text-[10px] font-bold uppercase tracking-[0.24em] text-[#984667]">
           {eyebrow}
         </p>
-        <h1 className="mt-2 font-serif text-4xl text-[#3e2530] sm:text-5xl">
+        <h1 className="mt-1 font-serif text-5xl font-light uppercase leading-none text-[#1d171a] sm:text-6xl">
           {title}
         </h1>
-        <p className="mt-3 max-w-2xl text-sm leading-6 text-[#806b74]">
+        <p className="mt-3 max-w-2xl text-sm leading-6 text-[#6b5a62]">
           {description}
         </p>
       </div>
@@ -41,7 +41,7 @@ export function Panel({
 }) {
   return (
     <section
-      className={`rounded-2xl border border-[#ead7df] bg-white p-5 shadow-[0_12px_35px_rgba(71,32,50,0.04)] sm:p-6 ${className}`}
+      className={`border border-[#cdb8c1] bg-[#fffdfd] p-5 shadow-[0_8px_22px_rgba(29,23,26,0.05)] sm:p-6 ${className}`}
     >
       {children}
     </section>
@@ -59,7 +59,7 @@ export function Notice({
     <p
       role="status"
       className={`rounded-xl px-4 py-3 text-sm ${
-        error ? 'bg-red-50 text-red-700' : 'bg-[#f8e7ee] text-[#7a4259]'
+        error ? 'bg-red-50 text-red-700' : 'bg-[#f3e3ea] text-[#7a4259]'
       }`}
     >
       {children}
@@ -74,7 +74,7 @@ export function PrimaryButton({
   return (
     <button
       {...props}
-      className={`rounded-full bg-[#d92c83] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[#b92068] disabled:opacity-50 ${props.className ?? ''}`}
+      className={`border border-[#1d171a] bg-[#1d171a] px-5 py-2.5 text-[10px] font-bold uppercase tracking-[0.14em] text-white transition hover:bg-[#984667] disabled:opacity-50 ${props.className ?? ''}`}
     >
       {children}
     </button>

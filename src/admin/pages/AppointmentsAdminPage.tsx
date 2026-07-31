@@ -7,7 +7,7 @@ const statusStyle: Record<string, string> = {
   pending: 'bg-[#fbe7d0] text-[#8a5a1f]',
   confirmed: 'bg-[#dcefe3] text-[#2f7d55]',
   completed: 'bg-[#e4e1f0] text-[#5a4e8a]',
-  cancelled: 'bg-[#f3ecee] text-[#8f7480]',
+  cancelled: 'bg-[#f3ecee] text-[#75636b]',
 }
 
 export function AppointmentsAdminPage() {
@@ -58,8 +58,8 @@ export function AppointmentsAdminPage() {
             <Panel key={booking.id}>
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="font-serif text-xl text-[#3e2530]">{booking.user.name}</p>
-                  <p className="mt-1 text-sm text-[#806b74]">
+                  <p className="font-serif text-xl text-[#1d171a]">{booking.user.name}</p>
+                  <p className="mt-1 text-sm text-[#6b5a62]">
                     {booking.service.name} at {booking.timeSlot} on {booking.date.slice(0, 10)}
                   </p>
                   <p className="mt-1 text-xs text-[#a08a94]">{booking.user.phone}</p>
@@ -104,7 +104,7 @@ export function AppointmentsAdminPage() {
               </div>
 
               {isRescheduling && (
-                <div className="mt-4 flex flex-wrap items-end gap-3 rounded-2xl bg-[#fff7fa] p-4">
+                <div className="mt-4 flex flex-wrap items-end gap-3 rounded-2xl bg-[#fff9fb] p-4">
                   <div>
                     <span className="mb-1.5 block text-[10px] font-bold uppercase tracking-[0.1em] text-[#956f80]">
                       New date
@@ -145,7 +145,7 @@ export function AppointmentsAdminPage() {
                   </div>
                   <button
                     onClick={() => reschedule(booking)}
-                    className="rounded-full bg-[#dc2d83] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-white"
+                    className="rounded-full bg-[#984667] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-white"
                   >
                     Save new schedule
                   </button>

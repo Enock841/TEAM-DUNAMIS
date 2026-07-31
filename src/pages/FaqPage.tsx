@@ -38,10 +38,10 @@ const faqs = [
 
 export function FaqPage() {
   return (
-    <main className="bg-[#fffaf8]">
-      <section className="border-b border-[#ead4de] bg-[#4b2637] px-6 py-16 text-white sm:px-10 sm:py-20 lg:px-12">
+    <main className="bg-[#fffdfd]">
+      <section className="border-b border-[#d9c7cf] bg-[#1d171a] px-6 py-16 text-white sm:px-10 sm:py-20 lg:px-12">
         <div className="mx-auto max-w-4xl text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#f2a7c9]">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#d9abbf]">
             Helpful details
           </p>
           <h1 className="mt-4 font-serif text-5xl leading-tight sm:text-6xl">
@@ -56,37 +56,37 @@ export function FaqPage() {
 
       <section className="px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24">
         <div className="mx-auto max-w-4xl">
-          <div className="divide-y divide-[#ead4de] border-y border-[#ead4de]">
+          <div className="divide-y divide-[#d9c7cf] border-y border-[#d9c7cf]">
             {faqs.map((faq, index) => (
               <details key={faq.question} className="group py-6 sm:py-7">
-                <summary className="flex cursor-pointer list-none items-start justify-between gap-5 font-serif text-xl text-[#3e2530] sm:text-2xl">
+                <summary className="flex cursor-pointer list-none items-start justify-between gap-5 font-serif text-xl text-[#1d171a] sm:text-2xl">
                   <span>
-                    <span className="mr-4 text-sm text-[#d92c83]">
+                    <span className="mr-4 text-sm text-[#984667]">
                       {String(index + 1).padStart(2, '0')}
                     </span>
                     {faq.question}
                   </span>
-                  <span className="mt-1 text-2xl font-light text-[#d92c83] transition group-open:rotate-45">
+                  <span className="mt-1 text-2xl font-light text-[#984667] transition group-open:rotate-45">
                     +
                   </span>
                 </summary>
-                <p className="max-w-3xl pt-5 text-base leading-8 text-[#745f68] sm:pl-10">
+                <p className="max-w-3xl pt-5 text-base leading-8 text-[#5f5157] sm:pl-10">
                   {faq.answer}
                 </p>
               </details>
             ))}
           </div>
 
-          <div className="mt-12 rounded-[2rem] bg-[#f7e4ec] p-7 text-center sm:p-10">
-            <h2 className="font-serif text-3xl text-[#3e2530]">
+          <div className="mt-12 rounded-[2rem] bg-[#ead2dd] p-7 text-center sm:p-10">
+            <h2 className="font-serif text-3xl text-[#1d171a]">
               Still need help?
             </h2>
-            <p className="mt-3 text-sm leading-7 text-[#745f68]">
+            <p className="mt-3 text-sm leading-7 text-[#5f5157]">
               Speak with the salon team for appointment or product guidance.
             </p>
             <a
               href="tel:0591911212"
-              className="mt-6 inline-flex rounded-full bg-[#dc2d83] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.14em] text-white"
+              className="mt-6 inline-flex rounded-full bg-[#984667] px-7 py-3.5 text-xs font-bold uppercase tracking-[0.14em] text-white"
             >
               Call 059 191 1212
             </a>

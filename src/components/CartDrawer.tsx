@@ -87,13 +87,13 @@ export function CartDrawer({
         onClick={onClose}
         className="absolute inset-0 h-full w-full"
       />
-      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col overflow-y-auto bg-[#fffaf8] p-6 shadow-2xl sm:p-8">
+      <aside className="absolute right-0 top-0 flex h-full w-full max-w-md flex-col overflow-y-auto bg-[#fffdfd] p-6 shadow-2xl sm:p-8">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#d92c83]">
+            <p className="text-xs font-bold uppercase tracking-[0.18em] text-[#984667]">
               Your bag
             </p>
-            <h2 className="mt-2 font-serif text-3xl text-[#3e2530]">Shopping bag</h2>
+            <h2 className="mt-2 font-serif text-3xl text-[#1d171a]">Shopping bag</h2>
           </div>
           <button
             type="button"
@@ -107,7 +107,7 @@ export function CartDrawer({
         <div className="mt-8 flex-1 space-y-5">
           {items.length === 0 ? (
             <div className="rounded-2xl bg-[#f8e5ed] p-6 text-center">
-              <p className="font-serif text-2xl text-[#3e2530]">Your bag is waiting.</p>
+              <p className="font-serif text-2xl text-[#1d171a]">Your bag is waiting.</p>
               <p className="mt-2 text-sm text-[#765c68]">
                 Browse the shop and add a product when you are ready.
               </p>
@@ -115,15 +115,15 @@ export function CartDrawer({
           ) : (
             items.map(function (item, index) {
               return (
-                <article key={item.id + '-' + index} className="flex gap-4 border-b border-[#ecd8e1] pb-5">
+                <article key={item.id + '-' + index} className="flex gap-4 border-b border-[#d9c7cf] pb-5">
                   <img
                     src={productImage(item)}
                     alt=""
                     className="h-24 w-20 rounded-xl object-cover"
                   />
                   <div className="min-w-0 flex-1">
-                    <p className="font-serif text-lg text-[#3e2530]">{item.name}</p>
-                    <p className="mt-2 text-sm font-semibold text-[#b32269]">
+                    <p className="font-serif text-lg text-[#1d171a]">{item.name}</p>
+                    <p className="mt-2 text-sm font-semibold text-[#984667]">
                       GHC {item.price.toLocaleString()}
                     </p>
                     <button
@@ -150,33 +150,33 @@ export function CartDrawer({
               value={name}
               onChange={function (e) { setName(e.target.value) }}
               placeholder="Full name"
-              className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
+              className="h-12 w-full rounded-xl border border-[#cdb8c1] bg-white px-4 text-sm outline-none focus:border-[#984667]"
             />
             <input
               type="tel"
               value={phone}
               onChange={function (e) { setPhone(e.target.value) }}
               placeholder={user ? user.phone : '024 000 0000'}
-              className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
+              className="h-12 w-full rounded-xl border border-[#cdb8c1] bg-white px-4 text-sm outline-none focus:border-[#984667]"
             />
             <input
               type="text"
               value={address}
               onChange={function (e) { setAddress(e.target.value) }}
               placeholder="Your location, e.g. Ayeduase, near the market"
-              className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
+              className="h-12 w-full rounded-xl border border-[#cdb8c1] bg-white px-4 text-sm outline-none focus:border-[#984667]"
             />
             <textarea
               value={notes}
               onChange={function (e) { setNotes(e.target.value) }}
               placeholder="Any notes for delivery, optional"
-              className="h-20 w-full rounded-xl border border-[#dfbdcb] bg-white p-4 text-sm outline-none focus:border-[#dc2d83]"
+              className="h-20 w-full rounded-xl border border-[#cdb8c1] bg-white p-4 text-sm outline-none focus:border-[#984667]"
             />
           </div>
         )}
 
         <div className="mt-6 border-t border-[#e7ccd7] pt-5">
-          <div className="flex justify-between font-serif text-xl text-[#3e2530]">
+          <div className="flex justify-between font-serif text-xl text-[#1d171a]">
             <span>Total</span>
             <span>GHC {total.toLocaleString()}</span>
           </div>
@@ -184,7 +184,7 @@ export function CartDrawer({
             type="button"
             onClick={function () { checkout() }}
             disabled={!items.length || busy}
-            className="mt-5 min-h-13 w-full rounded-full bg-[#d92c83] px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] text-white disabled:opacity-40"
+            className="mt-5 min-h-13 w-full rounded-full bg-[#984667] px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] text-white disabled:opacity-40"
           >
             {busy ? 'Redirecting to payment...' : 'Pay now'}
           </button>

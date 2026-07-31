@@ -33,16 +33,16 @@ const sections = [
 
 export function PrivacyPage() {
   return (
-    <main className="bg-[#fffaf8]">
-      <section className="border-b border-[#ead4de] bg-[#f7e4ec] px-6 py-16 sm:px-10 sm:py-20 lg:px-12">
+    <main className="bg-[#fffdfd]">
+      <section className="border-b border-[#d9c7cf] bg-[#ead2dd] px-6 py-16 sm:px-10 sm:py-20 lg:px-12">
         <div className="mx-auto max-w-4xl">
-          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#d92c83]">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#984667]">
             Your information
           </p>
-          <h1 className="mt-4 font-serif text-5xl leading-tight text-[#3e2530] sm:text-6xl">
+          <h1 className="mt-4 font-serif text-5xl leading-tight text-[#1d171a] sm:text-6xl">
             Privacy Policy
           </h1>
-          <p className="mt-5 max-w-2xl text-base leading-8 text-[#745f68]">
+          <p className="mt-5 max-w-2xl text-base leading-8 text-[#5f5157]">
             This policy explains how Beryl&apos;s Beauty Mark handles information
             provided through our website, salon bookings and online shop.
           </p>
@@ -53,13 +53,13 @@ export function PrivacyPage() {
       </section>
 
       <section className="px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24">
-        <div className="mx-auto max-w-4xl divide-y divide-[#ead4de]">
+        <div className="mx-auto max-w-4xl divide-y divide-[#d9c7cf]">
           {sections.map((section) => (
             <article key={section.title} className="grid gap-4 py-8 first:pt-0 sm:grid-cols-[0.8fr_1.5fr] sm:gap-10">
-              <h2 className="font-serif text-2xl text-[#3e2530]">
+              <h2 className="font-serif text-2xl text-[#1d171a]">
                 {section.title}
               </h2>
-              <p className="text-base leading-8 text-[#745f68]">
+              <p className="text-base leading-8 text-[#5f5157]">
                 {section.content}
               </p>
             </article>

@@ -7,36 +7,36 @@ type ProductCardProps = {
 
 export function ProductCard({ product, onAdd }: ProductCardProps) {
   return (
-    <article className="group flex h-full flex-col overflow-hidden rounded-[1.75rem] border border-[#efd7e1] bg-white shadow-[0_12px_35px_rgba(87,43,61,0.06)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_18px_45px_rgba(87,43,61,0.12)]">
-      <div className="relative aspect-[4/5] overflow-hidden bg-[#f6edf0]">
+    <article className="group flex h-full flex-col border-b border-[#cdb8c1] bg-[#fffdfd]">
+      <div className="relative aspect-[4/5] overflow-hidden bg-[#ead6df]">
         <img
           src={productImage(product)}
           alt={product.name}
-          className="h-full w-full object-cover transition duration-500 group-hover:scale-[1.03]"
+          className="h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]"
         />
         {!product.inStock && (
-          <span className="absolute left-4 top-4 rounded-full bg-[#fff9f7]/95 px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.16em] text-[#b32269]">
+          <span className="absolute left-3 top-3 bg-[#fffdfd]/95 px-3 py-1.5 text-[9px] font-bold uppercase tracking-[0.16em] text-[#1d171a]">
             Out of stock
           </span>
         )}
       </div>
-      <div className="flex flex-1 flex-col p-5 sm:p-6">
-        <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-[#d92c83]">
+      <div className="flex flex-1 flex-col px-1 py-4">
+        <p className="text-[9px] font-bold uppercase tracking-[0.18em] text-[#984667]">
           {product.category}
         </p>
-        <h3 className="mt-2 font-serif text-2xl leading-tight text-[#3e2530]">
+        <h3 className="mt-1.5 font-serif text-[23px] font-medium uppercase leading-[1.05] tracking-[0.01em] text-[#1d171a]">
           {product.name}
         </h3>
-        <p className="mt-3 text-sm leading-6 text-[#745f68]">{product.description}</p>
-        <div className="mt-auto flex items-center justify-between gap-4 pt-6">
-          <p className="font-serif text-xl font-semibold text-[#3e2530]">
+        <p className="mt-2 line-clamp-2 text-xs leading-5 text-[#6b5a62]">{product.description}</p>
+        <div className="mt-auto flex items-center justify-between gap-4 border-t border-[#e0d1d7] pt-3">
+          <p className="text-xs font-bold text-[#1d171a]">
             GH₵{product.price.toLocaleString()}
           </p>
           <button
             type="button"
             onClick={() => onAdd(product)}
             disabled={!product.inStock}
-            className="rounded-full bg-[#dc2d83] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white transition hover:bg-[#b92068] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#dc2d83] disabled:cursor-not-allowed disabled:bg-[#c7aeb9]"
+            className="border-b border-[#1d171a] pb-0.5 text-[9px] font-bold uppercase tracking-[0.14em] text-[#1d171a] transition hover:text-[#984667] disabled:cursor-not-allowed disabled:opacity-40"
           >
             {product.inStock ? 'Add to bag' : 'Unavailable'}
           </button>

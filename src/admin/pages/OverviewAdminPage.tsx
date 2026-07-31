@@ -25,27 +25,27 @@ export function OverviewAdminPage() {
           ['Customers', metrics?.customers ?? 0],
         ].map(([label, value]) => (
           <Panel key={label}>
-            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#8f7480]">{label}</p>
-            <p className="mt-3 font-serif text-4xl text-[#d92c83]">{value}</p>
+            <p className="text-xs font-bold uppercase tracking-[0.14em] text-[#75636b]">{label}</p>
+            <p className="mt-3 font-serif text-4xl text-[#984667]">{value}</p>
           </Panel>
         ))}
       </div>
       <div className="mt-6 grid gap-6 lg:grid-cols-2">
         <Panel>
-          <h2 className="font-serif text-2xl text-[#3e2530]">Popular services</h2>
+          <h2 className="font-serif text-2xl text-[#1d171a]">Popular services</h2>
           <div className="mt-5 space-y-4">
             {data?.popularServices.map((item) => (
-              <div key={item.name} className="flex justify-between border-b border-[#f0e2e8] pb-3 text-sm">
+              <div key={item.name} className="flex justify-between border-b border-[#e6d9df] pb-3 text-sm">
                 <span>{item.name}</span><strong>{item.bookings} bookings</strong>
               </div>
             ))}
           </div>
         </Panel>
         <Panel>
-          <h2 className="font-serif text-2xl text-[#3e2530]">Best-selling products</h2>
+          <h2 className="font-serif text-2xl text-[#1d171a]">Best-selling products</h2>
           <div className="mt-5 space-y-4">
             {data?.bestSellingProducts.map((item) => (
-              <div key={item.name} className="flex justify-between border-b border-[#f0e2e8] pb-3 text-sm">
+              <div key={item.name} className="flex justify-between border-b border-[#e6d9df] pb-3 text-sm">
                 <span>{item.name}</span><strong>{item.units} sold</strong>
               </div>
             ))}

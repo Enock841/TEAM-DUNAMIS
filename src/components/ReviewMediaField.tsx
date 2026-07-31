@@ -49,7 +49,7 @@ export function ReviewMediaField({ onChange }: ReviewMediaFieldProps) {
       {preview && (
         <p className="mb-2 text-xs text-emerald-700">Uploaded, ready to submit.</p>
       )}
-      <label className="flex h-13 w-full cursor-pointer items-center justify-center rounded-xl border border-dashed border-[#dfbdcb] bg-[#fff7fa] text-sm font-semibold text-[#9f205f]">
+      <label className="flex h-13 w-full cursor-pointer items-center justify-center rounded-xl border border-dashed border-[#cdb8c1] bg-[#fff9fb] text-sm font-semibold text-[#9f205f]">
         {uploading ? 'Uploading...' : preview ? 'Replace file' : 'Choose a photo or video'}
         <input
           type="file"
@@ -59,7 +59,7 @@ export function ReviewMediaField({ onChange }: ReviewMediaFieldProps) {
           className="hidden"
         />
       </label>
-      {error && <p className="mt-2 text-xs text-[#b32269]">{error}</p>}
+      {error && <p className="mt-2 text-xs text-[#984667]">{error}</p>}
     </div>
   )
 }

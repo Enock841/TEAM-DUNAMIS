@@ -6,7 +6,7 @@ import { useAdminResource } from '../hooks/useAdminResource'
 const statusStyle = {
   pending: 'bg-[#fbe7d0] text-[#8a5a1f]',
   approved: 'bg-[#dcefe3] text-[#2f7d55]',
-  rejected: 'bg-[#f3ecee] text-[#8f7480]',
+  rejected: 'bg-[#f3ecee] text-[#75636b]',
 }
 
 export function ReviewsAdminPage() {
@@ -42,11 +42,11 @@ export function ReviewsAdminPage() {
             <Panel key={review.id}>
               <div className="flex flex-wrap items-start justify-between gap-4">
                 <div>
-                  <p className="font-serif text-xl text-[#3e2530]">{review.customerName}</p>
-                  <p className="mt-1 text-xs text-[#806b74]">{review.serviceName}</p>
+                  <p className="font-serif text-xl text-[#1d171a]">{review.customerName}</p>
+                  <p className="mt-1 text-xs text-[#6b5a62]">{review.serviceName}</p>
                   <div className="mt-2 flex gap-0.5">
                     {[1, 2, 3, 4, 5].map((n) => (
-                      <span key={n} className={n <= review.rating ? 'text-[#dc2d83]' : 'text-[#e6d3da]'}>
+                      <span key={n} className={n <= review.rating ? 'text-[#984667]' : 'text-[#e6d3da]'}>
                         star
                       </span>
                     ))}

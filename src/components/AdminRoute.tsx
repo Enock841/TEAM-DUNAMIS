@@ -13,8 +13,8 @@ export function AdminRoute({ children }: { children: ReactNode }) {
 
   if (authLoading) {
     return (
-      <main className="flex min-h-[620px] items-center justify-center bg-[#fffaf8] px-6">
-        <p className="text-sm text-[#745f68]" role="status">
+      <main className="flex min-h-[620px] items-center justify-center bg-[#fffdfd] px-6">
+        <p className="text-sm text-[#5f5157]" role="status">
           Verifying staff access…
         </p>
       </main>
@@ -23,8 +23,8 @@ export function AdminRoute({ children }: { children: ReactNode }) {
 
   if (!isAdmin) {
     return (
-      <main className="flex min-h-[620px] items-center justify-center bg-[#fffaf8] px-6">
-        <p className="text-sm text-[#745f68]" role="status">
+      <main className="flex min-h-[620px] items-center justify-center bg-[#fffdfd] px-6">
+        <p className="text-sm text-[#5f5157]" role="status">
           Redirecting to secure staff login…
         </p>
       </main>

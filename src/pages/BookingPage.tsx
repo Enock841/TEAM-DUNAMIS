@@ -137,14 +137,14 @@ export function BookingPage(props) {
   const extensionStepAnswered = hasOwnExtension === true || (hasOwnExtension === false && wantsToBuyExtension !== null)
 
   return (
-    <main className="min-h-[760px] bg-[#f9e8ef] px-5 py-12 sm:px-10 sm:py-20 lg:px-12">
+    <main className="min-h-[760px] bg-[#f3e3ea] px-5 py-12 sm:px-10 sm:py-20 lg:px-12">
       <div className="mx-auto max-w-5xl">
         <div className="text-center">
-          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#d92c83]">Reserve your time</p>
-          <h1 className="mt-4 font-serif text-[42px] leading-tight text-[#3e2530] sm:text-6xl">
+          <p className="text-xs font-bold uppercase tracking-[0.24em] text-[#984667]">Reserve your time</p>
+          <h1 className="mt-4 font-serif text-[42px] leading-tight text-[#1d171a] sm:text-6xl">
             Book an appointment
           </h1>
-          <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-[#745f68]">
+          <p className="mx-auto mt-4 max-w-xl text-base leading-7 text-[#5f5157]">
             Choose your service and preferred time. We will confirm every detail before your visit.
           </p>
         </div>
@@ -152,8 +152,8 @@ export function BookingPage(props) {
         <div className="mt-10 flex items-center justify-center">
           {[1, 2, 3].map(function (item) {
             const circleClass = 'flex h-10 w-10 items-center justify-center rounded-full text-sm font-bold ' +
-              (step >= item ? 'bg-[#dc2d83] text-white' : 'border border-[#d9aabd] bg-white text-[#8f707d]')
-            const lineClass = 'h-px w-12 sm:w-24 ' + (step > item ? 'bg-[#dc2d83]' : 'bg-[#d9aabd]')
+              (step >= item ? 'bg-[#984667] text-white' : 'border border-[#c992aa] bg-white text-[#75636b]')
+            const lineClass = 'h-px w-12 sm:w-24 ' + (step > item ? 'bg-[#984667]' : 'bg-[#c992aa]')
             return (
               <div key={item} className="flex items-center">
                 <span className={circleClass}>{item}</span>
@@ -163,11 +163,11 @@ export function BookingPage(props) {
           })}
         </div>
 
-        <section className="mt-9 rounded-[1.75rem] border border-[#ebc8d7] bg-[#fffaf8] p-5 shadow-[0_20px_55px_rgba(80,34,54,0.08)] sm:mt-10 sm:rounded-[2rem] sm:p-10">
+        <section className="mt-9 rounded-[1.75rem] border border-[#d9c7cf] bg-[#fffdfd] p-5 shadow-[0_20px_55px_rgba(80,34,54,0.08)] sm:mt-10 sm:rounded-[2rem] sm:p-10">
           {step === 1 && (
             <div>
-              <h2 className="font-serif text-3xl text-[#3e2530]">Select a service</h2>
-              <p className="mt-2 text-sm text-[#745f68]">Prices are supplied by the salon and shown as a range.</p>
+              <h2 className="font-serif text-3xl text-[#1d171a]">Select a service</h2>
+              <p className="mt-2 text-sm text-[#5f5157]">Prices are supplied by the salon and shown as a range.</p>
               {catalogLoading && <p className="mt-7">Loading services...</p>}
               {catalogError && <p className="mt-7 text-[#8b435f]">{catalogError}</p>}
 
@@ -175,17 +175,17 @@ export function BookingPage(props) {
                 {services.map(function (service) {
                   const selected = selectedService === service.id
                   const cardClass = selected
-                    ? 'flex items-start justify-between gap-4 rounded-2xl border p-5 text-left transition border-[#dc2d83] bg-[#fbe0eb] shadow-sm'
-                    : 'flex items-start justify-between gap-4 rounded-2xl border p-5 text-left transition border-[#ecd8e1] bg-white hover:border-[#dc2d83]'
+                    ? 'flex items-start justify-between gap-4 rounded-2xl border p-5 text-left transition border-[#984667] bg-[#fbe0eb] shadow-sm'
+                    : 'flex items-start justify-between gap-4 rounded-2xl border p-5 text-left transition border-[#d9c7cf] bg-white hover:border-[#984667]'
                   return (
                     <button key={service.id} type="button" onClick={function () { selectService(service) }} className={cardClass}>
                       <span>
-                        <span className="block font-serif text-lg text-[#3e2530]">{service.name}</span>
-                        <span className="mt-1 block text-xs text-[#8f707d]">
+                        <span className="block font-serif text-lg text-[#1d171a]">{service.name}</span>
+                        <span className="mt-1 block text-xs text-[#75636b]">
                           {service.category.name + ' - ' + formatDuration(service.durationMinutes)}
                         </span>
                       </span>
-                      <span className="whitespace-nowrap text-sm font-bold text-[#b32269]">
+                      <span className="whitespace-nowrap text-sm font-bold text-[#984667]">
                         {'GHC ' + service.priceMin.toLocaleString() + ' - ' + service.priceMax.toLocaleString()}
                       </span>
                     </button>
@@ -194,19 +194,19 @@ export function BookingPage(props) {
               </div>
 
               {selectedService && lengthOptions.length > 0 && (
-                <div className="mt-8 rounded-2xl border border-[#e6c5d3] bg-white p-6">
-                  <p className="font-serif text-xl text-[#3e2530]">Choose your length</p>
-                  <p className="mt-2 text-sm text-[#745f68]">Pricing depends on the length you choose.</p>
+                <div className="mt-8 rounded-2xl border border-[#d9c7cf] bg-white p-6">
+                  <p className="font-serif text-xl text-[#1d171a]">Choose your length</p>
+                  <p className="mt-2 text-sm text-[#5f5157]">Pricing depends on the length you choose.</p>
                   <div className="mt-5 grid gap-3 sm:grid-cols-2">
                     {lengthOptions.map(function (option) {
                       const selected = selectedLength && selectedLength.id === option.id
                       const optionClass = selected
-                        ? 'flex items-center justify-between rounded-xl border p-4 text-left transition border-[#dc2d83] bg-[#fbe0eb]'
-                        : 'flex items-center justify-between rounded-xl border p-4 text-left transition border-[#ecd8e1] bg-white hover:border-[#dc2d83]'
+                        ? 'flex items-center justify-between rounded-xl border p-4 text-left transition border-[#984667] bg-[#fbe0eb]'
+                        : 'flex items-center justify-between rounded-xl border p-4 text-left transition border-[#d9c7cf] bg-white hover:border-[#984667]'
                       return (
                         <button key={option.id} type="button" onClick={function () { setSelectedLength(option) }} className={optionClass}>
-                          <span className="font-semibold text-[#3e2530]">{option.label}</span>
-                          <span className="text-sm font-bold text-[#b32269]">
+                          <span className="font-semibold text-[#1d171a]">{option.label}</span>
+                          <span className="text-sm font-bold text-[#984667]">
                             {'GHC ' + option.priceMin.toLocaleString() + ' - ' + option.priceMax.toLocaleString()}
                           </span>
                         </button>
@@ -217,9 +217,9 @@ export function BookingPage(props) {
               )}
 
               {selectedService && (
-                <div className="mt-8 rounded-2xl border border-[#e6c5d3] bg-white p-6">
-                  <p className="font-serif text-xl text-[#3e2530]">Have a reference picture?</p>
-                  <p className="mt-2 text-sm text-[#745f68]">
+                <div className="mt-8 rounded-2xl border border-[#d9c7cf] bg-white p-6">
+                  <p className="font-serif text-xl text-[#1d171a]">Have a reference picture?</p>
+                  <p className="mt-2 text-sm text-[#5f5157]">
                     Optional, but a photo of the look you want helps the stylist a lot.
                   </p>
                   <div className="mt-4">
@@ -229,9 +229,9 @@ export function BookingPage(props) {
               )}
 
               {selectedService && (
-                <div className="mt-8 rounded-2xl border border-[#e6c5d3] bg-white p-6">
-                  <p className="font-serif text-xl text-[#3e2530]">Are you bringing your own extension?</p>
-                  <p className="mt-2 text-sm text-[#745f68]">
+                <div className="mt-8 rounded-2xl border border-[#d9c7cf] bg-white p-6">
+                  <p className="font-serif text-xl text-[#1d171a]">Are you bringing your own extension?</p>
+                  <p className="mt-2 text-sm text-[#5f5157]">
                     If you already have your own hair or extensions, choose Yes.
                   </p>
                   <div className="mt-5 flex flex-wrap gap-3">
@@ -243,8 +243,8 @@ export function BookingPage(props) {
                       }}
                       className={
                         hasOwnExtension === true
-                          ? 'rounded-full border border-[#dc2d83] bg-[#dc2d83] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white'
-                          : 'rounded-full border border-[#dc2d83] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-[#dc2d83]'
+                          ? 'rounded-full border border-[#984667] bg-[#984667] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white'
+                          : 'rounded-full border border-[#984667] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-[#984667]'
                       }
                     >
                       Yes, I have my own
@@ -254,8 +254,8 @@ export function BookingPage(props) {
                       onClick={function () { setHasOwnExtension(false) }}
                       className={
                         hasOwnExtension === false
-                          ? 'rounded-full border border-[#8f707d] bg-[#8f707d] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white'
-                          : 'rounded-full border border-[#8f707d] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-[#604c55]'
+                          ? 'rounded-full border border-[#75636b] bg-[#75636b] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white'
+                          : 'rounded-full border border-[#75636b] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-[#5f5157]'
                       }
                     >
                       No, I need extensions
@@ -263,16 +263,16 @@ export function BookingPage(props) {
                   </div>
 
                   {hasOwnExtension === false && (
-                    <div className="mt-6 border-t border-[#ecd8e1] pt-5">
-                      <p className="text-sm font-semibold text-[#3e2530]">Would you like to buy some now?</p>
+                    <div className="mt-6 border-t border-[#d9c7cf] pt-5">
+                      <p className="text-sm font-semibold text-[#1d171a]">Would you like to buy some now?</p>
                       <div className="mt-3 flex flex-wrap gap-3">
                         <button
                           type="button"
                           onClick={function () { setWantsToBuyExtension(true) }}
                           className={
                             wantsToBuyExtension === true
-                              ? 'rounded-full border border-[#dc2d83] bg-[#dc2d83] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white'
-                              : 'rounded-full border border-[#dc2d83] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-[#dc2d83]'
+                              ? 'rounded-full border border-[#984667] bg-[#984667] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white'
+                              : 'rounded-full border border-[#984667] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-[#984667]'
                           }
                         >
                           Yes, show me
@@ -282,8 +282,8 @@ export function BookingPage(props) {
                           onClick={function () { setWantsToBuyExtension(false) }}
                           className={
                             wantsToBuyExtension === false
-                              ? 'rounded-full border border-[#8f707d] bg-[#8f707d] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white'
-                              : 'rounded-full border border-[#8f707d] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-[#604c55]'
+                              ? 'rounded-full border border-[#75636b] bg-[#75636b] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white'
+                              : 'rounded-full border border-[#75636b] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-[#5f5157]'
                           }
                         >
                           No, later
@@ -292,9 +292,9 @@ export function BookingPage(props) {
 
                       {wantsToBuyExtension === true && (
                         <div className="mt-5">
-                          {extensionsLoading && <p className="text-sm text-[#745f68]">Loading extensions...</p>}
+                          {extensionsLoading && <p className="text-sm text-[#5f5157]">Loading extensions...</p>}
                           {!extensionsLoading && extensionProducts.length === 0 && (
-                            <p className="text-sm text-[#745f68]">
+                            <p className="text-sm text-[#5f5157]">
                               No extensions have been added yet, ask the salon directly for now.
                             </p>
                           )}
@@ -302,11 +302,11 @@ export function BookingPage(props) {
                             {extensionProducts.map(function (product) {
                               const added = addedExtensionId === product.id
                               return (
-                                <div key={product.id} className="overflow-hidden rounded-2xl border border-[#ecd8e1] bg-white">
+                                <div key={product.id} className="overflow-hidden rounded-2xl border border-[#d9c7cf] bg-white">
                                   <img src={product.image} alt="" className="h-32 w-full object-cover" />
                                   <div className="p-3">
-                                    <p className="text-sm font-semibold text-[#3e2530]">{product.name}</p>
-                                    <p className="mt-1 text-xs font-bold text-[#b32269]">
+                                    <p className="text-sm font-semibold text-[#1d171a]">{product.name}</p>
+                                    <p className="mt-1 text-xs font-bold text-[#984667]">
                                       {'GHC ' + product.price.toLocaleString()}
                                     </p>
                                     <button
@@ -315,7 +315,7 @@ export function BookingPage(props) {
                                       className={
                                         added
                                           ? 'mt-2 w-full rounded-full bg-emerald-600 px-3 py-2 text-xs font-bold uppercase text-white'
-                                          : 'mt-2 w-full rounded-full bg-[#dc2d83] px-3 py-2 text-xs font-bold uppercase text-white'
+                                          : 'mt-2 w-full rounded-full bg-[#984667] px-3 py-2 text-xs font-bold uppercase text-white'
                                       }
                                     >
                                       {added ? 'Added to bag' : 'Add to bag'}
@@ -336,13 +336,13 @@ export function BookingPage(props) {
 
           {step === 2 && (
             <div>
-              <h2 className="font-serif text-3xl text-[#3e2530]">Choose your time</h2>
+              <h2 className="font-serif text-3xl text-[#1d171a]">Choose your time</h2>
               <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-5">
                 {dates.map(function (date) {
                   const selected = selectedDate === date.iso
                   const dateClass = selected
-                    ? 'rounded-2xl border px-4 py-4 text-center transition border-[#dc2d83] bg-[#dc2d83] text-white'
-                    : 'rounded-2xl border px-4 py-4 text-center transition border-[#ecd8e1] bg-white text-[#604c55]'
+                    ? 'rounded-2xl border px-4 py-4 text-center transition border-[#984667] bg-[#984667] text-white'
+                    : 'rounded-2xl border px-4 py-4 text-center transition border-[#d9c7cf] bg-white text-[#5f5157]'
                   return (
                     <button key={date.iso} type="button" onClick={function () { chooseDate(date.iso) }} className={dateClass}>
                       <span className="block text-xs uppercase tracking-[0.12em]">{date.day}</span>
@@ -352,7 +352,7 @@ export function BookingPage(props) {
                 })}
               </div>
               {availability && (
-                <p className="mt-5 text-sm text-[#745f68]">
+                <p className="mt-5 text-sm text-[#5f5157]">
                   {availability.available
                     ? availability.slotsRemaining + ' booking spaces remain for this service category.'
                     : 'This service category is fully booked for the selected date.'}
@@ -362,8 +362,8 @@ export function BookingPage(props) {
                 {times.map(function (time) {
                   const selected = selectedTime === time
                   const timeClass = selected
-                    ? 'rounded-full border px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 border-[#dc2d83] bg-[#fbe0eb] text-[#a51e61]'
-                    : 'rounded-full border px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 border-[#e5cbd6] bg-white text-[#604c55]'
+                    ? 'rounded-full border px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 border-[#984667] bg-[#fbe0eb] text-[#984667]'
+                    : 'rounded-full border px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 border-[#e5cbd6] bg-white text-[#5f5157]'
                   return (
                     <button
                       key={time}
@@ -383,14 +383,14 @@ export function BookingPage(props) {
           {step === 3 && (
             <div className="grid gap-10 lg:grid-cols-[1fr_0.8fr]">
               <div>
-                <h2 className="font-serif text-3xl text-[#3e2530]">Confirm your booking</h2>
+                <h2 className="font-serif text-3xl text-[#1d171a]">Confirm your booking</h2>
                 {user ? (
-                  <div className="mt-7 rounded-2xl border border-[#e6c5d3] bg-white p-5">
-                    <p className="font-semibold text-[#3e2530]">{user.name}</p>
-                    <p className="mt-1 text-sm text-[#745f68]">{user.phone}</p>
+                  <div className="mt-7 rounded-2xl border border-[#d9c7cf] bg-white p-5">
+                    <p className="font-semibold text-[#1d171a]">{user.name}</p>
+                    <p className="mt-1 text-sm text-[#5f5157]">{user.phone}</p>
                   </div>
                 ) : (
-                  <p className="mt-7 rounded-2xl bg-[#f7e4ec] p-5 text-sm leading-7 text-[#745f68]">
+                  <p className="mt-7 rounded-2xl bg-[#ead2dd] p-5 text-sm leading-7 text-[#5f5157]">
                     You will be asked to sign in before the request is submitted.
                   </p>
                 )}
@@ -403,12 +403,12 @@ export function BookingPage(props) {
                     value={momoNumber}
                     onChange={function (event) { setMomoNumber(event.target.value) }}
                     placeholder={user ? user.phone : '024 000 0000'}
-                    className="h-13 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 outline-none focus:border-[#dc2d83] focus:ring-4 focus:ring-[#dc2d83]/10"
+                    className="h-13 w-full rounded-xl border border-[#cdb8c1] bg-white px-4 outline-none focus:border-[#984667] focus:ring-4 focus:ring-[#984667]/10"
                   />
                 </label>
               </div>
-              <aside className="rounded-2xl bg-[#4b2637] p-6 text-white">
-                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#f2a7c9]">Booking summary</p>
+              <aside className="rounded-2xl bg-[#1d171a] p-6 text-white">
+                <p className="text-xs font-bold uppercase tracking-[0.16em] text-[#d9abbf]">Booking summary</p>
                 <h3 className="mt-4 font-serif text-2xl">{activeService ? activeService.name : 'Your service'}</h3>
                 <dl className="mt-5 space-y-3 text-sm text-white/75">
                   <div className="flex justify-between gap-4">
@@ -445,12 +445,12 @@ export function BookingPage(props) {
           )}
 
           {message && (
-            <p role="status" className="mt-6 rounded-xl bg-[#f7e4ec] px-4 py-3 text-sm text-[#74485a]">
+            <p role="status" className="mt-6 rounded-xl bg-[#ead2dd] px-4 py-3 text-sm text-[#74485a]">
               {message}
             </p>
           )}
 
-          <div className="mt-9 flex items-center justify-between border-t border-[#ecd8e1] pt-6">
+          <div className="mt-9 flex items-center justify-between border-t border-[#d9c7cf] pt-6">
             <button
               type="button"
               onClick={function () { setStep(function (current) { return Math.max(1, current - 1) }) }}
@@ -467,7 +467,7 @@ export function BookingPage(props) {
                   (step === 1 && (!selectedService || !extensionStepAnswered || (lengthOptions.length > 0 && !selectedLength))) ||
                   (step === 2 && (!selectedDate || !selectedTime))
                 }
-                className="rounded-full bg-[#dc2d83] px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:opacity-40"
+                className="rounded-full bg-[#984667] px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:opacity-40"
               >
                 Continue
               </button>
@@ -476,7 +476,7 @@ export function BookingPage(props) {
                 type="button"
                 onClick={function () { requestBooking() }}
                 disabled={busy}
-                className="rounded-full bg-[#dc2d83] px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white disabled:opacity-50"
+                className="rounded-full bg-[#984667] px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white disabled:opacity-50"
               >
                 {busy ? 'Submitting...' : 'Request booking'}
               </button>
