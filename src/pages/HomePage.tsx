@@ -148,7 +148,7 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
     if (productCount === 0) return
     setActiveProductIndex(0)
     const frame = requestAnimationFrame(function () {
-      if (window.matchMedia('(max-width: 639px)').matches && productsSliderRef.current) {
+      if (window.matchMedia('(max-width: 767px)').matches && productsSliderRef.current) {
         centerSlide(productsSliderRef.current, 0)
       }
     })
@@ -204,14 +204,14 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
             onScroll={function (event) {
               setActiveProductIndex(centeredSlideIndex(event.currentTarget))
             }}
-            className="mt-8 -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-[14vw] py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:py-0 lg:grid-cols-3 xl:grid-cols-5"
+            className="mt-8 -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-[14vw] py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-8 md:mx-0 md:grid md:grid-cols-2 md:overflow-visible md:px-0 md:py-0 lg:grid-cols-3 xl:grid-cols-5"
           >
-            {catalogLoading && <p className="sm:col-span-2 lg:col-span-3 xl:col-span-5">Loading client favourites...</p>}
+            {catalogLoading && <p className="md:col-span-2 lg:col-span-3 xl:col-span-5">Loading client favourites...</p>}
             {!catalogLoading && !catalogError && products.slice(0, 5).map(function (product, productIndex) {
               return (
                 <div
                   key={product.id}
-                  className={`relative w-[72vw] max-w-[300px] shrink-0 snap-center transition-[transform,opacity,box-shadow] duration-500 ease-out sm:w-auto sm:max-w-none sm:scale-100 sm:opacity-100 sm:shadow-none ${
+                  className={`relative w-[72vw] max-w-[300px] shrink-0 snap-center transition-[transform,opacity,box-shadow] duration-500 ease-out md:w-auto md:max-w-none md:scale-100 md:opacity-100 md:shadow-none ${
                     activeProductIndex === productIndex
                       ? 'z-10 scale-100 opacity-100 shadow-[0_10px_28px_rgba(29,23,26,0.10)]'
                       : 'z-0 scale-[0.94] opacity-70'
