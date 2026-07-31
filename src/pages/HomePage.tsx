@@ -1,8 +1,38 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ProductCard } from '../components/ProductCard'
 import { useAppData } from '../context/appData'
 import type { Product } from '../data/catalog'
 import { api, type HeroSlide, type ShopCategoryTile } from '../lib/api'
+
+function centeredSlideIndex(container: HTMLDivElement) {
+  const containerRect = container.getBoundingClientRect()
+  const center = containerRect.left + containerRect.width / 2
+  let closestIndex = 0
+  let closestDistance = Number.POSITIVE_INFINITY
+
+  Array.from(container.children).forEach(function (child, index) {
+    const element = child as HTMLElement
+    const slideRect = element.getBoundingClientRect()
+    const distance = Math.abs(slideRect.left + slideRect.width / 2 - center)
+    if (distance < closestDistance) {
+      closestDistance = distance
+      closestIndex = index
+    }
+  })
+
+  return closestIndex
+}
+
+function centerSlide(container: HTMLDivElement, index: number) {
+  const slide = container.children[index] as HTMLElement | undefined
+  if (!slide) return
+  const containerRect = container.getBoundingClientRect()
+  const slideRect = slide.getBoundingClientRect()
+  container.scrollTo({
+    left: container.scrollLeft + slideRect.left - containerRect.left - (containerRect.width - slideRect.width) / 2,
+    behavior: 'auto',
+  })
+}
 
 function HeroBanner() {
   const [slides, setSlides] = useState<HeroSlide[]>([])
@@ -97,6 +127,10 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
   const services = appData.services
   const catalogLoading = appData.catalogLoading
   const catalogError = appData.catalogError
+  const productsSliderRef = useRef<HTMLDivElement>(null)
+  const moodSliderRef = useRef<HTMLDivElement>(null)
+  const [activeProductIndex, setActiveProductIndex] = useState(0)
+  const [activeMoodIndex, setActiveMoodIndex] = useState(0)
 
   const [categoryTiles, setCategoryTiles] = useState<ShopCategoryTile[]>([])
   useEffect(function () {
@@ -108,6 +142,35 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
       cancelled = true
     }
   }, [])
+
+  useEffect(function () {
+    const productCount = Math.min(products.length, 5)
+    if (productCount === 0) return
+    const middleIndex = Math.floor(productCount / 2)
+    setActiveProductIndex(middleIndex)
+    const frame = requestAnimationFrame(function () {
+      if (window.matchMedia('(max-width: 639px)').matches && productsSliderRef.current) {
+        centerSlide(productsSliderRef.current, middleIndex)
+      }
+    })
+    return function () {
+      cancelAnimationFrame(frame)
+    }
+  }, [products.length])
+
+  useEffect(function () {
+    if (categoryTiles.length === 0) return
+    const middleIndex = Math.floor(categoryTiles.length / 2)
+    setActiveMoodIndex(middleIndex)
+    const frame = requestAnimationFrame(function () {
+      if (window.matchMedia('(max-width: 767px)').matches && moodSliderRef.current) {
+        centerSlide(moodSliderRef.current, middleIndex)
+      }
+    })
+    return function () {
+      cancelAnimationFrame(frame)
+    }
+  }, [categoryTiles.length])
 
   const categoryMap = new Map()
   for (const service of services) {
@@ -138,13 +201,24 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
             </a>
           </div>
           <div
+            ref={productsSliderRef}
             aria-label="New arrivals products"
-            className="mt-8 -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3 xl:grid-cols-5"
+            onScroll={function (event) {
+              setActiveProductIndex(centeredSlideIndex(event.currentTarget))
+            }}
+            className="mt-8 -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-[14vw] py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:py-0 lg:grid-cols-3 xl:grid-cols-5"
           >
             {catalogLoading && <p className="sm:col-span-2 lg:col-span-3 xl:col-span-5">Loading client favourites...</p>}
-            {!catalogLoading && !catalogError && products.slice(0, 5).map(function (product) {
+            {!catalogLoading && !catalogError && products.slice(0, 5).map(function (product, productIndex) {
               return (
-                <div key={product.id} className="w-[82vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+                <div
+                  key={product.id}
+                  className={`relative w-[72vw] max-w-[300px] shrink-0 snap-center transition-[transform,opacity,box-shadow] duration-500 ease-out sm:w-auto sm:max-w-none sm:scale-100 sm:opacity-100 sm:shadow-none ${
+                    activeProductIndex === productIndex
+                      ? 'z-10 scale-100 opacity-100 shadow-[0_10px_28px_rgba(29,23,26,0.10)]'
+                      : 'z-0 scale-[0.94] opacity-70'
+                  }`}
+                >
                   <ProductCard product={product} onAdd={onAdd} />
                 </div>
               )
@@ -161,10 +235,25 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
               The Beryl&apos;s edit
             </h2>
           </div>
-          <div className="mt-10 grid gap-2 md:grid-cols-3">
-            {categoryTiles.map(function (category) {
+          <div
+            ref={moodSliderRef}
+            aria-label="Shop your mood collections"
+            onScroll={function (event) {
+              setActiveMoodIndex(centeredSlideIndex(event.currentTarget))
+            }}
+            className="mt-10 -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto scroll-smooth px-[14vw] py-5 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:-mx-8 md:mx-0 md:grid md:grid-cols-3 md:overflow-visible md:px-0 md:py-0"
+          >
+            {categoryTiles.map(function (category, categoryIndex) {
               return (
-                <a key={category.id} href={category.href} className="group relative min-h-[420px] overflow-hidden bg-[#3f3037]">
+                <a
+                  key={category.id}
+                  href={category.href}
+                  className={`group relative min-h-[420px] w-[72vw] max-w-[320px] shrink-0 snap-center overflow-hidden bg-[#3f3037] transition-[transform,opacity,box-shadow] duration-500 ease-out md:w-auto md:max-w-none md:scale-100 md:opacity-100 md:shadow-none ${
+                    activeMoodIndex === categoryIndex
+                      ? 'z-10 scale-100 opacity-100 shadow-[0_10px_28px_rgba(29,23,26,0.12)]'
+                      : 'z-0 scale-[0.94] opacity-70'
+                  }`}
+                >
                   <img src={category.imageUrl} alt="" className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-[1.025]" />
                   <div className="absolute inset-0 bg-gradient-to-t from-[#1d171a]/85 via-transparent to-transparent" />
                   <div className="absolute inset-x-0 bottom-0 p-6 text-white">
