@@ -13,6 +13,11 @@
     "moduleDetection": "force",
     "noEmit": true,
     "jsx": "react-jsx",
+<<<<<<< HEAD
+=======
+
+    /* Linting - Relaxed for build */
+>>>>>>> bcbe423982f46a92f24b95e2aa73908e08843650
     "strict": false,
     "noImplicitAny": false,
     "noUnusedLocals": false,
