@@ -131,7 +131,7 @@ export function Header({
         visible ? 'translate-y-0 opacity-100' : '-translate-y-full opacity-0'
       } shadow-[0_6px_24px_rgba(29,23,26,0.05)] backdrop-blur-xl`}
     >
-      <div className="flex h-8 items-center justify-between bg-[#c992aa] px-5 text-[8px] font-bold uppercase tracking-[0.22em] text-[#21181c] sm:px-8 lg:px-12">
+      <div className="flex h-8 items-center justify-between bg-[#c992aa] px-5 text-[8px] font-bold uppercase tracking-[0.22em] text-[#44343b] sm:px-8 lg:px-12">
         <span className="hidden sm:inline">Kumasi, Ghana</span>
         <span>Welcome to Beryl&apos;s Beauty Mark</span>
         <a href="#/appointments" className="hidden border-b border-current sm:inline">

@@ -43,13 +43,13 @@ export function ShopPage({ onAdd }: ShopPageProps) {
   return (
     <main className="bg-[#fffdfd]">
       <section className="campaign-grid border-b border-[#bfaab3] bg-[#c992aa] px-6 py-14 text-center sm:px-10 sm:py-18">
-        <p className="editorial-kicker text-[#6f354f]">
+        <p className="editorial-kicker text-[#4b313d]">
           Shop
         </p>
-        <h1 className="mt-3 font-serif text-[clamp(4.5rem,10vw,8rem)] font-light uppercase leading-[0.82] text-[#1d171a]">
+        <h1 className="text-on-blush mt-3 font-serif text-[clamp(4.5rem,10vw,8rem)] font-light uppercase leading-[0.82]">
           Luxury hair care
         </h1>
-        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#5f5157] sm:text-lg">
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#55434b] sm:text-lg">
           Shop wigs, bundles and hair-care products selected for quality,
           everyday use and long-lasting results.
         </p>

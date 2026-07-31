@@ -55,16 +55,16 @@ export function ServicesPage() {
           aria-hidden="true"
           className="absolute inset-0 -z-20 h-full w-full object-cover object-center lg:hidden"
         />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(62,33,48,0.9)_0%,rgba(62,33,48,0.77)_55%,rgba(62,33,48,0.58)_100%)] lg:hidden" />
-        <div className="campaign-grid flex items-center px-6 py-20 text-white sm:px-10 sm:py-24 lg:bg-[#c992aa] lg:px-10 lg:py-16 lg:text-[#1d171a] xl:px-16 2xl:px-24">
+        <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(62,33,48,0.78)_0%,rgba(62,33,48,0.66)_55%,rgba(62,33,48,0.5)_100%)] lg:hidden" />
+        <div className="campaign-grid flex items-center px-6 py-20 text-[#fff8fb] sm:px-10 sm:py-24 lg:bg-[#c992aa] lg:px-10 lg:py-16 lg:text-[#44343b] xl:px-16 2xl:px-24">
           <div className="max-w-xl">
-            <p className="editorial-kicker text-[#6f354f]">
+            <p className="editorial-kicker text-[#e5bfd0] lg:text-[#4b313d]">
               Salon menu
             </p>
             <h1 className="mt-5 font-serif text-6xl font-light uppercase leading-[0.86] sm:text-7xl xl:text-8xl">
               Beauty services, tailored to you.
             </h1>
-            <p className="mt-6 max-w-lg text-base leading-8 text-white/75 sm:text-lg lg:text-[#4f3e46]">
+            <p className="mt-6 max-w-lg text-base leading-8 text-[#ead6df] sm:text-lg lg:text-[#55434b]">
               Choose from braiding, makeup, nails and lashes. We confirm the
               details and final price with you before your appointment.
             </p>
@@ -114,8 +114,8 @@ export function ServicesPage() {
                     alt={`${category.name} service`}
                     className="absolute inset-0 h-full w-full object-cover transition duration-700 ease-out group-hover:scale-105"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-t from-[#29151f]/90 via-[#29151f]/10 to-transparent" />
-                  <div className="absolute inset-x-0 bottom-0 p-6 text-white">
+                  <div className="absolute inset-0 bg-gradient-to-t from-[#35262d]/76 via-[#35262d]/8 to-transparent" />
+                  <div className="text-on-image absolute inset-x-0 bottom-0 p-6">
                     <h2 className="font-serif text-3xl">{category.name}</h2>
                     <p className="mt-2 text-xs font-bold uppercase tracking-[0.16em] text-white/75">
                       View services

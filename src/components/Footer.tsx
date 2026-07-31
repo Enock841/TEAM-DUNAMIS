@@ -34,11 +34,11 @@ export function Footer() {
   }
 
   return (
-    <footer className="border-t border-[#1d171a] bg-[#c992aa] text-[#1d171a]">
-      <section className="campaign-grid border-b border-[#1d171a]/20 px-6 py-14 sm:px-10 lg:px-12 lg:py-20">
+    <footer className="text-on-blush border-t border-[#5e4650]/55 bg-[#c992aa]">
+      <section className="campaign-grid border-b border-[#5e4650]/25 px-6 py-14 sm:px-10 lg:px-12 lg:py-20">
         <div className="mx-auto flex max-w-[1480px] flex-col justify-between gap-8 lg:flex-row lg:items-end">
           <div className="max-w-xl">
-            <p className="editorial-kicker text-[#6f354f]">
+            <p className="editorial-kicker text-[#4b313d]">
               Stay updated
             </p>
             <h2 className="mt-3 font-serif text-5xl font-light uppercase leading-[0.9] sm:text-6xl">
@@ -69,7 +69,7 @@ export function Footer() {
                 }}
                 placeholder="Email address"
                 disabled={signupState === 'submitting'}
-                className="h-[56px] w-full shrink-0 border border-[#1d171a] bg-transparent px-5 text-sm text-[#1d171a] outline-none placeholder:text-[#4f3e46] focus:bg-white/25 disabled:cursor-wait disabled:opacity-70 sm:flex-1"
+                className="h-[56px] w-full shrink-0 border border-[#59444d] bg-transparent px-5 text-sm text-[#44343b] outline-none placeholder:text-[#69555e] focus:bg-white/20 disabled:cursor-wait disabled:opacity-70 sm:flex-1"
               />
               <button
                 type="submit"
@@ -103,11 +103,11 @@ export function Footer() {
         </div>
 
         <div>
-          <p className="h-px w-8 bg-[#1d171a]" />
-          <h3 className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[#d9abbf]">
+          <p className="h-px w-8 bg-[#66505a]" />
+          <h3 className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[#4b313d]">
             Visit
           </h3>
-          <address className="mt-5 text-sm not-italic leading-8 text-white/60">
+          <address className="mt-5 text-sm not-italic leading-8 text-[#44343b]">
             {info ? info.address : 'Ayeduase Newsite, Kumasi, Ghana'}
             <br />
             By appointment only
@@ -115,32 +115,32 @@ export function Footer() {
         </div>
 
         <nav>
-          <p className="h-px w-8 bg-[#1d171a]" />
-          <h3 className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[#d9abbf]">
+          <p className="h-px w-8 bg-[#66505a]" />
+          <h3 className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[#4b313d]">
             Explore
           </h3>
           <div className="mt-5 grid gap-3.5 text-sm text-[#4f3e46]">
-            <a href="#/shop" className="w-fit transition hover:text-white">Shop</a>
-            <a href="#/services" className="w-fit transition hover:text-white">Services</a>
-            <a href="#/appointments" className="w-fit transition hover:text-white">Appointments</a>
+            <a href="#/shop" className="w-fit transition hover:text-[#2f252a]">Shop</a>
+            <a href="#/services" className="w-fit transition hover:text-[#2f252a]">Services</a>
+            <a href="#/appointments" className="w-fit transition hover:text-[#2f252a]">Appointments</a>
           </div>
         </nav>
 
         <nav className="col-span-2 lg:col-span-1">
-          <p className="h-px w-8 bg-[#1d171a]" />
-          <h3 className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[#d9abbf]">
+          <p className="h-px w-8 bg-[#66505a]" />
+          <h3 className="mt-4 text-xs font-bold uppercase tracking-[0.18em] text-[#4b313d]">
             Information
           </h3>
           <div className="mt-5 grid grid-cols-2 gap-x-4 gap-y-3.5 text-sm text-[#4f3e46] lg:grid-cols-1">
-            <a href="#/about" className="w-fit transition hover:text-white">About</a>
-            <a href="#/reviews" className="w-fit transition hover:text-white">Reviews</a>
-            <a href="#/privacy" className="w-fit transition hover:text-white">Privacy policy</a>
-            <a href="#/faqs" className="w-fit transition hover:text-white">FAQs</a>
-            <a href="#/terms" className="w-fit transition hover:text-white">Terms of service</a>
-            <a href={info ? "tel:" + info.phone.replace(/\s/g, "") : "tel:0591911212"} className="w-fit transition hover:text-white">{info ? info.phone : "059 191 1212"}</a>
+            <a href="#/about" className="w-fit transition hover:text-[#2f252a]">About</a>
+            <a href="#/reviews" className="w-fit transition hover:text-[#2f252a]">Reviews</a>
+            <a href="#/privacy" className="w-fit transition hover:text-[#2f252a]">Privacy policy</a>
+            <a href="#/faqs" className="w-fit transition hover:text-[#2f252a]">FAQs</a>
+            <a href="#/terms" className="w-fit transition hover:text-[#2f252a]">Terms of service</a>
+            <a href={info ? "tel:" + info.phone.replace(/\s/g, "") : "tel:0591911212"} className="w-fit transition hover:text-[#2f252a]">{info ? info.phone : "059 191 1212"}</a>
               <a
               href="#/staff-login"
-              className="col-span-2 mt-3 w-fit border-t border-white/10 pt-4 font-semibold text-[#d9abbf] transition hover:text-white lg:col-span-1"
+              className="col-span-2 mt-3 w-fit border-t border-[#5e4650]/25 pt-4 font-semibold text-[#4b313d] transition hover:text-[#2f252a] lg:col-span-1"
             >
               Staff Portal
             </a>
@@ -148,7 +148,7 @@ export function Footer() {
         </nav>
       </div>
 
-      <div className="border-t border-[#1d171a]/20 px-6 py-6 text-center text-[9px] font-bold uppercase tracking-[0.18em] text-[#4f3e46]">
+      <div className="border-t border-[#5e4650]/25 px-6 py-6 text-center text-[9px] font-bold uppercase tracking-[0.18em] text-[#44343b]">
         © 2026 Beryl&apos;s Beauty Mark. All rights reserved.
       </div>
     </footer>
