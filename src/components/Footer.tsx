@@ -45,7 +45,7 @@ export function Footer() {
               New arrivals, hair-care notes and available appointment dates.
             </h2>
           </div>
-          <div className="w-full max-w-lg">
+          <div className="-mx-3 w-[calc(100%+1.5rem)] max-w-lg sm:mx-0 sm:w-full">
             <form
               className="flex flex-col gap-3 sm:flex-row sm:items-center"
               onSubmit={handleNewsletterSignup}
