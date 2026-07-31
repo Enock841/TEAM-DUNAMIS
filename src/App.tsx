@@ -80,7 +80,7 @@ function App() {
       page = <TermsPage />
       break
     case 'reviews':
-      page = <ReviewsPage />
+      page = <ReviewsPage onRequireAuth={() => setAuthOpen(true)} />
       break
     case 'faqs':
       page = <FaqPage />

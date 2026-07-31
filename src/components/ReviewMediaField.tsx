@@ -1,16 +1,28 @@
-import { useState, type ChangeEvent } from 'react'
+import { useEffect, useState, type ChangeEvent } from 'react'
 
 const CLOUD_NAME = 'dwgeqdw4'
 const UPLOAD_PRESET = 'salon_media'
 
 type ReviewMediaFieldProps = {
   onChange: (url: string, mediaType: 'photo' | 'video') => void
+  onClear?: () => void
+  value?: string
+  mediaType?: 'photo' | 'video' | null
 }
 
-export function ReviewMediaField({ onChange }: ReviewMediaFieldProps) {
-  const [preview, setPreview] = useState('')
+export function ReviewMediaField({
+  onChange,
+  onClear,
+  value = '',
+  mediaType = null,
+}: ReviewMediaFieldProps) {
+  const [preview, setPreview] = useState(value)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    setPreview(value)
+  }, [value])
 
   async function handleFile(event: ChangeEvent<HTMLInputElement>) {
     const file = event.target.files?.[0]
@@ -47,7 +59,25 @@ export function ReviewMediaField({ onChange }: ReviewMediaFieldProps) {
         Add a photo or video, optional
       </span>
       {preview && (
-        <p className="mb-2 text-xs text-emerald-700">Uploaded, ready to submit.</p>
+        <div className="mb-3 border border-[#e2c7d2] bg-white p-3">
+          {mediaType === 'video' ? (
+            <video src={preview} controls className="h-36 w-full object-cover" />
+          ) : (
+            <img src={preview} alt="Review upload preview" className="h-36 w-full object-cover" />
+          )}
+          {onClear && (
+            <button
+              type="button"
+              onClick={() => {
+                setPreview('')
+                onClear()
+              }}
+              className="mt-3 text-xs font-bold uppercase tracking-[0.12em] text-[#984667]"
+            >
+              Remove media
+            </button>
+          )}
+        </div>
       )}
       <label className="flex h-13 w-full cursor-pointer items-center justify-center rounded-xl border border-dashed border-[#cdb8c1] bg-[#fff9fb] text-sm font-semibold text-[#9f205f]">
         {uploading ? 'Uploading...' : preview ? 'Replace file' : 'Choose a photo or video'}

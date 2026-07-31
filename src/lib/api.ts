@@ -200,6 +200,7 @@ export type Review = {
   mediaType?: 'photo' | 'video'
   status?: string
   createdAt: string
+  updatedAt?: string
   customerName: string
   serviceName: string
 }
@@ -333,12 +334,32 @@ export const api = {
   },
   createReview(
     token: string,
-    body: { bookingId: string; rating: number; comment?: string; mediaUrl?: string; mediaType?: 'photo' | 'video' },
+    body: { bookingId?: string; rating: number; comment?: string; mediaUrl?: string | null; mediaType?: 'photo' | 'video' | null },
   ) {
     return request<{ review: Review }>('/reviews', {
       method: 'POST',
       token,
       body: JSON.stringify(body),
+    })
+  },
+  myReview(token: string) {
+    return request<{ review: Review | null }>('/reviews/my-review', { token })
+  },
+  updateReview(
+    token: string,
+    id: string,
+    body: { rating: number; comment?: string; mediaUrl?: string | null; mediaType?: 'photo' | 'video' | null },
+  ) {
+    return request<{ review: Review }>(`/reviews/${id}`, {
+      method: 'PUT',
+      token,
+      body: JSON.stringify(body),
+    })
+  },
+  deleteReview(token: string, id: string) {
+    return request<null>(`/reviews/${id}`, {
+      method: 'DELETE',
+      token,
     })
   },
   updateReviewStatus(token: string, id: string, status: 'approved' | 'rejected') {
