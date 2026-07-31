@@ -71,16 +71,22 @@ export function ShopPage({ onAdd }: ShopPageProps) {
               </button>
             </div>
           )}
-          <div className="flex flex-wrap justify-center gap-0 border-y border-[#cdb8c1]">
+          <div
+            role="tablist"
+            aria-label="Product categories"
+            className="inner-tab-nav border-y border-[#cdb8c1]"
+          >
             {categories.map((item) => (
               <button
                 key={item}
                 type="button"
+                role="tab"
+                aria-selected={category === item}
                 onClick={() => {
                   setCategory(item)
                   setSearchTerm('')
                 }}
-                className={`border-x border-[#cdb8c1] px-5 py-3 text-[9px] font-bold uppercase tracking-[0.13em] transition ${
+                className={`border-x border-[#cdb8c1] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.13em] transition sm:px-5 ${
                   category === item
                     ? 'bg-[#984667] text-white'
                     : 'border border-[#cdb8c1] bg-white text-[#624956] hover:border-[#984667]'

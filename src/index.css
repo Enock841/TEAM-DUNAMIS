@@ -127,6 +127,43 @@ a {
   background-size: 40px 40px;
 }
 
+.inner-tab-nav {
+  display: grid;
+  grid-auto-flow: column;
+  grid-auto-columns: minmax(8.75rem, 44vw);
+  justify-content: start;
+  overflow-x: auto;
+  overscroll-behavior-inline: contain;
+  scroll-snap-type: inline proximity;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+
+.inner-tab-nav::-webkit-scrollbar {
+  display: none;
+}
+
+.inner-tab-nav > button {
+  min-height: 44px;
+  scroll-snap-align: start;
+  white-space: nowrap;
+}
+
+@media (min-width: 640px) {
+  .inner-tab-nav {
+    grid-auto-columns: minmax(10rem, 32vw);
+  }
+}
+
+@media (min-width: 1024px) {
+  .inner-tab-nav {
+    grid-auto-flow: row;
+    grid-auto-columns: auto;
+    grid-template-columns: repeat(auto-fit, minmax(8rem, 1fr));
+    overflow-x: visible;
+  }
+}
+
 .editorial-storefront main > section:first-child h1,
 .editorial-storefront main > div:first-child h1 {
   font-weight: 300;

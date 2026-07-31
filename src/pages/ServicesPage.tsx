@@ -188,7 +188,7 @@ export function ServicesPage() {
             <div
               role="tablist"
               aria-label="Service categories"
-              className="mb-12 flex flex-wrap justify-center gap-0 border-y border-[#cdb8c1] sm:mb-16"
+              className="inner-tab-nav mb-12 border-y border-[#cdb8c1] sm:mb-16"
             >
               {visibleCategories.map((category, categoryIndex) => {
                 const isActive = category.name === activeCategory?.name
@@ -206,7 +206,7 @@ export function ServicesPage() {
                     onKeyDown={(event) =>
                       handleTabKeyDown(event, categoryIndex)
                     }
-                    className={`border-x border-[#cdb8c1] px-5 py-3 text-[9px] font-bold uppercase tracking-[0.13em] transition ${
+                    className={`border-x border-[#cdb8c1] px-4 py-3 text-[9px] font-bold uppercase tracking-[0.13em] transition sm:px-5 ${
                       isActive
                         ? 'bg-[#984667] text-white'
                         : 'bg-white text-[#624956] hover:border-[#984667]'
