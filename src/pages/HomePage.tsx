@@ -146,11 +146,10 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
   useEffect(function () {
     const productCount = Math.min(products.length, 5)
     if (productCount === 0) return
-    const middleIndex = Math.floor(productCount / 2)
-    setActiveProductIndex(middleIndex)
+    setActiveProductIndex(0)
     const frame = requestAnimationFrame(function () {
       if (window.matchMedia('(max-width: 639px)').matches && productsSliderRef.current) {
-        centerSlide(productsSliderRef.current, middleIndex)
+        centerSlide(productsSliderRef.current, 0)
       }
     })
     return function () {
@@ -160,11 +159,10 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
 
   useEffect(function () {
     if (categoryTiles.length === 0) return
-    const middleIndex = Math.floor(categoryTiles.length / 2)
-    setActiveMoodIndex(middleIndex)
+    setActiveMoodIndex(0)
     const frame = requestAnimationFrame(function () {
       if (window.matchMedia('(max-width: 767px)').matches && moodSliderRef.current) {
-        centerSlide(moodSliderRef.current, middleIndex)
+        centerSlide(moodSliderRef.current, 0)
       }
     })
     return function () {
