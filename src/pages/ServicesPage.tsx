@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useState, type KeyboardEvent } from 'react'
 import { useAppData } from '../context/appData'
-import { formatDuration, imageBase } from '../data/catalog'
+import { formatDuration } from '../data/catalog'
 
 const categoryOrder = ['Braiding', 'Piercings', 'Lashes & Brows', 'Wigs']
 
@@ -78,9 +78,6 @@ export function ServicesPage() {
         (service) => service.category.name === activeCategory.name,
       )
     : []
-  const heroImage =
-    activeCategory?.imageUrl || `${imageBase}/service-lace-install.jpg`
-
   useEffect(() => {
     if (catalogLoading || visibleCategories.length === 0) return
 
@@ -138,43 +135,19 @@ export function ServicesPage() {
 
   return (
     <main className="bg-[#fffdfd]">
-      <section className="relative isolate grid min-h-[620px] overflow-hidden bg-[#c992aa] lg:grid-cols-[minmax(0,0.82fr)_minmax(0,1.18fr)]">
-        <img
-          src={heroImage}
-          alt=""
-          aria-hidden="true"
-          className="absolute inset-0 -z-20 h-full w-full object-cover object-center lg:hidden"
-        />
-        <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(62,33,48,0.78)_0%,rgba(62,33,48,0.66)_55%,rgba(62,33,48,0.5)_100%)] lg:hidden" />
-        <div className="campaign-grid flex items-center px-6 py-20 text-[#fff8fb] sm:px-10 sm:py-24 lg:bg-[#c992aa] lg:px-10 lg:py-16 lg:text-[#44343b] xl:px-16 2xl:px-24">
-          <div className="max-w-xl">
-            <p className="editorial-kicker text-[#e5bfd0] lg:text-[#4b313d]">
-              Salon menu
-            </p>
-            <h1 className="mt-5 font-serif text-6xl font-light uppercase leading-[0.86] sm:text-7xl xl:text-8xl">
-              Beauty services, tailored to you.
-            </h1>
-            <p className="mt-6 max-w-lg text-base leading-8 text-[#ead6df] sm:text-lg lg:text-[#55434b]">
-              Explore braiding, piercings, lashes and brows, and wigs. We
-              confirm the details and final price before your appointment.
-            </p>
-            <a
-              href="#/appointments"
-              className="mt-9 inline-flex border border-[#1d171a] bg-[#1d171a] px-8 py-3.5 text-[9px] font-bold uppercase tracking-[0.16em] text-white"
-            >
-              Book your visit
-            </a>
-          </div>
-        </div>
-        <img
-          src={heroImage}
-          alt="Beauty service at Beryl's Beauty Mark"
-          className="hidden h-full min-h-[420px] w-full object-cover lg:block"
-        />
+      <section className="campaign-grid border-b border-[#bfaab3] bg-[#c992aa] px-6 py-14 text-center sm:px-10 sm:py-18">
+        <p className="editorial-kicker text-[#4b313d]">Services</p>
+        <h1 className="text-on-blush mt-3 font-serif text-[clamp(4.5rem,10vw,8rem)] font-light uppercase leading-[0.82]">
+          Salon services
+        </h1>
+        <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#55434b] sm:text-lg">
+          Explore braiding, piercings, lashes and brows, and wigs. We confirm
+          the details and final price before your appointment.
+        </p>
       </section>
 
-      <section className="px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24 xl:py-28">
-        <div className="mx-auto max-w-7xl">
+      <section className="px-5 py-12 sm:px-8 sm:py-16 lg:px-12">
+        <div className="mx-auto max-w-[1480px]">
           {catalogLoading && <p>Loading salon services…</p>}
           {catalogError && <p className="text-[#8b435f]">{catalogError}</p>}
           {normalizedSearch && (
@@ -195,7 +168,7 @@ export function ServicesPage() {
             <div
               role="tablist"
               aria-label="Service categories"
-              className="-mx-6 mb-12 flex snap-x snap-mandatory overflow-x-auto border-y border-[#dcb9c8] px-6 sm:mx-0 sm:mb-16 sm:px-0"
+              className="mb-12 flex flex-wrap justify-center gap-0 border-y border-[#cdb8c1] sm:mb-16"
             >
               {visibleCategories.map((category, categoryIndex) => {
                 const isActive = category.name === activeCategory?.name
@@ -213,18 +186,13 @@ export function ServicesPage() {
                     onKeyDown={(event) =>
                       handleTabKeyDown(event, categoryIndex)
                     }
-                    className={`min-w-[72%] snap-start border-r border-[#dcb9c8] px-5 py-6 text-left transition-colors first:border-l sm:min-w-0 sm:flex-1 sm:px-6 ${
+                    className={`border-x border-[#cdb8c1] px-5 py-3 text-[9px] font-bold uppercase tracking-[0.13em] transition ${
                       isActive
-                        ? 'bg-[#1d171a] text-[#fff8fb]'
-                        : 'bg-[#f7e4ec] text-[#44343b] hover:bg-[#efd4df]'
+                        ? 'bg-[#984667] text-white'
+                        : 'bg-white text-[#624956] hover:border-[#984667]'
                     }`}
                   >
-                    <span className="block text-[9px] font-bold uppercase tracking-[0.2em] opacity-65">
-                      {String(categoryIndex + 1).padStart(2, '0')}
-                    </span>
-                    <span className="mt-2 block font-serif text-2xl uppercase sm:text-3xl">
-                      {categoryLabel(category.name)}
-                    </span>
+                    {categoryLabel(category.name)}
                   </button>
                 )
               })}
