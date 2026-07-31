@@ -2,7 +2,14 @@ import { useEffect, useMemo, useState, type KeyboardEvent } from 'react'
 import { useAppData } from '../context/appData'
 import { formatDuration } from '../data/catalog'
 
-const categoryOrder = ['Braiding', 'Piercings', 'Lashes & Brows', 'Wigs']
+const categoryOrder = [
+  'Braiding',
+  'Nails',
+  'Piercings',
+  'Lash & Brows',
+  'Wigs',
+  'Others',
+]
 
 function normalizeCategoryName(name: string) {
   return name.toLowerCase().replace(/\band\b/g, '&').replace(/\s+/g, ' ').trim()
@@ -13,17 +20,30 @@ function categoryRank(name: string) {
   const exactRank = categoryOrder.findIndex(
     (category) => normalizeCategoryName(category) === normalizedName,
   )
-  if (exactRank >= 0) return exactRank
+  if (exactRank >= 0) {
+    return exactRank === categoryOrder.length - 1
+      ? categoryOrder.length
+      : exactRank
+  }
   if (normalizedName.includes('braid')) return 0
-  if (normalizedName.includes('pierc')) return 1
-  if (normalizedName.includes('lash') || normalizedName.includes('brow')) return 2
-  if (normalizedName.includes('wig')) return 3
-  return categoryOrder.length
+  if (normalizedName.includes('nail')) return 1
+  if (normalizedName.includes('pierc')) return 2
+  if (normalizedName.includes('lash') || normalizedName.includes('brow')) return 3
+  if (normalizedName.includes('wig')) return 4
+  return categoryOrder.length - 1
 }
 
 function categoryLabel(name: string) {
-  const rank = categoryRank(name)
-  return rank < categoryOrder.length ? categoryOrder[rank] : name
+  const normalizedName = normalizeCategoryName(name)
+  if (normalizedName.includes('braid')) return 'Braiding'
+  if (normalizedName.includes('nail')) return 'Nails'
+  if (normalizedName.includes('pierc')) return 'Piercings'
+  if (normalizedName.includes('lash') || normalizedName.includes('brow')) {
+    return 'Lash & Brows'
+  }
+  if (normalizedName.includes('wig')) return 'Wigs'
+  if (normalizedName.includes('other')) return 'Others'
+  return name
 }
 
 function categorySlug(name: string) {
@@ -141,8 +161,8 @@ export function ServicesPage() {
           Salon services
         </h1>
         <p className="mx-auto mt-5 max-w-2xl text-base leading-7 text-[#55434b] sm:text-lg">
-          Explore braiding, piercings, lashes and brows, and wigs. We confirm
-          the details and final price before your appointment.
+          Explore braiding, nails, piercings, lash and brow services, wigs, and
+          more. We confirm the details and final price before your appointment.
         </p>
       </section>
 
