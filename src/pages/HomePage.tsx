@@ -137,10 +137,17 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
               View all
             </a>
           </div>
-          <div className="mt-8 grid gap-x-2 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+          <div
+            aria-label="New arrivals products"
+            className="mt-8 -mx-5 flex snap-x snap-mandatory gap-3 overflow-x-auto px-5 pb-4 [scrollbar-width:none] [&::-webkit-scrollbar]:hidden sm:mx-0 sm:grid sm:grid-cols-2 sm:overflow-visible sm:px-0 sm:pb-0 lg:grid-cols-3 xl:grid-cols-5"
+          >
             {catalogLoading && <p className="sm:col-span-2 lg:col-span-3 xl:col-span-5">Loading client favourites...</p>}
             {!catalogLoading && !catalogError && products.slice(0, 5).map(function (product) {
-              return <ProductCard key={product.id} product={product} onAdd={onAdd} />
+              return (
+                <div key={product.id} className="w-[82vw] max-w-[320px] shrink-0 snap-start sm:w-auto sm:max-w-none">
+                  <ProductCard product={product} onAdd={onAdd} />
+                </div>
+              )
             })}
           </div>
         </div>
