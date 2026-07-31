@@ -176,7 +176,8 @@ export function ReviewsPage({ onRequireAuth }: ReviewsPageProps) {
         </div>
       </section>
 
-      <section className="border-b border-[#e4cbd5] bg-[#f7e4ec] px-6 py-14 sm:px-10 lg:px-12">
+      <div className="flex flex-col">
+        <section className="order-2 border-b border-[#e4cbd5] bg-[#f7e4ec] px-6 py-14 sm:px-10 lg:px-12">
         <div className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[0.78fr_1.22fr] lg:items-start">
           <div>
             <p className="editorial-kicker text-[#984667]">Your review</p>
@@ -363,9 +364,9 @@ export function ReviewsPage({ onRequireAuth }: ReviewsPageProps) {
             )}
           </div>
         </div>
-      </section>
+        </section>
 
-      <section className="px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24">
+        <section className="order-1 px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24">
         <div className="mx-auto max-w-6xl">
           <div className="mb-10 flex items-end justify-between gap-5 border-b border-[#e2c7d2] pb-5">
             <div>
@@ -447,7 +448,8 @@ export function ReviewsPage({ onRequireAuth }: ReviewsPageProps) {
             ))}
           </div>
         </div>
-      </section>
+        </section>
+      </div>
     </main>
   )
 }
