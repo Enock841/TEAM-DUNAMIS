@@ -137,9 +137,9 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
               View all
             </a>
           </div>
-          <div className="mt-8 grid gap-x-2 gap-y-8 sm:grid-cols-2 lg:grid-cols-3">
-            {catalogLoading && <p className="sm:col-span-2 lg:col-span-3">Loading client favourites...</p>}
-            {!catalogLoading && !catalogError && products.slice(0, 3).map(function (product) {
+          <div className="mt-8 grid gap-x-2 gap-y-8 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5">
+            {catalogLoading && <p className="sm:col-span-2 lg:col-span-3 xl:col-span-5">Loading client favourites...</p>}
+            {!catalogLoading && !catalogError && products.slice(0, 5).map(function (product) {
               return <ProductCard key={product.id} product={product} onAdd={onAdd} />
             })}
           </div>
