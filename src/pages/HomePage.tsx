@@ -267,7 +267,7 @@ export function HomePage(props: { onAdd: (product: Product) => void }) {
       </section>
 
       <section className="grid bg-[#fffdfd] lg:grid-cols-[0.85fr_1.15fr]">
-        <div className="flex items-center px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24 xl:px-24">
+        <div className="hidden items-center px-6 py-16 sm:px-10 sm:py-20 lg:flex lg:px-12 lg:py-24 xl:px-24">
           <div className="max-w-xl">
             <p className="editorial-kicker text-[#984667]">Kumasi salon</p>
             <h2 className="mt-4 font-serif text-5xl font-light uppercase leading-[0.92] text-[#1d171a] sm:text-6xl">
