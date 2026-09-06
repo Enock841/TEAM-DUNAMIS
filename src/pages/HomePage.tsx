@@ -2,6 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { ProductCard } from '../components/ProductCard'
 import { useAppData } from '../context/appData'
 import { imageBase, type Product } from '../data/catalog'
+import logoWhite from '../assets/beryls-logo-white.png'
 import {
   api,
   type HeroSlide,
@@ -486,9 +487,17 @@ function HeroBanner() {
             lg:max-w-[680px]
           "
         >
+          {/* LOGO */}
+
+          <img
+            src={logoWhite}
+            alt="Beryl's Beauty Mark"
+            className="mx-auto h-24 w-auto object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.4)] sm:mx-0 sm:h-32"
+          />
+
           {/* BRAND */}
 
-          <p className="text-[9px] font-bold uppercase tracking-[0.22em] text-[#f2a7c9] drop-shadow sm:text-[11px] sm:tracking-[0.28em]">Welcome to</p>
+          <p className="mt-3 text-[9px] font-bold uppercase tracking-[0.22em] text-[#f2a7c9] drop-shadow sm:text-[11px] sm:tracking-[0.28em]">Welcome to</p>
 
           {/* MAIN TITLE */}
 
