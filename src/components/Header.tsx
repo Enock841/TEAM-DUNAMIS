@@ -150,9 +150,9 @@ export function Header({
         </div>
       )}
 
-      <div className="mx-auto grid h-20 max-w-7xl grid-cols-[1fr_auto_1fr] items-center gap-3 px-5 sm:h-24 sm:px-8 lg:px-12">
+      <div className="mx-auto flex h-20 max-w-7xl items-center gap-3 px-5 sm:h-24 sm:px-8 lg:px-12">
         {/* LEFT: menu toggle */}
-        <div className="flex items-center justify-start">
+        <div className="flex items-center">
           <button
             type="button"
             onClick={() => {
@@ -171,17 +171,26 @@ export function Header({
           </button>
         </div>
 
-        {/* CENTER: logo lockup */}
-        <a href="#/" className="shrink-0">
-          <img
-            src={logoPink}
-            alt="Beryl's Beauty Mark"
-            className="h-12 w-auto object-contain transition sm:h-16"
-          />
+        <a
+          href="#/"
+          className={`shrink-0 font-serif leading-none transition ${
+            blendsWithHero ? 'text-white' : 'text-[#3e2530]'
+          }`}
+        >
+          <span className="block text-[16px] font-semibold uppercase tracking-[0.2em] sm:text-[20px] sm:tracking-[0.24em]">
+            Beryl&apos;s
+          </span>
+          <span
+            className={`block text-[7px] font-bold uppercase tracking-[0.3em] sm:text-[9px] ${
+              blendsWithHero ? 'text-[#f7b4d2]' : 'text-[#d92c83]'
+            }`}
+          >
+            Beauty Mark
+          </span>
         </a>
 
         {/* RIGHT: actions */}
-        <div className="flex items-center justify-end gap-1.5 sm:gap-2">
+        <div className="ml-auto flex items-center justify-end gap-1.5 sm:gap-2">
           <button
             type="button"
             onClick={() => {
