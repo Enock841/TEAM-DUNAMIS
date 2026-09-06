@@ -492,7 +492,10 @@ function HeroBanner() {
               sm:text-[clamp(4rem,9vw,6.8rem)]
             "
           >
-            Beryl&apos;s Beauty Mark
+            <span className="text-white">Beryl&apos;s</span>{' '}
+            <span className="bg-gradient-to-r from-[#f7b4d2] to-white bg-clip-text text-transparent">
+              Beauty Mark
+            </span>
           </h1>
 
           {slide.title && (

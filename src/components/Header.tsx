@@ -14,6 +14,18 @@ import { useAppData } from '../context/appData'
 import logoPink from '../assets/beryls-logo-pink.png'
 import logoWhite from '../assets/beryls-logo-white.png'
 
+const leftLinks = [
+  ['Home', '#/'],
+  ['Shop', '#/shop'],
+  ['Services', '#/services'],
+]
+
+const rightLinks = [
+  ['Appointments', '#/appointments'],
+  ['About', '#/about'],
+  ['Reviews', '#/reviews'],
+]
+
 type HeaderProps = {
   cartCount: number
   isHome: boolean
@@ -151,8 +163,8 @@ export function Header({
       )}
 
       <div className="mx-auto flex h-20 max-w-7xl items-center gap-3 px-5 sm:h-24 sm:px-8 lg:px-12">
-        {/* LEFT: menu toggle */}
-        <div className="flex items-center">
+        {/* LEFT: menu toggle plus desktop links */}
+        <div className="flex items-center gap-6">
           <button
             type="button"
             onClick={() => {
@@ -169,28 +181,51 @@ export function Header({
             <span className="h-0.5 w-6 rounded-full bg-current" />
             <span className="h-0.5 w-6 rounded-full bg-current" />
           </button>
+
+          <nav aria-label="Primary navigation" className="hidden items-center gap-6 lg:flex">
+            {leftLinks.map(function (item) {
+              return (
+                <a
+                  key={item[0]}
+                  href={item[1]}
+                  className={`text-[11px] font-bold uppercase tracking-[0.16em] transition ${
+                    blendsWithHero ? 'text-white/90 hover:text-white' : 'text-[#604c55] hover:text-[#d92c83]'
+                  }`}
+                >
+                  {item[0]}
+                </a>
+              )
+            })}
+          </nav>
         </div>
 
-        <a
-          href="#/"
-          className={`shrink-0 font-serif leading-none transition ${
-            blendsWithHero ? 'text-white' : 'text-[#3e2530]'
-          }`}
-        >
-          <span className="block text-[16px] font-semibold uppercase tracking-[0.2em] sm:text-[20px] sm:tracking-[0.24em]">
-            Beryl&apos;s
-          </span>
-          <span
-            className={`block text-[7px] font-bold uppercase tracking-[0.3em] sm:text-[9px] ${
-              blendsWithHero ? 'text-[#f7b4d2]' : 'text-[#d92c83]'
-            }`}
-          >
-            Beauty Mark
-          </span>
+        <a href="#/" className="mx-auto shrink-0 lg:mx-0">
+          <img
+            src={blendsWithHero ? logoWhite : logoPink}
+            alt="Beryl's Beauty Mark"
+            className="h-12 w-auto object-contain transition sm:h-16"
+          />
         </a>
 
-        {/* RIGHT: actions */}
-        <div className="ml-auto flex items-center justify-end gap-1.5 sm:gap-2">
+        {/* RIGHT: desktop links plus actions */}
+        <div className="ml-auto flex items-center gap-5">
+          <nav aria-label="Secondary navigation" className="hidden items-center gap-6 lg:flex">
+            {rightLinks.map(function (item) {
+              return (
+                <a
+                  key={item[0]}
+                  href={item[1]}
+                  className={`text-[11px] font-bold uppercase tracking-[0.16em] transition ${
+                    blendsWithHero ? 'text-white/90 hover:text-white' : 'text-[#604c55] hover:text-[#d92c83]'
+                  }`}
+                >
+                  {item[0]}
+                </a>
+              )
+            })}
+          </nav>
+
+          <div className="flex items-center justify-end gap-1.5 sm:gap-2">
           <button
             type="button"
             onClick={() => {
@@ -316,6 +351,7 @@ export function Header({
               </div>
             )}
           </div>
+        </div>
         </div>
       </div>
 
