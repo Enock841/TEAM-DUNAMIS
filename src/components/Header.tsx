@@ -11,6 +11,8 @@ import {
   FiX,
 } from 'react-icons/fi'
 import { useAppData } from '../context/appData'
+import logoPink from '../assets/beryls-logo-pink.png'
+import logoWhite from '../assets/beryls-logo-white.png'
 
 type HeaderProps = {
   cartCount: number
@@ -170,34 +172,12 @@ export function Header({
         </div>
 
         {/* CENTER: logo lockup */}
-        <a
-          href="#/"
-          className={`shrink-0 text-center font-serif leading-none transition ${
-            blendsWithHero ? 'text-white' : 'text-[#3e2530]'
-          }`}
-        >
-          <span className="block text-[24px] font-semibold uppercase tracking-[0.28em] sm:text-[34px] sm:tracking-[0.34em]">
-            Beryl&apos;s
-          </span>
-          <span className="mt-1.5 flex items-center justify-center gap-2">
-            <span
-              className={`h-px w-5 sm:w-8 ${
-                blendsWithHero ? 'bg-white/50' : 'bg-[#e4bdce]'
-              }`}
-            />
-            <span
-              className={`text-[11px] font-bold uppercase tracking-[0.3em] sm:text-[14px] ${
-                blendsWithHero ? 'text-[#f7b4d2]' : 'text-[#d92c83]'
-              }`}
-            >
-              Beauty Mark
-            </span>
-            <span
-              className={`h-px w-5 sm:w-8 ${
-                blendsWithHero ? 'bg-white/50' : 'bg-[#e4bdce]'
-              }`}
-            />
-          </span>
+        <a href="#/" className="shrink-0">
+          <img
+            src={blendsWithHero ? logoWhite : logoPink}
+            alt="Beryl's Beauty Mark"
+            className="h-12 w-auto object-contain transition sm:h-16"
+          />
         </a>
 
         {/* RIGHT: actions */}
