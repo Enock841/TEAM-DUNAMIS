@@ -39,6 +39,19 @@ export function AppointmentsAdminPage() {
     }
   }
 
+  async function settleFromCode(bookingId: string) {
+    if (!token || !window.confirm('Confirm you have genuinely received the rest of the payment from this client, in cash or Mobile Money?')) return
+    try {
+      await api.settleBookingBalance(token, bookingId)
+      setCodeResult(function (current: any) {
+        return current ? { ...current, amountPaid: current.confirmedPrice } : current
+      })
+      await reload()
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'Unable to mark this as settled.')
+    }
+  }
+
   async function status(booking: AdminBooking, next: string, price?: number) {
     if (!token) return
     try {
@@ -142,6 +155,21 @@ export function AppointmentsAdminPage() {
             <p className="mt-2 text-xs font-bold uppercase tracking-[0.1em] text-[#a82061]">
               Current status: {codeResult.status}
             </p>
+            {codeResult.confirmedPrice != null && (
+              <div className="mt-3 rounded-xl bg-white p-3">
+                <p className="text-xs text-[#745f68]">
+                  Total GHC {codeResult.confirmedPrice}, paid so far GHC {codeResult.amountPaid || 0}, remaining GHC {codeResult.confirmedPrice - (codeResult.amountPaid || 0)}
+                </p>
+                {(codeResult.amountPaid || 0) > 0 && (codeResult.amountPaid || 0) < codeResult.confirmedPrice && (
+                  <button
+                    onClick={() => settleFromCode(codeResult.id)}
+                    className="mt-2 rounded-full border border-emerald-600 px-4 py-1.5 text-[10px] font-bold uppercase tracking-[0.1em] text-emerald-700"
+                  >
+                    Mark remaining balance as settled in person
+                  </button>
+                )}
+              </div>
+            )}
           </div>
         )}
       </Panel>

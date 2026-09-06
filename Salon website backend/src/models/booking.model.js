@@ -208,6 +208,7 @@ export async function findBookingByCode(code) {
   const result = await query(
     `select b.id, b.booking_date as date, b.time_slot as "timeSlot", b.status,
             b.confirmation_code as "confirmationCode",
+            b.confirmed_price as "confirmedPrice", b.amount_paid as "amountPaid",
             u.name as "customerName", u.phone as "customerPhone",
             s.name as "serviceName"
      from bookings b

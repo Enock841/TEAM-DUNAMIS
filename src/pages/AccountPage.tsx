@@ -410,6 +410,11 @@ export function AccountPage(props) {
                                     : 'Pay deposit, GHC ' + (booking.confirmedPrice / 2) + ' of ' + booking.confirmedPrice)}
                             </button>
                           )}
+                          {booking.status === 'confirmed' && !booking.isPaid && !booking.amountPaid && (
+                            <p className="mt-2 text-xs leading-5 text-[#8f707d]">
+                              This is a deposit, half of your total price. You will pay the remaining balance in person at the salon when your appointment happens.
+                            </p>
+                          )}
                           {booking.status === 'confirmed' && !booking.isPaid && !booking.confirmedPrice && (
                             <p className="mt-3 rounded-lg bg-[#fdf2e0] px-3 py-2 text-xs font-bold text-[#8a5a1f]">
                               Waiting for the salon to confirm your final price before you can pay
