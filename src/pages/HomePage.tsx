@@ -450,14 +450,12 @@ function HeroBanner() {
         <div
           key={slide.id}
           className="
-            mx-auto
+            mx-0
             w-full
             max-w-[380px]
-            text-center
+            text-left
             animate-[bbm-rise_800ms_cubic-bezier(0.22,1,0.36,1)_both]
-            sm:mx-0
             sm:max-w-[560px]
-            sm:text-left
             lg:max-w-[680px]
           "
         >
@@ -466,7 +464,7 @@ function HeroBanner() {
           <img
             src={logoPink}
             alt="Beryl's Beauty Mark"
-            className="mx-auto h-24 w-auto object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.4)] sm:mx-0 sm:h-32"
+            className="mx-0 h-24 w-auto object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.4)] sm:h-32"
           />
 
           {/* BRAND */}
@@ -477,7 +475,7 @@ function HeroBanner() {
 
           <h1
             className="
-              mx-auto
+              mx-0
               mt-2
               max-w-[380px]
               font-serif
@@ -487,7 +485,6 @@ function HeroBanner() {
               text-white
               drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]
               sm:mt-4
-              sm:mx-0
               sm:max-w-[560px]
               sm:text-[clamp(4rem,9vw,6.8rem)]
             "
@@ -499,13 +496,13 @@ function HeroBanner() {
           </h1>
 
           {slide.title && (
-            <p className="mx-auto mt-4 max-w-[380px] font-serif text-xl italic text-[#f7b4d2] drop-shadow sm:mx-0 sm:max-w-[500px] sm:text-2xl">
+            <p className="mx-0 mt-4 max-w-[380px] font-serif text-xl italic text-[#f7b4d2] drop-shadow sm:max-w-[500px] sm:text-2xl">
               {slide.title}
             </p>
           )}
 
           {slide.subtitle && (
-            <p className="mx-auto mt-3 max-w-[340px] text-sm leading-6 text-white/85 drop-shadow sm:mx-0 sm:max-w-[460px] sm:text-base">
+            <p className="mx-0 mt-3 max-w-[340px] text-sm leading-6 text-white/85 drop-shadow sm:max-w-[460px] sm:text-base">
               {slide.subtitle}
             </p>
           )}
@@ -518,7 +515,7 @@ function HeroBanner() {
               flex
               flex-row
               items-center
-              justify-center
+              justify-start
               gap-2.5
               sm:mt-8
               sm:gap-3
