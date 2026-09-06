@@ -3,6 +3,7 @@ import { useAppData } from '../../context/appData'
 import { api } from '../../lib/api'
 import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
 import { ImageUploadField } from '../components/ImageUploadField'
+import { formatDuration } from '../../data/catalog'
 
 export function ServicesAdminPage() {
   const appData = useAppData()
@@ -39,7 +40,7 @@ export function ServicesAdminPage() {
       name: String(form.get('name')),
       description: String(form.get('description')),
       categoryId: String(form.get('categoryId')),
-      durationMinutes: Number(form.get('durationMinutes')),
+      durationMinutes: Math.round(Number(form.get('durationHours')) * 60),
       priceMin: Number(form.get('priceMin')),
       priceMax: Number(form.get('priceMax')),
       images: imageUrl ? [imageUrl] : [],
@@ -159,7 +160,7 @@ export function ServicesAdminPage() {
               })}
             </select>
             <textarea name="description" required defaultValue={editing ? editing.description : ''} placeholder="Description" className={fieldClass + ' h-24 py-3 md:col-span-2'} />
-            <input name="durationMinutes" required type="number" min="1" defaultValue={editing ? editing.durationMinutes : ''} placeholder="Duration in minutes" className={fieldClass} />
+            <input name="durationHours" required type="number" min="0.25" step="0.25" defaultValue={editing ? editing.durationMinutes / 60 : 1} placeholder="Duration in hours, e.g. 1.5" className={fieldClass} />
             <div className="md:col-span-2">
               <ImageUploadField label="Service photo" value={imageUrl} onChange={setImageUrl} />
             </div>
@@ -184,7 +185,7 @@ export function ServicesAdminPage() {
                 <div className="min-w-0 flex-1">
                   <p className="font-serif text-xl text-[#3e2530]">{service.name}</p>
                   <p className="mt-1 text-xs text-[#8f7480]">
-                    {service.category.name + ' - ' + service.durationMinutes + ' min - GHC ' + service.priceMin + '-' + service.priceMax}
+                    {service.category.name + ' - ' + formatDuration(service.durationMinutes) + ' - GHC ' + service.priceMin + '-' + service.priceMax}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-4 text-xs font-bold uppercase">
                     <button onClick={function () { openForm(service) }} className="text-[#a52261]">Edit</button>
