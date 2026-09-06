@@ -2,10 +2,15 @@ import { query } from "../config/db.js";
 
 export async function findPaymentAmount(type, refId, userId, portion) {
   if (type === "order") {
-    const result = await query(
-      "select total_amount as amount from orders where id = $1 and user_id = $2",
-      [refId, userId]
-    );
+    const result = userId
+      ? await query(
+          "select total_amount as amount from orders where id = $1 and user_id = $2",
+          [refId, userId]
+        )
+      : await query(
+          "select total_amount as amount from orders where id = $1 and user_id is null",
+          [refId]
+        );
     return result.rows[0]?.amount ?? null;
   }
 

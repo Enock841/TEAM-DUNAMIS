@@ -1,5 +1,6 @@
 import crypto from "node:crypto";
 import { env } from "../config/env.js";
+import { query } from "../config/db.js";
 import { z } from "zod";
 import {
   createPayment,
@@ -27,14 +28,24 @@ const FRONTEND_URL = process.env.FRONTEND_URL || "http://localhost:3000";
 
 export async function initiate(req, res) {
   const body = initiateSchema.parse(req.body);
-  const amount = await findPaymentAmount(body.type, body.refId, req.user.id, body.portion);
+  const userId = req.user ? req.user.id : null;
+  const amount = await findPaymentAmount(body.type, body.refId, userId, body.portion);
   if (amount === null) throw notFound(`${body.type} not found`);
+
+  let customerEmail = userId + "@customer.salon";
+  if (body.type === "order") {
+    const orderResult = await query(
+      "select delivery_email as email from orders where id = $1",
+      [body.refId]
+    );
+    if (orderResult.rows[0]?.email) customerEmail = orderResult.rows[0].email;
+  }
 
   const reference = `SALON-${crypto.randomUUID()}`;
 
   await createPayment({
     reference,
-    userId: req.user.id,
+    userId,
     type: body.type,
     refId: body.refId,
     momoNumber: body.momoNumber,
@@ -48,7 +59,7 @@ export async function initiate(req, res) {
       "Content-Type": "application/json"
     },
     body: JSON.stringify({
-      email: `${req.user.phone}@customer.salon`,
+      email: customerEmail,
       amount: Math.round(amount * 100),
       reference,
       callback_url: `${FRONTEND_URL}/#/payment-complete`

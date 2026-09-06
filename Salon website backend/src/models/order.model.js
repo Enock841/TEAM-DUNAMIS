@@ -129,13 +129,17 @@ export async function listOrders(status) {
             o.delivery_name as "deliveryName", o.delivery_phone as "deliveryPhone",
             o.delivery_address as "deliveryAddress", o.delivery_notes as "deliveryNotes",
             o.gift_card_code as "giftCardCode", o.gift_card_discount as "giftCardDiscount",
-            json_build_object('id', u.id, 'name', u.name, 'phone', u.phone) as "user",
+            json_build_object(
+              'id', u.id,
+              'name', coalesce(u.name, o.delivery_name || ' (guest)'),
+              'phone', coalesce(u.phone, o.delivery_phone)
+            ) as "user",
             coalesce(json_agg(json_build_object(
               'productId', p.id, 'name', p.name, 'quantity', oi.quantity,
               'unitPrice', oi.unit_price
             )) filter (where oi.id is not null), '[]') as items
      from orders o
-     join users u on u.id = o.user_id
+     left join users u on u.id = o.user_id
      left join order_items oi on oi.order_id = o.id
      left join products p on p.id = oi.product_id
      where ($1::text is null or o.status = $1)

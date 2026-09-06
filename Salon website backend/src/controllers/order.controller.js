@@ -26,14 +26,15 @@ const orderSchema = z.object({
     phone: z.string().min(7).max(20),
     address: z.string().min(5, "Please provide a more complete address or location so we can find you"),
     notes: z.string().optional(),
-    email: z.string().email().optional()
+    email: z.string().email("Please provide a real email so we can send you updates about your order")
   }),
   giftCardCode: z.string().optional()
 });
 
 export async function create(req, res) {
   const body = orderSchema.parse(req.body);
-  const result = await createOrder(req.user.id, body.items, body.delivery, body.giftCardCode);
+  const userId = req.user ? req.user.id : null;
+  const result = await createOrder(userId, body.items, body.delivery, body.giftCardCode);
 
   checkLowStock(result.items).catch(() => {});
 
