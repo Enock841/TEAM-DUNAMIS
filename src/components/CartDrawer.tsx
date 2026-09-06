@@ -57,11 +57,6 @@ export function CartDrawer({
   }
 
   async function checkout() {
-    if (!token) {
-      setMessage('Sign in or create an account to complete checkout.')
-      onRequireAuth()
-      return
-    }
     if (!name.trim() || !phone.trim() || !address.trim() || !email.trim()) {
       setMessage('Please fill in your name, phone number, email and location.')
       return
@@ -193,6 +188,15 @@ export function CartDrawer({
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#765b67]">
               Delivery details
             </p>
+            {!user && (
+              <p className="rounded-xl bg-[#f7e4ec] px-4 py-2.5 text-xs leading-5 text-[#745f68]">
+                You can check out as a guest right now, no account needed. Or you can{' '}
+                <button type="button" onClick={onRequireAuth} className="font-bold text-[#dc2d83] underline">
+                  sign in
+                </button>{' '}
+                to save this order to your account.
+              </p>
+            )}
             <input
               type="text"
               value={name}

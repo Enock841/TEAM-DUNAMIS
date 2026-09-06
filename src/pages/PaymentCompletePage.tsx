@@ -15,7 +15,7 @@ export function PaymentCompletePage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.hash.split('?')[1])
     const reference = params.get('reference') || params.get('trxref')
-    if (!token || !reference) {
+    if (!reference) {
       setStatus('failed')
       return
     }

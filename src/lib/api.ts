@@ -507,7 +507,7 @@ export const api = {
     })
   },
   createOrder(
-    token: string,
+    token: string | undefined,
     items: Array<{ productId: string; quantity: number; variantId?: string }>,
     delivery: { name: string; phone: string; address: string; notes?: string; email?: string },
     giftCardCode?: string,
@@ -521,7 +521,7 @@ export const api = {
     })
   },
   initiatePayment(
-    token: string,
+    token: string | undefined,
     body: { type: 'booking' | 'order' | 'gift_card'; refId: string; momoNumber: string },
   ) {
     return request<{
@@ -535,7 +535,7 @@ export const api = {
       body: JSON.stringify(body),
     })
   },
-  verifyPayment(token: string, reference: string) {
+  verifyPayment(token: string | undefined, reference: string) {
     return request<{ reference: string; status: string; amount?: number }>(
       `/payments/${reference}/verify`,
       { token },
