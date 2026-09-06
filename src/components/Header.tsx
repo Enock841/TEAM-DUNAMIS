@@ -182,7 +182,7 @@ export function Header({
             <span className="h-0.5 w-6 rounded-full bg-current" />
           </button>
 
-          <nav aria-label="Primary navigation" className="hidden items-center gap-6 lg:flex">
+          <nav aria-label="Primary navigation" className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 lg:gap-6">
             {leftLinks.map(function (item) {
               return (
                 <a
@@ -209,7 +209,7 @@ export function Header({
 
         {/* RIGHT: desktop links plus actions */}
         <div className="ml-auto flex items-center gap-5">
-          <nav aria-label="Secondary navigation" className="hidden items-center gap-6 lg:flex">
+          <nav aria-label="Secondary navigation" className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 lg:gap-6">
             {rightLinks.map(function (item) {
               return (
                 <a

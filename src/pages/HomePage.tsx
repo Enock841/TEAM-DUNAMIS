@@ -455,9 +455,7 @@ function HeroBanner() {
             max-w-[380px]
             text-center
             animate-[bbm-rise_800ms_cubic-bezier(0.22,1,0.36,1)_both]
-            sm:mx-0
             sm:max-w-[560px]
-            sm:text-left
             lg:max-w-[680px]
           "
         >
@@ -487,7 +485,6 @@ function HeroBanner() {
               text-white
               drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]
               sm:mt-4
-              sm:mx-0
               sm:max-w-[560px]
               sm:text-[clamp(4rem,9vw,6.8rem)]
             "
