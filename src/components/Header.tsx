@@ -182,21 +182,6 @@ export function Header({
             <span className="h-0.5 w-6 rounded-full bg-current" />
           </button>
 
-          <nav aria-label="Primary navigation" className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 lg:gap-6">
-            {leftLinks.map(function (item) {
-              return (
-                <a
-                  key={item[0]}
-                  href={item[1]}
-                  className={`text-[11px] font-bold uppercase tracking-[0.16em] transition ${
-                    blendsWithHero ? 'text-white/90 hover:text-white' : 'text-[#604c55] hover:text-[#d92c83]'
-                  }`}
-                >
-                  {item[0]}
-                </a>
-              )
-            })}
-          </nav>
         </div>
 
         <a href="#/" className="mx-auto shrink-0 lg:mx-0">
@@ -209,21 +194,6 @@ export function Header({
 
         {/* RIGHT: desktop links plus actions */}
         <div className="ml-auto flex items-center gap-5">
-          <nav aria-label="Secondary navigation" className="flex flex-wrap items-center justify-center gap-x-3 gap-y-1 lg:gap-6">
-            {rightLinks.map(function (item) {
-              return (
-                <a
-                  key={item[0]}
-                  href={item[1]}
-                  className={`text-[11px] font-bold uppercase tracking-[0.16em] transition ${
-                    blendsWithHero ? 'text-white/90 hover:text-white' : 'text-[#604c55] hover:text-[#d92c83]'
-                  }`}
-                >
-                  {item[0]}
-                </a>
-              )
-            })}
-          </nav>
 
           <div className="flex items-center justify-end gap-1.5 sm:gap-2">
           <button
