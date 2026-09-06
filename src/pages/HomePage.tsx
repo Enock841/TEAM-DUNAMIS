@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState, type ReactNode } from 'react'
 import { ProductCard } from '../components/ProductCard'
 import { useAppData } from '../context/appData'
 import { imageBase, type Product } from '../data/catalog'
-import logoWhite from '../assets/beryls-logo-white.png'
+import logoPink from '../assets/beryls-logo-pink.png'
 import {
   api,
   type HeroSlide,
@@ -446,34 +446,6 @@ function HeroBanner() {
           lg:pb-16
         "
       >
-        {/* SMALL HEADLINE, LEFT SIDE, OPTIONAL, ADMIN CONTROLLED */}
-        {(slide.title || slide.subtitle) && (
-          <div
-            className="
-              absolute
-              left-5
-              top-1/2
-              hidden
-              max-w-[220px]
-              -translate-y-1/2
-              text-left
-              sm:left-10
-              md:block
-              lg:left-12
-            "
-          >
-            {slide.title && (
-              <p className="font-serif text-lg leading-tight text-white drop-shadow sm:text-xl">
-                {slide.title}
-              </p>
-            )}
-            {slide.subtitle && (
-              <p className="mt-2 text-xs leading-5 text-white/75 sm:text-sm">
-                {slide.subtitle}
-              </p>
-            )}
-          </div>
-        )}
 
         <div
           key={slide.id}
@@ -483,14 +455,16 @@ function HeroBanner() {
             max-w-[380px]
             text-center
             animate-[bbm-rise_800ms_cubic-bezier(0.22,1,0.36,1)_both]
+            sm:mx-0
             sm:max-w-[560px]
+            sm:text-left
             lg:max-w-[680px]
           "
         >
           {/* LOGO */}
 
           <img
-            src={logoWhite}
+            src={logoPink}
             alt="Beryl's Beauty Mark"
             className="mx-auto h-24 w-auto object-contain drop-shadow-[0_4px_16px_rgba(0,0,0,0.4)] sm:mx-0 sm:h-32"
           />
@@ -520,6 +494,17 @@ function HeroBanner() {
             Beryl&apos;s Beauty Mark
           </h1>
 
+          {slide.title && (
+            <p className="mx-auto mt-4 max-w-[380px] font-serif text-xl italic text-[#f7b4d2] drop-shadow sm:mx-0 sm:max-w-[500px] sm:text-2xl">
+              {slide.title}
+            </p>
+          )}
+
+          {slide.subtitle && (
+            <p className="mx-auto mt-3 max-w-[340px] text-sm leading-6 text-white/85 drop-shadow sm:mx-0 sm:max-w-[460px] sm:text-base">
+              {slide.subtitle}
+            </p>
+          )}
 
           {/* BUTTONS */}
 

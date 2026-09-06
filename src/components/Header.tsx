@@ -174,7 +174,7 @@ export function Header({
         {/* CENTER: logo lockup */}
         <a href="#/" className="shrink-0">
           <img
-            src={blendsWithHero ? logoWhite : logoPink}
+            src={logoPink}
             alt="Beryl's Beauty Mark"
             className="h-12 w-auto object-contain transition sm:h-16"
           />
