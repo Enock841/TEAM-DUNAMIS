@@ -487,6 +487,7 @@ function HeroBanner() {
               text-white
               drop-shadow-[0_4px_20px_rgba(0,0,0,0.5)]
               sm:mt-4
+              sm:mx-0
               sm:max-w-[560px]
               sm:text-[clamp(4rem,9vw,6.8rem)]
             "
