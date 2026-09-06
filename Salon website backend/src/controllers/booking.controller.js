@@ -2,6 +2,7 @@ import { z } from "zod";
 import {
   approveCustomLength,
   createBooking,
+  deleteBooking,
   findBookingByCode,
   getBookingAvailability,
   getBookingsNeedingReminder,
@@ -147,6 +148,17 @@ export async function approveCustomLengthRequest(req, res) {
   const booking = await approveCustomLength(req.params.id, body.price);
   if (!booking) throw notFound("Booking not found");
   res.json({ booking });
+}
+
+export async function remove(req, res) {
+  const deleted = await deleteBooking(req.params.id);
+  if (!deleted) {
+    throw new (await import("../utils/httpError.js")).HttpError(
+      400,
+      "Only completed or cancelled appointments can be deleted"
+    );
+  }
+  res.status(204).send();
 }
 
 export async function sendReminders(req, res) {

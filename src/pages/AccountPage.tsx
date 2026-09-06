@@ -396,19 +396,25 @@ export function AccountPage(props) {
                               Your requested style is being reviewed, we will confirm a price soon.
                             </p>
                           )}
-                          {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && (
+                          {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && !booking.amountPaid && (
                             <button
                               type="button"
                               onClick={function () { payForBooking(booking.id) }}
                               disabled={payingId === booking.id}
                               className="mt-3 rounded-full bg-[#dc2d83] px-5 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white disabled:opacity-50"
                             >
-                              {payingId === booking.id
-                                ? 'Redirecting...'
-                                : (booking.amountPaid > 0
-                                    ? 'Pay remaining balance, GHC ' + (booking.confirmedPrice - booking.amountPaid)
-                                    : 'Pay deposit, GHC ' + (booking.confirmedPrice / 2) + ' of ' + booking.confirmedPrice)}
+                              {payingId === booking.id ? 'Redirecting...' : 'Pay deposit, GHC ' + (booking.confirmedPrice / 2) + ' of ' + booking.confirmedPrice}
                             </button>
+                          )}
+                          {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && !booking.amountPaid && (
+                            <p className="mt-2 text-xs leading-5 text-[#8f707d]">
+                              Only half of the total is paid online, right now. The remaining half is paid directly at the salon on the day of your appointment.
+                            </p>
+                          )}
+                          {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && booking.amountPaid > 0 && (
+                            <p className="mt-3 rounded-lg bg-[#fdf2e0] px-3 py-2 text-xs font-bold text-[#8a5a1f]">
+                              Deposit paid. The remaining GHC {booking.confirmedPrice - booking.amountPaid} will be paid at the salon on the day of your appointment.
+                            </p>
                           )}
                           {booking.status === 'confirmed' && !booking.isPaid && !booking.amountPaid && (
                             <p className="mt-2 text-xs leading-5 text-[#8f707d]">

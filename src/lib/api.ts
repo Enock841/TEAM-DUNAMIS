@@ -317,6 +317,12 @@ export const api = {
       body: JSON.stringify({ price }),
     })
   },
+  deleteBooking(token: string, id: string) {
+    return request<void>('/bookings/' + id, {
+      method: 'DELETE',
+      token,
+    })
+  },
   serviceLengthOptions(serviceId: string) {
     return request<ServiceLengthOption[]>('/service-length-options/service/' + serviceId)
   },

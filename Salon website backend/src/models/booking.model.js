@@ -267,6 +267,14 @@ export async function markReminderSent(id) {
   await query("update bookings set reminder_sent = true where id = $1", [id]);
 }
 
+export async function deleteBooking(id) {
+  const result = await query(
+    "delete from bookings where id = $1 and status in ('completed', 'cancelled') returning id",
+    [id]
+  );
+  return Boolean(result.rowCount);
+}
+
 export async function approveCustomLength(id, price) {
   const result = await query(
     `update bookings

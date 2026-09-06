@@ -6,6 +6,7 @@ import {
   index,
   mine,
   monthAvailability,
+  remove,
   reschedule,
   sendReminders,
   updateStatus,
@@ -45,7 +46,7 @@ router.put(
   requireAdmin,
   asyncHandler(approveCustomLengthRequest)
 );
-
+router.delete("/:id", requireAuth, requireAdmin, asyncHandler(remove));
 router.post("/send-reminders", asyncHandler(sendReminders));
 
 export default router;

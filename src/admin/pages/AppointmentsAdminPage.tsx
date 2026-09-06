@@ -104,6 +104,16 @@ export function AppointmentsAdminPage() {
     }
   }
 
+  async function removeBooking(booking: AdminBooking) {
+    if (!token || !window.confirm('Delete this appointment permanently? This cannot be undone.')) return
+    try {
+      await api.deleteBooking(token, booking.id)
+      await reload()
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'Unable to delete this appointment.')
+    }
+  }
+
   async function reschedule(booking: AdminBooking) {
     if (!token) return
     const draft = drafts[booking.id]
@@ -330,6 +340,14 @@ export function AppointmentsAdminPage() {
                     className="rounded-full border border-[#d99eb7] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-[#9f205f]"
                   >
                     {isRescheduling ? 'Hide reschedule' : 'Reschedule'}
+                  </button>
+                )}
+                {(booking.status === 'completed' || booking.status === 'cancelled') && (
+                  <button
+                    onClick={() => removeBooking(booking)}
+                    className="rounded-full border border-[#c7a9b6] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-[#8f707d]"
+                  >
+                    Delete
                   </button>
                 )}
               </div>
