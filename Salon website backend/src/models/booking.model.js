@@ -162,8 +162,8 @@ export async function listBookingsForUser(userId) {
             b.custom_length_request as "customLengthRequest",
             b.custom_length_price as "customLengthPrice",
             b.custom_length_status as "customLengthStatus",
-            b.confirmed_price as "confirmedPrice",
-            b.amount_paid as "amountPaid",
+            b.confirmed_price::float8 as "confirmedPrice",
+            b.amount_paid::float8 as "amountPaid",
             (b.confirmed_price is not null and b.amount_paid >= b.confirmed_price) as "isPaid",
             s.name as "serviceName", c.name as "categoryName"
      from bookings b
@@ -183,8 +183,8 @@ export async function listBookings({ date, categoryId }) {
             b.custom_length_request as "customLengthRequest",
             b.custom_length_price as "customLengthPrice",
             b.custom_length_status as "customLengthStatus",
-            b.confirmed_price as "confirmedPrice",
-            b.amount_paid as "amountPaid",
+            b.confirmed_price::float8 as "confirmedPrice",
+            b.amount_paid::float8 as "amountPaid",
             b.notes,
             b.extension_product_name as "extensionProductName",
             b.extension_quantity as "extensionQuantity",
@@ -208,7 +208,7 @@ export async function findBookingByCode(code) {
   const result = await query(
     `select b.id, b.booking_date as date, b.time_slot as "timeSlot", b.status,
             b.confirmation_code as "confirmationCode",
-            b.confirmed_price as "confirmedPrice", b.amount_paid as "amountPaid",
+            b.confirmed_price::float8 as "confirmedPrice", b.amount_paid::float8 as "amountPaid",
             u.name as "customerName", u.phone as "customerPhone",
             s.name as "serviceName"
      from bookings b
@@ -229,7 +229,7 @@ export async function updateBookingStatus(id, status, price) {
      where id = $3
      returning id, user_id as "userId", service_id as "serviceId",
                booking_date as date, time_slot as "timeSlot", status,
-               confirmed_price as "confirmedPrice"`,
+               confirmed_price::float8 as "confirmedPrice"`,
     [status, price ?? null, id]
   );
   return result.rows[0] || null;
