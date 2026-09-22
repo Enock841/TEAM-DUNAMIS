@@ -58,9 +58,10 @@ export function ProductsAdminPage() {
 
   function updateVariantForm(productId: string, field: string, value: string) {
     setVariantForms((current) => {
-      const existing = current[productId] || {
+            const existing = current[productId] || {
         label: '', price: '', stockQty: '', imageUrl: '',
-        option1Name: '', option1Value: '', option2Name: '', option2Value: '',
+        option1Name: '', option1Value: '', option1NameCustom: '',
+        option2Name: '', option2Value: '', option2NameCustom: '',
       }
       return { ...current, [productId]: { ...existing, [field]: value } }
     })
@@ -73,7 +74,9 @@ export function ProductsAdminPage() {
       setMessage('Fill in a price, stock quantity, and either a label or at least one option before adding a variant.')
       return
     }
-    try {
+        try {
+      const resolvedOption1Name = draft.option1Name === 'Custom' ? draft.option1NameCustom : draft.option1Name
+      const resolvedOption2Name = draft.option2Name === 'Custom' ? draft.option2NameCustom : draft.option2Name
       await api.createProductVariant(token, {
         productId,
         label: draft.label || undefined,
@@ -81,9 +84,9 @@ export function ProductsAdminPage() {
         stockQty: Number(draft.stockQty),
         imageUrl: draft.imageUrl || undefined,
         sortOrder: 0,
-        option1Name: draft.option1Name || undefined,
+        option1Name: resolvedOption1Name || undefined,
         option1Value: draft.option1Value || undefined,
-        option2Name: draft.option2Name || undefined,
+        option2Name: resolvedOption2Name || undefined,
         option2Value: draft.option2Value || undefined,
       })
       setVariantForms((current) => {
@@ -132,7 +135,7 @@ export function ProductsAdminPage() {
           <thead className="bg-[#f8e7ee] text-xs uppercase text-[#76515f]"><tr><th className="p-4">Product</th><th>Category</th><th>Price</th><th>Stock</th><th>Actions</th></tr></thead>
           <tbody>{products.map((product) => {
             const variants = variantsByProduct[product.id]
-            const draft = variantForms[product.id] || { label: '', price: '', stockQty: '', imageUrl: '' }
+            const draft = variantForms[product.id] || { label: '', price: '', stockQty: '', imageUrl: '', option1Name: '', option1Value: '', option1NameCustom: '', option2Name: '', option2Value: '', option2NameCustom: '' }
             return (
               <>
                 <tr key={product.id} className="border-t border-[#f0e2e8]">
@@ -173,13 +176,21 @@ export function ProductsAdminPage() {
                         <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#a08a94]">
                           First choice, e.g. Scent, optional
                         </p>
-                        <div className="mt-1.5 grid gap-2 sm:grid-cols-2">
-                          <input
+                                                <div className="mt-1.5 grid gap-2 sm:grid-cols-2">
+                          <select
                             value={draft.option1Name}
                             onChange={(e) => updateVariantForm(product.id, 'option1Name', e.target.value)}
-                            placeholder="Choice name, e.g. Scent"
                             className={fieldClass}
-                          />
+                          >
+                            <option value="">Choose a type, optional</option>
+                            <option value="Size">Size</option>
+                            <option value="Color">Color</option>
+                            <option value="Scent">Scent</option>
+                            <option value="Flavor">Flavor</option>
+                            <option value="Length">Length</option>
+                            <option value="Material">Material</option>
+                            <option value="Custom">Custom...</option>
+                          </select>
                           <input
                             value={draft.option1Value}
                             onChange={(e) => updateVariantForm(product.id, 'option1Value', e.target.value)}
@@ -187,16 +198,32 @@ export function ProductsAdminPage() {
                             className={fieldClass}
                           />
                         </div>
+                        {draft.option1Name === 'Custom' && (
+                          <input
+                            value={draft.option1NameCustom}
+                            onChange={(e) => updateVariantForm(product.id, 'option1NameCustom', e.target.value)}
+                            placeholder="Type the choice name, e.g. Pattern"
+                            className={`${fieldClass} mt-1.5`}
+                          />
+                        )}
                         <p className="mt-3 text-[10px] font-bold uppercase tracking-[0.1em] text-[#a08a94]">
                           Second choice, e.g. Size, optional
                         </p>
-                        <div className="mt-1.5 grid gap-2 sm:grid-cols-2">
-                          <input
+                                                <div className="mt-1.5 grid gap-2 sm:grid-cols-2">
+                          <select
                             value={draft.option2Name}
                             onChange={(e) => updateVariantForm(product.id, 'option2Name', e.target.value)}
-                            placeholder="Choice name, e.g. Size"
                             className={fieldClass}
-                          />
+                          >
+                            <option value="">Choose a type, optional</option>
+                            <option value="Size">Size</option>
+                            <option value="Color">Color</option>
+                            <option value="Scent">Scent</option>
+                            <option value="Flavor">Flavor</option>
+                            <option value="Length">Length</option>
+                            <option value="Material">Material</option>
+                            <option value="Custom">Custom...</option>
+                          </select>
                           <input
                             value={draft.option2Value}
                             onChange={(e) => updateVariantForm(product.id, 'option2Value', e.target.value)}
@@ -204,6 +231,14 @@ export function ProductsAdminPage() {
                             className={fieldClass}
                           />
                         </div>
+                        {draft.option2Name === 'Custom' && (
+                          <input
+                            value={draft.option2NameCustom}
+                            onChange={(e) => updateVariantForm(product.id, 'option2NameCustom', e.target.value)}
+                            placeholder="Type the choice name, e.g. Pattern"
+                            className={`${fieldClass} mt-1.5`}
+                          />
+                        )}
                       </div>
                       <div className="mt-3 grid gap-2 sm:grid-cols-4">
                         <input
