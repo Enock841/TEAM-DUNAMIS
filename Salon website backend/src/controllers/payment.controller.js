@@ -109,7 +109,7 @@ export async function verify(req, res) {
       if (giftCard) sendGiftCardEmail(giftCard);
     }
 
-    res.json({ reference, status: "success", amount: unlocked.amount });
+    res.json({ reference, status: "success", amount: unlocked.amount, type: unlocked.type });
   } else {
     await updatePaymentStatus(reference, "failed");
     res.json({ reference, status: "failed" });

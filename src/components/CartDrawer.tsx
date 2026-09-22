@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAppData } from '../context/appData'
 import type { Product } from '../data/catalog'
 import { productImage } from '../data/catalog'
@@ -34,6 +34,14 @@ export function CartDrawer({
   const [appliedGiftCard, setAppliedGiftCard] = useState<{ code: string; balance: number } | null>(null)
   const [giftCardChecking, setGiftCardChecking] = useState(false)
   const [giftCardError, setGiftCardError] = useState('')
+
+  useEffect(() => {
+    function handlePageShow(event: PageTransitionEvent) {
+      if (event.persisted) setBusy(false)
+    }
+    window.addEventListener('pageshow', handlePageShow)
+    return () => window.removeEventListener('pageshow', handlePageShow)
+  }, [])
 
   if (!open) return null
 
@@ -109,7 +117,6 @@ export function CartDrawer({
         momoNumber: phone.trim(),
       })
 
-      onOrderComplete()
       window.location.href = payment.authorizationUrl
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Checkout failed.')

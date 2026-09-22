@@ -9,6 +9,7 @@ import { AppDataContext } from './appData'
 
 const tokenStorageKey = 'beryl-auth-token'
 const userStorageKey = 'beryl-auth-user'
+const cartStorageKey = 'beryl-cart'
 
 function storedUser() {
   try {
@@ -16,6 +17,15 @@ function storedUser() {
     return value ? (JSON.parse(value) as User) : null
   } catch {
     return null
+  }
+}
+
+function storedCart(): Product[] {
+  try {
+    const value = localStorage.getItem(cartStorageKey)
+    return value ? (JSON.parse(value) as Product[]) : []
+  } catch {
+    return []
   }
 }
 
@@ -30,6 +40,27 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(storedUser)
   const [authLoading, setAuthLoading] = useState(() => Boolean(token))
   const [wishlistIds, setWishlistIds] = useState<Set<string>>(new Set())
+  const [cart, setCart] = useState<Product[]>(storedCart)
+
+  useEffect(() => {
+    try {
+      localStorage.setItem(cartStorageKey, JSON.stringify(cart))
+    } catch {
+      // ignore storage errors
+    }
+  }, [cart])
+
+  function addToCart(product: Product) {
+    setCart((items) => [...items, product])
+  }
+
+  function removeFromCart(index: number) {
+    setCart((items) => items.filter((_, itemIndex) => itemIndex !== index))
+  }
+
+  function clearCart() {
+    setCart([])
+  }
 
   async function refreshCatalog() {
     setCatalogLoading(true)
@@ -174,6 +205,10 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     changePassword,
     logout,
     refreshCatalog,
+    cart,
+    addToCart,
+    removeFromCart,
+    clearCart,
   }
 
   return (
