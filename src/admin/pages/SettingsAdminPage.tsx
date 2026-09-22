@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { api, type AdminSettings, type AdminStaff } from '../../lib/api'
 import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
+import { ImageUploadField } from '../components/ImageUploadField'
 import { useAdminResource } from '../hooks/useAdminResource'
 
 export function SettingsAdminPage() {
@@ -11,6 +12,11 @@ export function SettingsAdminPage() {
   const { data, setData, loading, error, setError, token } = useAdminResource(settingsLoader)
   const [staff, setStaff] = useState<AdminStaff[]>([])
   const [message, setMessage] = useState('')
+  const [aboutImageUrl, setAboutImageUrl] = useState('')
+
+  useEffect(() => {
+    if (data) setAboutImageUrl(data.aboutImageUrl || '')
+  }, [data])
 
   useEffect(() => {
     if (token) api.adminStaff(token).then(setStaff).catch((reason) => setError(reason instanceof Error ? reason.message : 'Unable to load staff.'))
@@ -26,7 +32,7 @@ export function SettingsAdminPage() {
       businessName: String(form.get('businessName')),
       phone: String(form.get('phone')),
       address: String(form.get('address')),
-      aboutImageUrl: String(form.get('aboutImageUrl') || ''),
+      aboutImageUrl,
       openingHours: Object.fromEntries(days.map((day) => [day, String(form.get(`hours-${day}`))])),
       notifications: {
         bookingEmail: form.get('bookingEmail') === 'on',
@@ -75,13 +81,7 @@ export function SettingsAdminPage() {
               <input name="businessName" required defaultValue={data.businessName} className={fieldClass} aria-label="Business name" />
               <input name="phone" required defaultValue={data.phone} className={fieldClass} aria-label="Business phone" />
               <input name="address" required defaultValue={data.address} className={fieldClass} aria-label="Business address" />
-              <label className="text-xs font-bold text-[#76515f]">
-                About page image URL
-                <input name="aboutImageUrl" defaultValue={data.aboutImageUrl || ''} placeholder="https://..." className={`${fieldClass} mt-1 font-normal`} aria-label="About page image URL" />
-              </label>
-              {data.aboutImageUrl && (
-                <img src={data.aboutImageUrl} alt="About page preview" className="h-32 w-full rounded-xl object-cover" />
-              )}
+              <ImageUploadField label="About page image" value={aboutImageUrl} onChange={setAboutImageUrl} />
             </div>
           </Panel>
           <Panel>
