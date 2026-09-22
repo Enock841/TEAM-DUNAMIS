@@ -67,6 +67,26 @@ export function SettingsAdminPage() {
     } catch (reason) { setError(reason instanceof Error ? reason.message : 'Unable to update staff account.') }
   }
 
+  async function changePassword(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault()
+    if (!token) return
+    const form = new FormData(event.currentTarget)
+    const currentPassword = String(form.get('currentPassword'))
+    const newPassword = String(form.get('newPassword'))
+    const confirmPassword = String(form.get('confirmPassword'))
+    if (newPassword !== confirmPassword) {
+      setError('New password and confirmation do not match.')
+      return
+    }
+    try {
+      const result = await api.changePassword(token, { currentPassword, newPassword })
+      setMessage(result.message || 'Password updated.')
+      event.currentTarget.reset()
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'Unable to change password.')
+    }
+  }
+
   return (
     <>
       <PageHeader eyebrow="Settings" title="Business configuration" description="Manage salon details, operating hours, staff, notifications and payment methods." />
@@ -100,6 +120,15 @@ export function SettingsAdminPage() {
         </form>
       )}
       <div className="mt-8 grid gap-6 xl:grid-cols-2">
+        <Panel>
+          <h2 className="font-serif text-2xl text-[#3e2530]">Change your password</h2>
+          <form onSubmit={changePassword} className="mt-5 grid gap-3">
+            <input name="currentPassword" required type="password" placeholder="Current password" className={fieldClass} />
+            <input name="newPassword" required type="password" minLength={8} placeholder="New password" className={fieldClass} />
+            <input name="confirmPassword" required type="password" minLength={8} placeholder="Confirm new password" className={fieldClass} />
+            <PrimaryButton type="submit">Update password</PrimaryButton>
+          </form>
+        </Panel>
         <Panel>
           <h2 className="font-serif text-2xl text-[#3e2530]">Staff accounts</h2>
           <div className="mt-5 space-y-3">{staff.map((member) => <div key={member.id} className="flex items-center justify-between rounded-xl bg-[#fbf4f7] p-3"><div><strong className="text-sm">{member.name}</strong><span className="block text-xs text-[#806b74]">{member.phone}{member.email ? " - " + member.email : ""}</span></div><button onClick={() => toggle(member)} className={`text-xs font-bold ${member.isActive ? 'text-red-600' : 'text-emerald-700'}`}>{member.isActive ? 'Deactivate' : 'Activate'}</button></div>)}</div>
