@@ -7,7 +7,7 @@ function wait(ms) {
 }
 
 export function PaymentCompletePage() {
-  const { token } = useAppData()
+  const { token, clearCart } = useAppData()
   const [status, setStatus] = useState<'checking' | 'success' | 'failed'>('checking')
   const [amount, setAmount] = useState<number | null>(null)
   const hasRun = useRef(false)
@@ -34,6 +34,7 @@ export function PaymentCompletePage() {
           const result = await api.verifyPayment(token as string, reference as string)
           if (result.status === 'success') {
             if (result.amount) setAmount(result.amount)
+            if (result.type === 'order') clearCart()
             setStatus('success')
             return
           }

@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useAppData } from '../context/appData'
 import { api } from '../lib/api'
 
@@ -21,6 +21,14 @@ export function GiftCardPage(props) {
   const [momoNumber, setMomoNumber] = useState('')
   const [busy, setBusy] = useState(false)
   const [error, setError] = useState('')
+
+  useEffect(() => {
+    function handlePageShow(event: PageTransitionEvent) {
+      if (event.persisted) setBusy(false)
+    }
+    window.addEventListener('pageshow', handlePageShow)
+    return () => window.removeEventListener('pageshow', handlePageShow)
+  }, [])
 
   const finalAmount = customAmount ? Number(customAmount) : amount
 

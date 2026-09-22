@@ -6,6 +6,7 @@ import { CartDrawer } from './components/CartDrawer'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { PaymentVerifier } from './components/PaymentVerifier'
+import { useAppData } from './context/appData'
 import type { Product } from './data/catalog'
 import { AccountPage } from './pages/AccountPage'
 import { AboutPage } from './pages/AboutPage'
@@ -28,9 +29,9 @@ function currentRoute() {
 }
 
 function App() {
+  const { cart, addToCart: addProductToCart, removeFromCart, clearCart } = useAppData()
   const [route, setRoute] = useState(currentRoute)
   const [locationKey, setLocationKey] = useState(window.location.hash)
-  const [cart, setCart] = useState<Product[]>([])
   const [cartOpen, setCartOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
 
@@ -50,7 +51,7 @@ function App() {
   }, [])
 
   function addToCart(product: Product) {
-    setCart((items) => [...items, product])
+    addProductToCart(product)
     setCartOpen(true)
   }
 
@@ -141,10 +142,8 @@ function App() {
           open={cartOpen}
           onClose={() => setCartOpen(false)}
           onRequireAuth={() => setAuthOpen(true)}
-          onOrderComplete={() => setCart([])}
-          onRemove={(index) =>
-            setCart((items) => items.filter((_, itemIndex) => itemIndex !== index))
-          }
+          onOrderComplete={clearCart}
+          onRemove={removeFromCart}
         />
       </div>
     </>

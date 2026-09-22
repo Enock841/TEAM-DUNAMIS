@@ -20,6 +20,10 @@ export type AppDataContextValue = {
   ) => Promise<string>
   logout: () => void
   refreshCatalog: () => Promise<void>
+  cart: Product[]
+  addToCart: (product: Product) => void
+  removeFromCart: (index: number) => void
+  clearCart: () => void
 }
 
 export const AppDataContext = createContext<AppDataContextValue | null>(null)

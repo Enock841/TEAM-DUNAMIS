@@ -542,7 +542,7 @@ export const api = {
     })
   },
   verifyPayment(token: string | undefined, reference: string) {
-    return request<{ reference: string; status: string; amount?: number }>(
+    return request<{ reference: string; status: string; amount?: number; type?: string }>(
       `/payments/${reference}/verify`,
       { token },
     )

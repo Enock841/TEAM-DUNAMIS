@@ -165,6 +165,14 @@ export function AccountPage(props) {
   const [payingId, setPayingId] = useState('')
   const [payMessage, setPayMessage] = useState('')
 
+  useEffect(() => {
+    function handlePageShow(event: PageTransitionEvent) {
+      if (event.persisted) setPayingId('')
+    }
+    window.addEventListener('pageshow', handlePageShow)
+    return () => window.removeEventListener('pageshow', handlePageShow)
+  }, [])
+
   async function payForBooking(bookingId) {
     if (!token) return
     setPayingId(bookingId)
