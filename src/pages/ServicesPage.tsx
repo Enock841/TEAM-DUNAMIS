@@ -170,7 +170,7 @@ export function ServicesPage() {
                         </div>
                         <div className="flex items-center gap-5 sm:flex-col sm:items-end">
                           <p className="font-serif text-xl text-[#3e2530]">
-                            GH₵{service.priceMin.toLocaleString()}–
+                            GHC{service.priceMin.toLocaleString()}–
                             {service.priceMax.toLocaleString()}
                           </p>
                           <a

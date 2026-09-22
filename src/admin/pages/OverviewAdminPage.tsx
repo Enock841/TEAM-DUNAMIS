@@ -19,7 +19,7 @@ export function OverviewAdminPage() {
       {error && <div className="mt-8"><Notice error>{error}</Notice></div>}
       <div className="mt-8 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
         {[
-          ['Revenue', `GH₵${Number(metrics?.revenue ?? 0).toLocaleString()}`],
+          ['Revenue', `GHC${Number(metrics?.revenue ?? 0).toLocaleString()}`],
           ['Appointments', metrics?.appointments ?? 0],
           ['Orders', metrics?.orders ?? 0],
           ['Customers', metrics?.customers ?? 0],
