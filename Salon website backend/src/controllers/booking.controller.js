@@ -23,7 +23,26 @@ import {
   sendBookingReminder,
   sendBookingRescheduled
 } from "../utils/email.js";
-import { notFound } from "../utils/httpError.js";
+import { HttpError, notFound } from "../utils/httpError.js";
+
+function parseBookingDateTime(dateStr, timeLabel) {
+  const match = timeLabel.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i);
+  if (!match) return null;
+  let hours = parseInt(match[1], 10);
+  const minutes = parseInt(match[2], 10);
+  const period = match[3].toUpperCase();
+  if (period === "PM" && hours !== 12) hours += 12;
+  if (period === "AM" && hours === 12) hours = 0;
+  const [year, month, day] = dateStr.split("-").map(Number);
+  return new Date(year, month - 1, day, hours, minutes);
+}
+
+function assertNotPast(dateStr, timeLabel) {
+  const dateTime = parseBookingDateTime(dateStr, timeLabel);
+  if (dateTime && dateTime.getTime() < Date.now()) {
+    throw new HttpError(400, "That time has already passed, please choose a different time");
+  }
+}
 
 const createBookingSchema = z.object({
   serviceId: z.string().uuid(),
@@ -72,10 +91,9 @@ export async function availability(req, res) {
 }
 
 export async function create(req, res) {
-  const booking = await createBooking(
-    req.user.id,
-    createBookingSchema.parse(req.body)
-  );
+  const body = createBookingSchema.parse(req.body);
+  assertNotPast(body.date, body.timeSlot);
+  const booking = await createBooking(req.user.id, body);
   const details = await getBookingDetailsForEmail(booking.id);
   if (details) {
     sendBookingReceived(details);
@@ -129,6 +147,7 @@ export async function updateStatus(req, res) {
 
 export async function reschedule(req, res) {
   const body = scheduleSchema.parse(req.body);
+  assertNotPast(body.date, body.timeSlot);
   const booking = await rescheduleBooking(req.params.id, body.date, body.timeSlot);
   if (!booking) throw notFound("Booking not found");
 

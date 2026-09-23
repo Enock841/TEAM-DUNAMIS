@@ -119,6 +119,17 @@ export function BookingPage(props) {
     return year + '-' + String(month).padStart(2, '0') + '-' + String(day).padStart(2, '0')
   }
 
+  function parseTimeLabelToMinutes(label) {
+    const match = label.match(/^(\d{1,2}):(\d{2})\s*(AM|PM)$/i)
+    if (!match) return null
+    let hours = parseInt(match[1], 10)
+    const minutes = parseInt(match[2], 10)
+    const period = match[3].toUpperCase()
+    if (period === 'PM' && hours !== 12) hours += 12
+    if (period === 'AM' && hours === 12) hours = 0
+    return hours * 60 + minutes
+  }
+
   async function chooseDate(iso) {
     setSelectedDate(iso)
     setSelectedTime('')
@@ -590,16 +601,20 @@ export function BookingPage(props) {
                 {times.map(function (time) {
                   const selected = selectedTime === time
                   const isTaken = Boolean(availability && availability.bookedTimeSlots && availability.bookedTimeSlots.indexOf(time) !== -1)
+                  const now = new Date()
+                  const isToday = selectedDate === isoDate(now.getFullYear(), now.getMonth() + 1, now.getDate())
+                  const isPastTime = isToday && parseTimeLabelToMinutes(time) !== null && parseTimeLabelToMinutes(time) <= now.getHours() * 60 + now.getMinutes()
+                  const isUnavailable = isTaken || isPastTime
                   const timeClass = selected
                     ? 'rounded-full border px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 border-[#dc2d83] bg-[#fbe0eb] text-[#a51e61]'
-                    : isTaken
+                    : isUnavailable
                     ? 'rounded-full border px-4 py-3 text-sm font-semibold transition cursor-not-allowed border-[#ecd8e1] bg-[#f3e6ec] text-[#c7a9b6] line-through'
                     : 'rounded-full border px-4 py-3 text-sm font-semibold transition disabled:cursor-not-allowed disabled:opacity-40 border-[#e5cbd6] bg-white text-[#604c55]'
                   return (
                     <button
                       key={time}
                       type="button"
-                      disabled={!availability || !availability.available || isTaken}
+                      disabled={!availability || !availability.available || isUnavailable}
                       onClick={function () { setSelectedTime(time) }}
                       className={timeClass}
                     >
