@@ -12,7 +12,6 @@ export function PaymentVerifier() {
   const hasRun = useRef(false)
 
   useEffect(() => {
-    if (!token) return
     const params = new URLSearchParams(window.location.search)
     const reference = params.get('reference') || params.get('trxref')
     if (!reference) return
@@ -32,7 +31,7 @@ export function PaymentVerifier() {
         if (attemptDelaysMs[i] > 0) await wait(attemptDelaysMs[i])
         if (cancelled) return
         try {
-          lastResult = await api.verifyPayment(token as string, reference as string)
+          lastResult = await api.verifyPayment(token ?? undefined, reference as string)
           if (lastResult.status === 'success') {
             setNotice('Payment confirmed, thank you.')
             return
