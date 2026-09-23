@@ -46,9 +46,12 @@ export async function listPayments() {
     `select p.id, p.reference, p.payment_type as "paymentType",
             p.amount, p.status, p.momo_number as "momoNumber",
             p.created_at as "createdAt",
-            json_build_object('id', u.id, 'name', u.name, 'phone', u.phone) as customer
+            case when u.id is not null
+              then json_build_object('id', u.id, 'name', u.name, 'phone', u.phone)
+              else null
+            end as customer
      from payments p
-     join users u on u.id = p.user_id
+     left join users u on u.id = p.user_id
      order by p.created_at desc`
   );
   return result.rows;
