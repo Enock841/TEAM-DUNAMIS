@@ -23,6 +23,7 @@ export function AppointmentsAdminPage() {
   const [priceDrafts, setPriceDrafts] = useState<Record<string, string>>({})
   const [approvingId, setApprovingId] = useState('')
   const [approvalPriceDrafts, setApprovalPriceDrafts] = useState<Record<string, string>>({})
+  const [approvalDepositDrafts, setApprovalDepositDrafts] = useState<Record<string, string>>({})
 
   async function checkCode() {
     if (!token || !codeInput.trim()) return
@@ -52,10 +53,10 @@ export function AppointmentsAdminPage() {
     }
   }
 
-  async function status(booking: AdminBooking, next: string, price?: number) {
+  async function status(booking: AdminBooking, next: string, price?: number, depositAmount?: number) {
     if (!token) return
     try {
-      await api.updateBookingStatus(token, booking.id, next, price)
+      await api.updateBookingStatus(token, booking.id, next, price, depositAmount)
       await reload()
     } catch (reason) {
       setError(reason instanceof Error ? reason.message : 'Update failed.')
@@ -83,7 +84,22 @@ export function AppointmentsAdminPage() {
       return
     }
     const finalPrice = servicePrice + extensionTotalFor(booking)
-    await status(booking, 'confirmed', finalPrice)
+
+    const depositDraft = approvalDepositDrafts[booking.id]
+    let depositAmount: number | undefined
+    if (depositDraft && depositDraft.trim()) {
+      depositAmount = Number(depositDraft)
+      if (!depositAmount || depositAmount <= 0) {
+        setError('Enter a real deposit amount, or leave it blank to use half the price.')
+        return
+      }
+      if (depositAmount > finalPrice) {
+        setError('The deposit cannot be more than the total price.')
+        return
+      }
+    }
+
+    await status(booking, 'confirmed', finalPrice, depositAmount)
   }
 
   async function approveCustomLengthPrice(booking: AdminBooking) {
@@ -307,6 +323,16 @@ export function AppointmentsAdminPage() {
                         }
                         className={fieldClass + ' max-w-[180px]'}
                       />
+                      <input
+                        type="number"
+                        min="0"
+                        placeholder="Deposit due online, GHC (optional, half by default)"
+                        value={approvalDepositDrafts[booking.id] ?? ''}
+                        onChange={(e) =>
+                          setApprovalDepositDrafts((all) => ({ ...all, [booking.id]: e.target.value }))
+                        }
+                        className={fieldClass + ' max-w-[260px]'}
+                      />
                       <PrimaryButton onClick={() => approveWithPrice(booking)}>Approve</PrimaryButton>
                     </div>
                     {extensionTotalFor(booking) > 0 && (
@@ -314,6 +340,9 @@ export function AppointmentsAdminPage() {
                         Plus GHC {extensionTotalFor(booking)} for the extension, real total the client will pay: GHC {(Number(approvalPriceDrafts[booking.id]) || 0) + extensionTotalFor(booking)}
                       </p>
                     )}
+                    <p className="mt-2 text-xs text-[#8f707d]">
+                      Leave the deposit blank to charge half the total online as usual, or set the exact amount the client should pay upfront, with the rest settled in cash at the salon.
+                    </p>
                   </div>
                 )}
                 {booking.status !== 'completed' && booking.status !== 'cancelled' && (
