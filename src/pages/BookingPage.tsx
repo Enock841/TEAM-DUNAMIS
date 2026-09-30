@@ -29,7 +29,7 @@ export function BookingPage(props) {
   const [wantsToBuyExtension, setWantsToBuyExtension] = useState(null)
   const [extensionProducts, setExtensionProducts] = useState([])
   const [extensionsLoading, setExtensionsLoading] = useState(false)
-  const [extensionCart, setExtensionCart] = useState({})
+  const [extensionCart, setExtensionCart] = useState<any>({})
   const [agreedToExtensionPickup, setAgreedToExtensionPickup] = useState(false)
   const [lengthOptions, setLengthOptions] = useState([])
   const [selectedLength, setSelectedLength] = useState(null)
@@ -143,7 +143,7 @@ export function BookingPage(props) {
     })
   }
 
-  const extensionCartList = Object.values(extensionCart)
+  const extensionCartList: any[] = Object.values(extensionCart)
   const extensionCartTotal = extensionCartList.reduce(function (sum, entry) { return sum + entry.unitPrice * entry.quantity }, 0)
   const extensionCartTotalQty = extensionCartList.reduce(function (sum, entry) { return sum + entry.quantity }, 0)
   const extensionCartSummaryText = extensionCartList.map(function (entry) {
