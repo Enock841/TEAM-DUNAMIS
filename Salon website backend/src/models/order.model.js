@@ -1,18 +1,26 @@
 import { pool, query } from "../config/db.js";
 import { HttpError } from "../utils/httpError.js";
 
-export async function createOrder(userId, requestedItems, delivery, giftCardCode) {
+export async function createOrder(userId, requestedItems, delivery, giftCardCode, fulfillmentType) {
   const client = await pool.connect();
   try {
     await client.query("begin");
     const orderResult = await client.query(
-      `insert into orders (user_id, status, total_amount, delivery_name, delivery_phone, delivery_address, delivery_notes, delivery_email)
-       values ($1, 'pending_payment', 0, $2, $3, $4, $5, $6)
+      `insert into orders (user_id, status, total_amount, delivery_name, delivery_phone, delivery_address, delivery_notes, delivery_email, fulfillment_type)
+       values ($1, 'pending_payment', 0, $2, $3, $4, $5, $6, $7)
        returning id, user_id as "userId", status, total_amount as "totalAmount",
                  delivery_name as "deliveryName", delivery_phone as "deliveryPhone",
                  delivery_address as "deliveryAddress", delivery_notes as "deliveryNotes",
-                 delivery_email as "deliveryEmail"`,
-      [userId, delivery.name, delivery.phone, delivery.address, delivery.notes || null, delivery.email || null]
+                 delivery_email as "deliveryEmail", fulfillment_type as "fulfillmentType"`,
+      [
+        userId,
+        delivery.name,
+        delivery.phone || null,
+        delivery.address || null,
+        delivery.notes || null,
+        delivery.email || null,
+        fulfillmentType || "delivery"
+      ]
     );
     const order = orderResult.rows[0];
     let total = 0;
@@ -89,7 +97,8 @@ export async function createOrder(userId, requestedItems, delivery, giftCardCode
        returning id, user_id as "userId", status, total_amount as "totalAmount",
                  delivery_name as "deliveryName", delivery_phone as "deliveryPhone",
                  delivery_address as "deliveryAddress", delivery_notes as "deliveryNotes",
-                 gift_card_code as "giftCardCode", gift_card_discount as "giftCardDiscount"`,
+                 gift_card_code as "giftCardCode", gift_card_discount as "giftCardDiscount",
+                 fulfillment_type as "fulfillmentType"`,
       [finalTotal, appliedCode, discount, finalStatus, order.id]
     );
     await client.query("commit");
@@ -107,6 +116,7 @@ export async function listOrdersForUser(userId) {
     `select o.id, o.status, o.total_amount as "totalAmount", o.created_at as "createdAt",
             o.delivery_name as "deliveryName", o.delivery_phone as "deliveryPhone",
             o.delivery_address as "deliveryAddress", o.delivery_notes as "deliveryNotes",
+            o.fulfillment_type as "fulfillmentType",
             o.gift_card_code as "giftCardCode", o.gift_card_discount as "giftCardDiscount",
             coalesce(json_agg(json_build_object(
               'productId', p.id, 'name', p.name, 'quantity', oi.quantity,
@@ -128,6 +138,7 @@ export async function listOrders(status) {
     `select o.id, o.status, o.total_amount as "totalAmount", o.created_at as "createdAt",
             o.delivery_name as "deliveryName", o.delivery_phone as "deliveryPhone",
             o.delivery_address as "deliveryAddress", o.delivery_notes as "deliveryNotes",
+            o.fulfillment_type as "fulfillmentType",
             o.gift_card_code as "giftCardCode", o.gift_card_discount as "giftCardDiscount",
             json_build_object(
               'id', u.id,

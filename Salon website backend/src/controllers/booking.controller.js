@@ -71,7 +71,8 @@ const monthAvailabilitySchema = z.object({
 
 const statusSchema = z.object({
   status: z.enum(["pending", "confirmed", "cancelled", "completed"]),
-  price: z.number().positive().optional()
+  price: z.number().positive().optional(),
+  depositAmount: z.number().positive().optional()
 });
 
 const scheduleSchema = z.object({
@@ -133,7 +134,7 @@ export async function updateStatus(req, res) {
     );
   }
 
-  const booking = await updateBookingStatus(req.params.id, body.status, body.price);
+  const booking = await updateBookingStatus(req.params.id, body.status, body.price, body.depositAmount);
   if (!booking) throw notFound("Booking not found");
 
   const details = await getBookingDetailsForEmail(booking.id);

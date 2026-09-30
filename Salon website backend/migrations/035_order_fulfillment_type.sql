@@ -1,0 +1,1 @@
+alter table orders add column if not exists fulfillment_type text not null default 'delivery';

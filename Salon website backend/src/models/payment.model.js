@@ -1,4 +1,5 @@
-import { query } from "../config/db.js";
+import crypto from "node:crypto";
+import { pool, query } from "../config/db.js";
 
 export async function findPaymentAmount(type, refId, userId, portion) {
   if (type === "order") {
@@ -23,7 +24,8 @@ export async function findPaymentAmount(type, refId, userId, portion) {
   }
 
   const result = await query(
-    `select b.confirmed_price as "confirmedPrice", b.amount_paid as "amountPaid"
+    `select b.confirmed_price as "confirmedPrice", b.amount_paid as "amountPaid",
+            b.deposit_amount as "depositAmount"
      from bookings b
      where b.id = $1 and b.user_id = $2`,
     [refId, userId]
@@ -35,6 +37,9 @@ export async function findPaymentAmount(type, refId, userId, portion) {
   if (remaining <= 0) return null;
 
   if (Number(booking.amountPaid || 0) === 0) {
+    if (booking.depositAmount != null) {
+      return Math.min(Number(booking.depositAmount), remaining);
+    }
     return Math.round((Number(booking.confirmedPrice) / 2) * 100) / 100;
   }
 
@@ -91,9 +96,11 @@ export async function getGiftCardForEmail(id) {
 export async function getOrderDetailsForEmail(orderId) {
   const orderResult = await query(
     `select o.id, o.total_amount as "totalAmount", o.delivery_email as "deliveryEmail",
-            u.name as "customerName", u.phone as "customerPhone", u.email as "customerEmail"
+            coalesce(u.name, o.delivery_name) as "customerName",
+            coalesce(u.phone, o.delivery_phone) as "customerPhone",
+            u.email as "customerEmail"
      from orders o
-     join users u on u.id = o.user_id
+     left join users u on u.id = o.user_id
      where o.id = $1`,
     [orderId]
   );
@@ -156,12 +163,59 @@ export async function markPaymentSuccessAndUnlock(reference) {
 }
 
 export async function markBookingBalanceSettledInPerson(id) {
+  const client = await pool.connect();
+  try {
+    await client.query("begin");
+
+    const bookingResult = await client.query(
+      `select user_id as "userId", confirmed_price as "confirmedPrice", amount_paid as "amountPaid"
+       from bookings where id = $1 for update`,
+      [id]
+    );
+    const booking = bookingResult.rows[0];
+    if (!booking || booking.confirmedPrice == null) {
+      await client.query("rollback");
+      return null;
+    }
+
+    const remaining = Number(booking.confirmedPrice) - Number(booking.amountPaid || 0);
+    if (remaining <= 0) {
+      await client.query("rollback");
+      return null;
+    }
+
+    const reference = `CASH-${crypto.randomUUID()}`;
+    await client.query(
+      `insert into payments (reference, user_id, payment_type, ref_id, momo_number, amount, status)
+       values ($1, $2, 'booking', $3, 'Cash', $4, 'success')`,
+      [reference, booking.userId, id, remaining]
+    );
+
+    const result = await client.query(
+      `update bookings
+       set amount_paid = confirmed_price, updated_at = now()
+       where id = $1
+       returning id, confirmed_price as "confirmedPrice", amount_paid as "amountPaid"`,
+      [id]
+    );
+
+    await client.query("commit");
+    return result.rows[0] || null;
+  } catch (error) {
+    await client.query("rollback");
+    throw error;
+  } finally {
+    client.release();
+  }
+}
+
+export async function listPendingPayments() {
   const result = await query(
-    `update bookings
-     set amount_paid = confirmed_price, updated_at = now()
-     where id = $1
-     returning id, confirmed_price as "confirmedPrice", amount_paid as "amountPaid"`,
-    [id]
+    `select reference, payment_type as type, ref_id as "refId", amount, created_at as "createdAt"
+     from payments
+     where status = 'pending'
+       and created_at < now() - interval '90 seconds'
+     order by created_at asc`
   );
-  return result.rows[0] || null;
+  return result.rows;
 }

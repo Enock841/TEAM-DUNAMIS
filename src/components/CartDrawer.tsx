@@ -22,6 +22,7 @@ export function CartDrawer({
   onOrderComplete,
 }: CartDrawerProps) {
   const { token, user } = useAppData()
+  const [fulfillmentType, setFulfillmentType] = useState<'delivery' | 'pickup'>('delivery')
   const [name, setName] = useState('')
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
@@ -65,7 +66,12 @@ export function CartDrawer({
   }
 
   async function checkout() {
-    if (!name.trim() || !phone.trim() || !address.trim() || !email.trim()) {
+    if (fulfillmentType === 'pickup') {
+      if (!name.trim()) {
+        setMessage('Please fill in your name.')
+        return
+      }
+    } else if (!name.trim() || !phone.trim() || !address.trim() || !email.trim()) {
       setMessage('Please fill in your name, phone number, email and location.')
       return
     }
@@ -94,14 +100,17 @@ export function CartDrawer({
           quantity: entry.quantity,
           variantId: entry.variantId,
         })),
-        {
-          name: name.trim(),
-          phone: phone.trim(),
-          address: address.trim(),
-          notes: notes.trim() || undefined,
-          email: email.trim(),
-        },
+        fulfillmentType === 'pickup'
+          ? { name: name.trim(), email: email.trim() || undefined }
+          : {
+              name: name.trim(),
+              phone: phone.trim(),
+              address: address.trim(),
+              notes: notes.trim() || undefined,
+              email: email.trim(),
+            },
         appliedGiftCard ? appliedGiftCard.code : undefined,
+        fulfillmentType,
       )
 
       if (result.order.status === 'paid') {
@@ -114,7 +123,7 @@ export function CartDrawer({
       const payment = await api.initiatePayment(token, {
         type: 'order',
         refId: result.order.id,
-        momoNumber: phone.trim(),
+        momoNumber: fulfillmentType === 'pickup' ? 'In-store pickup' : phone.trim(),
       })
 
       window.location.href = payment.authorizationUrl
@@ -193,7 +202,7 @@ export function CartDrawer({
         {items.length > 0 && (
           <div className="mt-6 space-y-4 border-t border-[#e7ccd7] pt-5">
             <p className="text-xs font-bold uppercase tracking-[0.12em] text-[#765b67]">
-              Delivery details
+              {fulfillmentType === 'pickup' ? 'Pickup details' : 'Delivery details'}
             </p>
             {!user && (
               <p className="rounded-xl bg-[#f7e4ec] px-4 py-2.5 text-xs leading-5 text-[#745f68]">
@@ -204,6 +213,30 @@ export function CartDrawer({
                 to save this order to your account.
               </p>
             )}
+
+            <div className="flex gap-2 rounded-xl bg-[#f7e4ec] p-1">
+              <button
+                type="button"
+                onClick={function () { setFulfillmentType('delivery') }}
+                className={
+                  'h-10 flex-1 rounded-lg text-xs font-bold uppercase tracking-[0.08em] transition ' +
+                  (fulfillmentType === 'delivery' ? 'bg-[#dc2d83] text-white' : 'text-[#8f707d]')
+                }
+              >
+                Delivery
+              </button>
+              <button
+                type="button"
+                onClick={function () { setFulfillmentType('pickup') }}
+                className={
+                  'h-10 flex-1 rounded-lg text-xs font-bold uppercase tracking-[0.08em] transition ' +
+                  (fulfillmentType === 'pickup' ? 'bg-[#dc2d83] text-white' : 'text-[#8f707d]')
+                }
+              >
+                Pickup
+              </button>
+            </div>
+
             <input
               type="text"
               value={name}
@@ -211,33 +244,51 @@ export function CartDrawer({
               placeholder="Full name"
               className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
             />
-            <input
-              type="tel"
-              value={phone}
-              onChange={function (e) { setPhone(e.target.value) }}
-              placeholder={user ? user.phone : '024 000 0000'}
-              className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
-            />
-            <input
-              type="email"
-              value={email}
-              onChange={function (e) { setEmail(e.target.value) }}
-              placeholder="Email address, for your receipt"
-              className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
-            />
-            <input
-              type="text"
-              value={address}
-              onChange={function (e) { setAddress(e.target.value) }}
-              placeholder="Your location, e.g. Ayeduase, near the market"
-              className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
-            />
-            <textarea
-              value={notes}
-              onChange={function (e) { setNotes(e.target.value) }}
-              placeholder="Any notes for delivery, optional"
-              className="h-20 w-full rounded-xl border border-[#dfbdcb] bg-white p-4 text-sm outline-none focus:border-[#dc2d83]"
-            />
+
+            {fulfillmentType === 'pickup' ? (
+              <>
+                <p className="rounded-xl bg-[#f7e4ec] px-4 py-2.5 text-xs leading-5 text-[#745f68]">
+                  No delivery details needed, just pick up your order at the salon once it's ready.
+                </p>
+                <input
+                  type="email"
+                  value={email}
+                  onChange={function (e) { setEmail(e.target.value) }}
+                  placeholder="Email address, optional, for your receipt"
+                  className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
+                />
+              </>
+            ) : (
+              <>
+                <input
+                  type="tel"
+                  value={phone}
+                  onChange={function (e) { setPhone(e.target.value) }}
+                  placeholder={user ? user.phone : '024 000 0000'}
+                  className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
+                />
+                <input
+                  type="email"
+                  value={email}
+                  onChange={function (e) { setEmail(e.target.value) }}
+                  placeholder="Email address, for your receipt"
+                  className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
+                />
+                <input
+                  type="text"
+                  value={address}
+                  onChange={function (e) { setAddress(e.target.value) }}
+                  placeholder="Your location, e.g. Ayeduase, near the market"
+                  className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
+                />
+                <textarea
+                  value={notes}
+                  onChange={function (e) { setNotes(e.target.value) }}
+                  placeholder="Any notes for delivery, optional"
+                  className="h-20 w-full rounded-xl border border-[#dfbdcb] bg-white p-4 text-sm outline-none focus:border-[#dc2d83]"
+                />
+              </>
+            )}
 
             <div className="rounded-2xl border border-[#e6c5d3] bg-white p-4">
               <p className="text-sm font-semibold text-[#3e2530]">Have a gift card?</p>

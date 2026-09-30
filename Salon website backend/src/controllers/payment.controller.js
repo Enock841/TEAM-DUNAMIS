@@ -11,7 +11,8 @@ import {
   markBookingBalanceSettledInPerson,
   getOrderDetailsForEmail,
   getBookingDetailsForEmail,
-  getGiftCardForEmail
+  getGiftCardForEmail,
+  listPendingPayments
 } from "../models/payment.model.js";
 import { notFound } from "../utils/httpError.js";
 import { sendOrderConfirmation, sendAdminOrderNotification, sendGiftCardEmail } from "../utils/email.js";
@@ -80,6 +81,29 @@ export async function initiate(req, res) {
   });
 }
 
+async function unlockAndNotify(reference) {
+  const unlocked = await markPaymentSuccessAndUnlock(reference);
+  if (!unlocked) return null;
+
+  if (unlocked.type === "order") {
+    const order = await getOrderDetailsForEmail(unlocked.refId);
+    if (order) {
+      if (order.customerEmail) sendOrderConfirmation(order.customerEmail, order);
+      sendAdminOrderNotification(order, {
+        name: order.customerName,
+        phone: order.customerPhone
+      });
+    }
+  }
+
+  if (unlocked.type === "gift_card") {
+    const giftCard = await getGiftCardForEmail(unlocked.refId);
+    if (giftCard) sendGiftCardEmail(giftCard);
+  }
+
+  return unlocked;
+}
+
 export async function verify(req, res) {
   const reference = req.params.reference;
 
@@ -88,32 +112,50 @@ export async function verify(req, res) {
     { headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` } }
   );
   const paystackData = await paystackResponse.json();
+  const paystackStatus = paystackData.data?.status;
 
-  if (paystackData.data?.status === "success") {
-    const unlocked = await markPaymentSuccessAndUnlock(reference);
+  if (paystackStatus === "success") {
+    const unlocked = await unlockAndNotify(reference);
     if (!unlocked) throw notFound("Payment not found");
-
-    if (unlocked.type === "order") {
-      const order = await getOrderDetailsForEmail(unlocked.refId);
-      if (order) {
-        sendOrderConfirmation(order.customerEmail, order);
-        sendAdminOrderNotification(order, {
-          name: order.customerName,
-          phone: order.customerPhone
-        });
-      }
-    }
-
-    if (unlocked.type === "gift_card") {
-      const giftCard = await getGiftCardForEmail(unlocked.refId);
-      if (giftCard) sendGiftCardEmail(giftCard);
-    }
-
     res.json({ reference, status: "success", amount: unlocked.amount, type: unlocked.type });
-  } else {
+  } else if (paystackStatus === "failed" || paystackStatus === "abandoned") {
     await updatePaymentStatus(reference, "failed");
     res.json({ reference, status: "failed" });
+  } else {
+    res.json({ reference, status: "pending" });
   }
+}
+
+export async function reconcilePending(req, res) {
+  const pending = await listPendingPayments();
+  let confirmed = 0;
+  let failed = 0;
+  let stillPending = 0;
+
+  for (const payment of pending) {
+    try {
+      const paystackResponse = await fetch(
+        `https://api.paystack.co/transaction/verify/${payment.reference}`,
+        { headers: { Authorization: `Bearer ${PAYSTACK_SECRET_KEY}` } }
+      );
+      const paystackData = await paystackResponse.json();
+      const paystackStatus = paystackData.data?.status;
+
+      if (paystackStatus === "success") {
+        const unlocked = await unlockAndNotify(payment.reference);
+        if (unlocked) confirmed += 1;
+      } else if (paystackStatus === "failed" || paystackStatus === "abandoned") {
+        await updatePaymentStatus(payment.reference, "failed");
+        failed += 1;
+      } else {
+        stillPending += 1;
+      }
+    } catch {
+      stillPending += 1;
+    }
+  }
+
+  res.json({ checked: pending.length, confirmed, failed, stillPending });
 }
 
 export async function webhook(req, res) {

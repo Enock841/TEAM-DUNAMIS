@@ -42,6 +42,7 @@ export type AdminBooking = {
   notes?: string
   confirmedPrice?: number
   amountPaid?: number
+  depositAmount?: number
   extensionProductName?: string
   extensionQuantity?: number
   extensionProductPrice?: number
@@ -56,6 +57,7 @@ export type AdminOrder = {
   deliveryPhone?: string
   deliveryAddress?: string
   deliveryNotes?: string
+  fulfillmentType?: 'pickup' | 'delivery'
   user: Pick<User, 'id' | 'name' | 'phone'>
   items: Array<{
     productId: string
@@ -515,15 +517,16 @@ export const api = {
   createOrder(
     token: string | undefined,
     items: Array<{ productId: string; quantity: number; variantId?: string }>,
-    delivery: { name: string; phone: string; address: string; notes?: string; email?: string },
+    delivery: { name: string; phone?: string; address?: string; notes?: string; email?: string },
     giftCardCode?: string,
+    fulfillmentType?: 'pickup' | 'delivery',
   ) {
     return request<{
       order: { id: string; totalAmount: number; status: string; giftCardCode?: string; giftCardDiscount?: number }
     }>('/orders', {
       method: 'POST',
       token,
-      body: JSON.stringify({ items, delivery, giftCardCode }),
+      body: JSON.stringify({ items, delivery, giftCardCode, fulfillmentType }),
     })
   },
   initiatePayment(
@@ -556,12 +559,18 @@ export const api = {
       token,
     })
   },
-  updateBookingStatus(token: string, id: string, status: string, price?: number) {
+  updateBookingStatus(token: string, id: string, status: string, price?: number, depositAmount?: number) {
     return request<{ booking: AdminBooking }>(`/bookings/${id}/status`, {
       method: 'PUT',
       token,
-      body: JSON.stringify({ status, price }),
+      body: JSON.stringify({ status, price, depositAmount }),
     })
+  },
+  reconcilePendingPayments(token: string) {
+    return request<{ checked: number; confirmed: number; failed: number; stillPending: number }>(
+      '/payments/reconcile-pending',
+      { method: 'POST', token },
+    )
   },
   rescheduleBooking(token: string, id: string, date: string, timeSlot: string) {
     return request<{ booking: AdminBooking }>(`/bookings/${id}/schedule`, {

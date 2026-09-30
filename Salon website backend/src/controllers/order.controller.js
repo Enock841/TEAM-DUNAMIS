@@ -11,30 +11,57 @@ import { query } from "../config/db.js";
 import { sendLowStockAlert, sendOrderStatusUpdate } from "../utils/email.js";
 import { notFound } from "../utils/httpError.js";
 
-const orderSchema = z.object({
-  items: z
-    .array(
-      z.object({
-        productId: z.string().uuid(),
-        quantity: z.number().int().positive(),
-        variantId: z.string().uuid().optional()
-      })
-    )
-    .min(1),
-  delivery: z.object({
-    name: z.string().min(2),
-    phone: z.string().min(7).max(20),
-    address: z.string().min(5, "Please provide a more complete address or location so we can find you"),
-    notes: z.string().optional(),
-    email: z.string().email("Please provide a real email so we can send you updates about your order")
-  }),
-  giftCardCode: z.string().optional()
-});
+const orderSchema = z
+  .object({
+    items: z
+      .array(
+        z.object({
+          productId: z.string().uuid(),
+          quantity: z.number().int().positive(),
+          variantId: z.string().uuid().optional()
+        })
+      )
+      .min(1),
+    fulfillmentType: z.enum(["pickup", "delivery"]).default("delivery"),
+    delivery: z.object({
+      name: z.string().min(2),
+      phone: z.string().max(20).optional(),
+      address: z.string().optional(),
+      notes: z.string().optional(),
+      email: z.string().email("Please provide a real email").optional().or(z.literal(""))
+    }),
+    giftCardCode: z.string().optional()
+  })
+  .superRefine((data, ctx) => {
+    if (data.fulfillmentType === "delivery") {
+      if (!data.delivery.phone || data.delivery.phone.trim().length < 7) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["delivery", "phone"],
+          message: "Please provide a phone number for delivery"
+        });
+      }
+      if (!data.delivery.address || data.delivery.address.trim().length < 5) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["delivery", "address"],
+          message: "Please provide a more complete address or location so we can find you"
+        });
+      }
+      if (!data.delivery.email) {
+        ctx.addIssue({
+          code: z.ZodIssueCode.custom,
+          path: ["delivery", "email"],
+          message: "Please provide a real email so we can send you updates about your order"
+        });
+      }
+    }
+  });
 
 export async function create(req, res) {
   const body = orderSchema.parse(req.body);
   const userId = req.user ? req.user.id : null;
-  const result = await createOrder(userId, body.items, body.delivery, body.giftCardCode);
+  const result = await createOrder(userId, body.items, body.delivery, body.giftCardCode, body.fulfillmentType);
 
   checkLowStock(result.items).catch(() => {});
 

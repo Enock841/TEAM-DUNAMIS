@@ -65,25 +65,39 @@ export function OrdersAdminPage() {
                     GHC {Number(order.totalAmount).toLocaleString()}
                   </p>
                 </div>
-                <span
-                  className={`shrink-0 rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] ${style}`}
-                >
-                  {label}
-                </span>
+                <div className="flex shrink-0 flex-col items-end gap-2">
+                  <span
+                    className={`rounded-full px-3 py-1.5 text-[11px] font-bold uppercase tracking-[0.08em] ${style}`}
+                  >
+                    {label}
+                  </span>
+                  <span className="rounded-full bg-[#f0e0fb] px-3 py-1 text-[10px] font-bold uppercase tracking-[0.08em] text-[#6a2f8a]">
+                    {order.fulfillmentType === 'pickup' ? 'Pickup' : 'Delivery'}
+                  </span>
+                </div>
               </div>
 
-              {order.deliveryName && (
+              {order.fulfillmentType === 'pickup' ? (
                 <div className="mt-4 rounded-2xl bg-[#fff7fa] p-4">
                   <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#956f80]">
-                    Deliver to
+                    Pickup, at the salon
                   </p>
                   <p className="mt-1.5 text-sm text-[#3e2530]">{order.deliveryName}</p>
-                  <p className="text-sm text-[#745f68]">{order.deliveryPhone}</p>
-                  <p className="text-sm text-[#745f68]">{order.deliveryAddress}</p>
-                  {order.deliveryNotes && (
-                    <p className="mt-2 text-xs italic text-[#8c747e]">{order.deliveryNotes}</p>
-                  )}
                 </div>
+              ) : (
+                order.deliveryName && (
+                  <div className="mt-4 rounded-2xl bg-[#fff7fa] p-4">
+                    <p className="text-[10px] font-bold uppercase tracking-[0.1em] text-[#956f80]">
+                      Deliver to
+                    </p>
+                    <p className="mt-1.5 text-sm text-[#3e2530]">{order.deliveryName}</p>
+                    <p className="text-sm text-[#745f68]">{order.deliveryPhone}</p>
+                    <p className="text-sm text-[#745f68]">{order.deliveryAddress}</p>
+                    {order.deliveryNotes && (
+                      <p className="mt-2 text-xs italic text-[#8c747e]">{order.deliveryNotes}</p>
+                    )}
+                  </div>
+                )
               )}
 
               <div className="mt-5 flex flex-wrap gap-2 border-t border-[#f0dfe6] pt-5">

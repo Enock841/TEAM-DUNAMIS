@@ -185,6 +185,7 @@ export async function listBookings({ date, categoryId }) {
             b.custom_length_status as "customLengthStatus",
             b.confirmed_price::float8 as "confirmedPrice",
             b.amount_paid::float8 as "amountPaid",
+            b.deposit_amount::float8 as "depositAmount",
             b.notes,
             b.extension_product_name as "extensionProductName",
             b.extension_quantity as "extensionQuantity",
@@ -220,17 +221,19 @@ export async function findBookingByCode(code) {
   return result.rows[0] || null;
 }
 
-export async function updateBookingStatus(id, status, price) {
+export async function updateBookingStatus(id, status, price, depositAmount) {
   const result = await query(
     `update bookings
      set status = $1,
          confirmed_price = coalesce($2, confirmed_price),
+         deposit_amount = coalesce($4, deposit_amount),
          updated_at = now()
      where id = $3
      returning id, user_id as "userId", service_id as "serviceId",
                booking_date as date, time_slot as "timeSlot", status,
-               confirmed_price::float8 as "confirmedPrice"`,
-    [status, price ?? null, id]
+               confirmed_price::float8 as "confirmedPrice",
+               deposit_amount::float8 as "depositAmount"`,
+    [status, price ?? null, id, depositAmount ?? null]
   );
   return result.rows[0] || null;
 }

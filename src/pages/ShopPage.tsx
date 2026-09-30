@@ -9,8 +9,16 @@ type ShopPageProps = {
 
 export function ShopPage({ onAdd }: ShopPageProps) {
   const { products, catalogLoading, catalogError } = useAppData()
+  const normalize = (value: string) => value.trim().toLowerCase()
   const categories = useMemo(
-    () => ['All', ...new Set(products.map((product) => product.category))],
+    () => {
+      const seen = new Map<string, string>()
+      for (const product of products) {
+        const key = normalize(product.category)
+        if (!seen.has(key)) seen.set(key, product.category.trim())
+      }
+      return ['All', ...seen.values()]
+    },
     [products],
   )
   const hashCategory = new URLSearchParams(window.location.hash.split('?')[1]).get(
@@ -35,7 +43,7 @@ export function ShopPage({ onAdd }: ShopPageProps) {
 
       return category === 'All'
         ? products
-        : products.filter((product) => product.category === category)
+        : products.filter((product) => normalize(product.category) === normalize(category))
     },
     [category, products, searchTerm],
   )
@@ -81,7 +89,7 @@ export function ShopPage({ onAdd }: ShopPageProps) {
                   setSearchTerm('')
                 }}
                 className={`rounded-full px-5 py-2.5 text-xs font-bold uppercase tracking-[0.13em] transition ${
-                  category === item
+                  normalize(category) === normalize(item)
                     ? 'bg-[#dc2d83] text-white'
                     : 'border border-[#e4bdce] bg-white text-[#624956] hover:border-[#dc2d83]'
                 }`}
