@@ -71,7 +71,7 @@ export function BookingPage(props) {
     setExtensionsLoading(true)
     api.products().then(function (allProducts) {
       const extras = allProducts.filter(function (product) {
-        return product.category.trim().toLowerCase() === 'extensions'
+        return product.category.trim().toLowerCase().includes('extension')
       })
       setExtensionProducts(extras)
       setExtensionsLoading(false)

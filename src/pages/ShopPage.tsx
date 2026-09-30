@@ -41,9 +41,13 @@ export function ShopPage({ onAdd }: ShopPageProps) {
         )
       }
 
-      return category === 'All'
-        ? products
-        : products.filter((product) => normalize(product.category) === normalize(category))
+      if (category === 'All') return products
+      const targetCategory = normalize(category)
+      return products.filter((product) => {
+        const productCategory = normalize(product.category)
+        if (targetCategory === 'extensions') return productCategory.includes('extension')
+        return productCategory === targetCategory
+      })
     },
     [category, products, searchTerm],
   )
