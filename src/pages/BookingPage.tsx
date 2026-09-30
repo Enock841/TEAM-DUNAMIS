@@ -29,8 +29,7 @@ export function BookingPage(props) {
   const [wantsToBuyExtension, setWantsToBuyExtension] = useState(null)
   const [extensionProducts, setExtensionProducts] = useState([])
   const [extensionsLoading, setExtensionsLoading] = useState(false)
-  const [selectedExtension, setSelectedExtension] = useState(null)
-  const [extensionQuantity, setExtensionQuantity] = useState(1)
+  const [extensionCart, setExtensionCart] = useState({})
   const [agreedToExtensionPickup, setAgreedToExtensionPickup] = useState(false)
   const [lengthOptions, setLengthOptions] = useState([])
   const [selectedLength, setSelectedLength] = useState(null)
@@ -79,6 +78,80 @@ export function BookingPage(props) {
   }, [wantsToBuyExtension])
 
   useEffect(function () {
+    const ids = Object.keys(extensionCart)
+    ids.forEach(function (id) {
+      const entry = extensionCart[id]
+      if (entry.variantsFetched) return
+      api.productVariants(id).then(function (data) {
+        setExtensionCart(function (current) {
+          if (!current[id]) return current
+          const firstAvailable = data.find(function (variant) { return variant.stockQty > 0 }) || data[0] || null
+          return {
+            ...current,
+            [id]: {
+              ...current[id],
+              variants: data,
+              variantsFetched: true,
+              loading: false,
+              variantId: firstAvailable ? firstAvailable.id : null,
+              variantLabel: firstAvailable ? firstAvailable.label : '',
+              unitPrice: firstAvailable ? firstAvailable.price : current[id].unitPrice,
+            },
+          }
+        })
+      }).catch(function () {
+        setExtensionCart(function (current) {
+          if (!current[id]) return current
+          return { ...current, [id]: { ...current[id], variants: [], variantsFetched: true, loading: false } }
+        })
+      })
+    })
+  }, [extensionCart])
+
+  function toggleExtensionProduct(product) {
+    setExtensionCart(function (current) {
+      const next = { ...current }
+      if (next[product.id]) {
+        delete next[product.id]
+        return next
+      }
+      next[product.id] = {
+        product: product,
+        quantity: 1,
+        variants: [],
+        variantsFetched: false,
+        loading: true,
+        variantId: null,
+        variantLabel: '',
+        unitPrice: product.price,
+      }
+      return next
+    })
+  }
+
+  function setExtensionQtyFor(productId, qty) {
+    setExtensionCart(function (current) {
+      if (!current[productId]) return current
+      return { ...current, [productId]: { ...current[productId], quantity: Math.max(1, qty) } }
+    })
+  }
+
+  function setExtensionVariantFor(productId, variant) {
+    setExtensionCart(function (current) {
+      if (!current[productId]) return current
+      return { ...current, [productId]: { ...current[productId], variantId: variant.id, variantLabel: variant.label, unitPrice: variant.price } }
+    })
+  }
+
+  const extensionCartList = Object.values(extensionCart)
+  const extensionCartTotal = extensionCartList.reduce(function (sum, entry) { return sum + entry.unitPrice * entry.quantity }, 0)
+  const extensionCartTotalQty = extensionCartList.reduce(function (sum, entry) { return sum + entry.quantity }, 0)
+  const extensionCartSummaryText = extensionCartList.map(function (entry) {
+    const variantPart = entry.variantLabel ? ' (' + entry.variantLabel + ')' : ''
+    return entry.quantity + 'x ' + entry.product.name + variantPart
+  }).join('; ')
+
+  useEffect(function () {
     if (step !== 2 || !selectedService) return
     setMonthLoading(true)
     api.monthAvailability(selectedService, calendarYear, calendarMonth).then(function (data) {
@@ -94,8 +167,7 @@ export function BookingPage(props) {
     setHasOwnExtension(null)
     setWantsToBuyExtension(null)
     setExtensionProducts([])
-    setSelectedExtension(null)
-    setExtensionQuantity(1)
+    setExtensionCart({})
     setSelectedDate('')
     setSelectedTime('')
     setAvailability(null)
@@ -106,13 +178,6 @@ export function BookingPage(props) {
     api.serviceLengthOptions(service.id).then(function (options) {
       setLengthOptions(options)
     })
-  }
-
-  function selectExtension(product) {
-    setSelectedExtension(function (current) {
-      return current && current.id === product.id ? null : product
-    })
-    setExtensionQuantity(1)
   }
 
   function isoDate(year, month, day) {
@@ -199,10 +264,10 @@ export function BookingPage(props) {
         customLengthRequest: wantsCustomLength && customLengthText.trim() ? customLengthText.trim() : undefined,
         notes: notes.trim() || undefined,
         contactEmail: contactEmail.trim() || undefined,
-        extensionProductId: selectedExtension ? selectedExtension.id : undefined,
-        extensionProductName: selectedExtension ? selectedExtension.name : undefined,
-        extensionQuantity: selectedExtension ? extensionQuantity : undefined,
-        extensionProductPrice: selectedExtension ? selectedExtension.price : undefined,
+        extensionProductId: extensionCartList.length ? extensionCartList[0].product.id : undefined,
+        extensionProductName: extensionCartList.length ? extensionCartSummaryText : undefined,
+        extensionQuantity: extensionCartList.length ? extensionCartTotalQty : undefined,
+        extensionProductPrice: extensionCartList.length ? extensionCartTotal : undefined,
       })
 
       setSubmitted(true)
@@ -438,64 +503,109 @@ export function BookingPage(props) {
                               </span>
                             </label>
                           </div>
+                          <p className="mt-3 text-xs leading-5 text-[#8f707d]">
+                            You can pick more than one extension. Tap each one you want, then choose the color or size and how many, if the product has those options.
+                          </p>
+
                           <div className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                             {extensionProducts.map(function (product) {
-                              const isSelected = selectedExtension && selectedExtension.id === product.id
+                              const entry = extensionCart[product.id]
+                              const isSelected = Boolean(entry)
                               return (
-                                <button
+                                <div
                                   key={product.id}
-                                  type="button"
-                                  onClick={function () { selectExtension(product) }}
                                   className={
-                                    'overflow-hidden rounded-2xl border text-left transition ' +
+                                    'overflow-hidden rounded-2xl border transition ' +
                                     (isSelected ? 'border-[#dc2d83] ring-2 ring-[#dc2d83]/30' : 'border-[#ecd8e1] hover:border-[#dc2d83]')
                                   }
                                 >
-                                  <img src={product.image} alt="" className="h-32 w-full object-cover" />
-                                  <div className="p-3">
-                                    <p className="text-sm font-semibold text-[#3e2530]">{product.name}</p>
-                                    <p className="mt-1 text-xs font-bold text-[#b32269]">
-                                      {'GHC ' + product.price.toLocaleString()} each
-                                    </p>
-                                    <p className={'mt-2 text-[10px] font-bold uppercase tracking-[0.1em] ' + (isSelected ? 'text-[#dc2d83]' : 'text-[#a08a94]')}>
-                                      {isSelected ? 'Selected' : 'Tap to select'}
-                                    </p>
-                                  </div>
-                                </button>
+                                  <button
+                                    type="button"
+                                    onClick={function () { toggleExtensionProduct(product) }}
+                                    className="block w-full text-left"
+                                  >
+                                    <img src={product.image} alt="" className="h-32 w-full object-cover" />
+                                    <div className="p-3">
+                                      <p className="text-sm font-semibold text-[#3e2530]">{product.name}</p>
+                                      <p className="mt-1 text-xs font-bold text-[#b32269]">
+                                        {'GHC ' + product.price.toLocaleString()} each
+                                      </p>
+                                      <p className={'mt-2 text-[10px] font-bold uppercase tracking-[0.1em] ' + (isSelected ? 'text-[#dc2d83]' : 'text-[#a08a94]')}>
+                                        {isSelected ? 'Selected, tap to remove' : 'Tap to select'}
+                                      </p>
+                                    </div>
+                                  </button>
+
+                                  {isSelected && (
+                                    <div className="border-t border-[#ecd8e1] bg-[#fbf3f6] p-3">
+                                      {entry.loading && <p className="text-xs text-[#745f68]">Loading options...</p>}
+
+                                      {!entry.loading && entry.variants.length > 0 && (
+                                        <div className="flex flex-wrap gap-1.5">
+                                          {entry.variants.map(function (variant) {
+                                            const activeVariant = entry.variantId === variant.id
+                                            return (
+                                              <button
+                                                key={variant.id}
+                                                type="button"
+                                                disabled={variant.stockQty <= 0}
+                                                onClick={function () { setExtensionVariantFor(product.id, variant) }}
+                                                className={
+                                                  'rounded-full border px-3 py-1.5 text-[10px] font-bold uppercase tracking-[0.06em] disabled:cursor-not-allowed disabled:opacity-40 ' +
+                                                  (activeVariant
+                                                    ? 'border-[#dc2d83] bg-[#dc2d83] text-white'
+                                                    : 'border-[#ead7df] bg-white text-[#745f68]')
+                                                }
+                                              >
+                                                {variant.label}
+                                              </button>
+                                            )
+                                          })}
+                                        </div>
+                                      )}
+
+                                      <div className="mt-3 flex items-center justify-between gap-2">
+                                        <div className="flex items-center gap-2 rounded-full border border-[#e5cbd6] bg-white px-2.5 py-1">
+                                          <button
+                                            type="button"
+                                            onClick={function () { setExtensionQtyFor(product.id, entry.quantity - 1) }}
+                                            className="text-sm font-bold text-[#604c55]"
+                                          >
+                                            -
+                                          </button>
+                                          <span className="w-5 text-center text-xs font-bold">{entry.quantity}</span>
+                                          <button
+                                            type="button"
+                                            onClick={function () { setExtensionQtyFor(product.id, entry.quantity + 1) }}
+                                            className="text-sm font-bold text-[#604c55]"
+                                          >
+                                            +
+                                          </button>
+                                        </div>
+                                        <p className="text-xs font-bold text-[#b32269]">
+                                          GHC {(entry.unitPrice * entry.quantity).toLocaleString()}
+                                        </p>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
                               )
                             })}
                           </div>
 
-                          {selectedExtension && (
-                            <div className="mt-4 flex flex-wrap items-center gap-3 rounded-2xl border border-[#e6c5d3] bg-[#f7e4ec] p-4">
-                              <p className="text-sm font-semibold text-[#3e2530]">
-                                How many {selectedExtension.name} do you think you need?
+                          {extensionCartList.length > 0 && (
+                            <div className="mt-4 rounded-2xl border border-[#e6c5d3] bg-[#f7e4ec] p-4">
+                              <p className="text-sm font-semibold text-[#3e2530]">Your extensions</p>
+                              <p className="mt-1 text-sm text-[#604c55]">{extensionCartSummaryText}</p>
+                              <p className="mt-2 text-sm font-bold text-[#b32269]">
+                                Total GHC {extensionCartTotal.toLocaleString()}
                               </p>
-                              <div className="flex items-center gap-3 rounded-full border border-[#e5cbd6] bg-white px-3 py-1.5">
-                                <button
-                                  type="button"
-                                  onClick={function () { setExtensionQuantity(Math.max(1, extensionQuantity - 1)) }}
-                                  className="text-lg font-bold text-[#604c55]"
-                                >
-                                  -
-                                </button>
-                                <span className="w-6 text-center text-sm font-bold">{extensionQuantity}</span>
-                                <button
-                                  type="button"
-                                  onClick={function () { setExtensionQuantity(extensionQuantity + 1) }}
-                                  className="text-lg font-bold text-[#604c55]"
-                                >
-                                  +
-                                </button>
-                              </div>
                             </div>
                           )}
 
                           <p className="mt-3 text-xs leading-5 text-[#8f707d]">
                             Not sure exactly how many you will need? The salon will confirm and set the real total price for your service and extensions together once they review your request. If it is not quite enough on the day, more can be bought directly at the salon.
                           </p>
-
-                          <a href="#/shop?category=Extensions" target="_blank" rel="noopener noreferrer" className="mt-4 inline-block text-xs font-bold uppercase tracking-[0.1em] text-[#dc2d83] underline underline-offset-4">Browse more extensions in our shop, opens in a new tab</a>
                         </div>
                       )}
                     </div>
@@ -708,13 +818,13 @@ export function BookingPage(props) {
                       <dd className="text-right">{customLengthText.trim()}</dd>
                     </div>
                   )}
-                  {selectedExtension && (
+                  {extensionCartList.length > 0 && (
                     <div className="flex justify-between gap-4">
-                      <dt>Extension</dt>
+                      <dt>Extensions</dt>
                       <dd className="text-right">
-                        {extensionQuantity}x {selectedExtension.name}
+                        {extensionCartSummaryText}
                         <br />
-                        GHC {(selectedExtension.price * extensionQuantity).toLocaleString()}
+                        GHC {extensionCartTotal.toLocaleString()}
                       </dd>
                     </div>
                   )}
