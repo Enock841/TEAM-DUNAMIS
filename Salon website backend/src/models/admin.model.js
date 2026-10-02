@@ -57,6 +57,11 @@ export async function listPayments() {
   return result.rows;
 }
 
+export async function deletePayment(id) {
+  const result = await query(`delete from payments where id = $1 returning id`, [id]);
+  return result.rows[0] || null;
+}
+
 export async function getAnalytics() {
   const [metrics, services, products, revenue] = await Promise.all([
     query(

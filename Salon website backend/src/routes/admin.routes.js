@@ -19,6 +19,7 @@ router.use(requireAuth, requireAdmin);
 router.get("/customers", asyncHandler(customers));
 router.get("/customers/:id", asyncHandler(customer));
 router.get("/payments", asyncHandler(payments));
+router.delete("/payments/:id", asyncHandler(removePayment));
 router.get("/analytics", asyncHandler(analytics));
 router.get("/settings", asyncHandler(showSettings));
 router.put("/settings", asyncHandler(saveSettings));

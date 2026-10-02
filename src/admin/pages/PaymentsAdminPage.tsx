@@ -10,6 +10,7 @@ export function PaymentsAdminPage() {
   const [search, setSearch] = useState('')
   const [checking, setChecking] = useState(false)
   const [checkMessage, setCheckMessage] = useState('')
+  const [deletingId, setDeletingId] = useState('')
   const pendingCount = (data ?? []).filter((payment) => payment.status === 'pending').length
   const filtered = (data ?? []).filter((payment) => {
     const query = search.trim().toLowerCase()
@@ -40,6 +41,21 @@ export function PaymentsAdminPage() {
       setError(reason instanceof Error ? reason.message : 'Unable to recheck pending payments.')
     } finally {
       setChecking(false)
+    }
+  }
+
+  async function removePayment(id: string) {
+    if (!token) return
+    const confirmed = window.confirm('Delete this payment record? This cannot be undone.')
+    if (!confirmed) return
+    setDeletingId(id)
+    try {
+      await api.adminDeletePayment(token, id)
+      await reload()
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'Unable to delete this payment.')
+    } finally {
+      setDeletingId('')
     }
   }
 
@@ -76,8 +92,8 @@ export function PaymentsAdminPage() {
       </p>
       <div className="mt-4 overflow-x-auto rounded-2xl border border-[#ead7df] bg-white">
         <table className="w-full min-w-[850px] text-left text-sm">
-          <thead className="bg-[#f8e7ee] text-xs uppercase text-[#76515f]"><tr><th className="p-4">Reference</th><th>Customer</th><th>Type</th><th>Method</th><th>Amount</th><th>Status</th><th>Date</th></tr></thead>
-          <tbody>{filtered.map((payment) => <tr key={payment.id} className="border-t border-[#f0e2e8]"><td className="p-4 font-mono text-xs">{payment.reference}</td><td>{payment.customer?.name ?? 'Guest'}<span className="block text-xs text-[#806b74]">{payment.customer?.phone ?? ''}</span></td><td className="capitalize">{payment.paymentType}</td><td>{payment.momoNumber}</td><td>GHC{Number(payment.amount).toLocaleString()}</td><td><span className="rounded-full bg-[#f8e7ee] px-3 py-1 text-xs font-bold capitalize">{payment.status}</span></td><td>{new Date(payment.createdAt).toLocaleDateString()}</td></tr>)}</tbody>
+          <thead className="bg-[#f8e7ee] text-xs uppercase text-[#76515f]"><tr><th className="p-4">Reference</th><th>Customer</th><th>Type</th><th>Method</th><th>Amount</th><th>Status</th><th>Date</th><th></th></tr></thead>
+          <tbody>{filtered.map((payment) => <tr key={payment.id} className="border-t border-[#f0e2e8]"><td className="p-4 font-mono text-xs">{payment.reference}</td><td>{payment.customer?.name ?? 'Guest'}<span className="block text-xs text-[#806b74]">{payment.customer?.phone ?? ''}</span></td><td className="capitalize">{payment.paymentType}</td><td>{payment.momoNumber}</td><td>GHC{Number(payment.amount).toLocaleString()}</td><td><span className="rounded-full bg-[#f8e7ee] px-3 py-1 text-xs font-bold capitalize">{payment.status}</span></td><td>{new Date(payment.createdAt).toLocaleDateString()}</td><td className="p-4"><button type="button" onClick={() => removePayment(payment.id)} disabled={deletingId === payment.id} className="text-xs font-bold uppercase tracking-[0.08em] text-red-600 underline disabled:opacity-40">{deletingId === payment.id ? 'Deleting...' : 'Delete'}</button></td></tr>)}</tbody>
         </table>
       </div>
     </>

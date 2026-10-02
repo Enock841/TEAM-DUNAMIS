@@ -30,7 +30,9 @@ export function BookingPage(props) {
   const [extensionProducts, setExtensionProducts] = useState([])
   const [extensionsLoading, setExtensionsLoading] = useState(false)
   const [extensionCart, setExtensionCart] = useState<any>({})
-  const [agreedToExtensionPickup, setAgreedToExtensionPickup] = useState(false)
+  const [extensionPaidInfo, setExtensionPaidInfo] = useState<any>(null)
+  const [payingExtensions, setPayingExtensions] = useState(false)
+  const [extensionPayError, setExtensionPayError] = useState('')
   const [lengthOptions, setLengthOptions] = useState([])
   const [selectedLength, setSelectedLength] = useState(null)
   const [wantsCustomLength, setWantsCustomLength] = useState(false)
@@ -64,6 +66,22 @@ export function BookingPage(props) {
     hasHandledServiceFromHash.current = true
     selectService(match)
   }, [serviceFromHash, services])
+
+  useEffect(function () {
+    if (!selectedService) return
+    try {
+      const raw = localStorage.getItem('paidExtensionOrder')
+      if (!raw) return
+      const parsed = JSON.parse(raw)
+      if (parsed && parsed.serviceId === selectedService) {
+        setExtensionPaidInfo(parsed)
+        setHasOwnExtension(false)
+        setWantsToBuyExtension(true)
+      }
+    } catch (error) {
+      // ignore a corrupted or missing marker
+    }
+  }, [selectedService])
 
   useEffect(function () {
     if (wantsToBuyExtension !== true) return
@@ -145,11 +163,57 @@ export function BookingPage(props) {
 
   const extensionCartList: any[] = Object.values(extensionCart)
   const extensionCartTotal = extensionCartList.reduce(function (sum, entry) { return sum + entry.unitPrice * entry.quantity }, 0)
-  const extensionCartTotalQty = extensionCartList.reduce(function (sum, entry) { return sum + entry.quantity }, 0)
   const extensionCartSummaryText = extensionCartList.map(function (entry) {
     const variantPart = entry.variantLabel ? ' (' + entry.variantLabel + ')' : ''
     return entry.quantity + 'x ' + entry.product.name + variantPart
   }).join('; ')
+
+  async function payForExtensions() {
+    if (!token) {
+      onRequireAuth()
+      return
+    }
+    if (!extensionCartList.length) return
+    setPayingExtensions(true)
+    setExtensionPayError('')
+    try {
+      const items = extensionCartList.map(function (entry) {
+        const item: any = { productId: entry.product.id, quantity: entry.quantity }
+        if (entry.variantId) item.variantId = entry.variantId
+        return item
+      })
+      const result = await api.createOrder(
+        token,
+        items,
+        { name: user ? user.name : '', email: user && user.email ? user.email : undefined },
+        undefined,
+        'pickup',
+      )
+      const marker = {
+        serviceId: selectedService,
+        orderId: result.order.id,
+        summaryText: extensionCartSummaryText,
+        total: extensionCartTotal,
+      }
+      localStorage.setItem('paidExtensionOrder', JSON.stringify(marker))
+
+      if (result.order.status === 'paid') {
+        setExtensionPaidInfo(marker)
+        setPayingExtensions(false)
+        return
+      }
+
+      const payment = await api.initiatePayment(token, {
+        type: 'order',
+        refId: result.order.id,
+        momoNumber: 'In-store pickup',
+      })
+      window.location.href = payment.authorizationUrl
+    } catch (error) {
+      setExtensionPayError(error instanceof Error ? error.message : 'Unable to start payment for these extensions.')
+      setPayingExtensions(false)
+    }
+  }
 
   useEffect(function () {
     if (step !== 2 || !selectedService) return
@@ -168,6 +232,8 @@ export function BookingPage(props) {
     setWantsToBuyExtension(null)
     setExtensionProducts([])
     setExtensionCart({})
+    setExtensionPaidInfo(null)
+    setExtensionPayError('')
     setSelectedDate('')
     setSelectedTime('')
     setAvailability(null)
@@ -264,12 +330,13 @@ export function BookingPage(props) {
         customLengthRequest: wantsCustomLength && customLengthText.trim() ? customLengthText.trim() : undefined,
         notes: notes.trim() || undefined,
         contactEmail: contactEmail.trim() || undefined,
-        extensionProductId: extensionCartList.length ? extensionCartList[0].product.id : undefined,
-        extensionProductName: extensionCartList.length ? extensionCartSummaryText : undefined,
-        extensionQuantity: extensionCartList.length ? extensionCartTotalQty : undefined,
-        extensionProductPrice: extensionCartList.length ? extensionCartTotal : undefined,
+        extensionProductName: extensionPaidInfo
+          ? extensionPaidInfo.summaryText + ' (paid separately, order ' + extensionPaidInfo.orderId.slice(0, 8) + ')'
+          : undefined,
+        extensionProductPrice: extensionPaidInfo ? extensionPaidInfo.total : undefined,
       })
 
+      localStorage.removeItem('paidExtensionOrder')
       setSubmitted(true)
       setMessage('Your booking request was submitted. We will review it and let you know once it is approved with a confirmed price, at which point you can pay from your account.')
     } catch (error) {
@@ -281,7 +348,9 @@ export function BookingPage(props) {
 
   const extensionStepAnswered = !activeService || activeService.category.name !== 'Braiding'
     ? true
-    : hasOwnExtension === true || (hasOwnExtension === false && wantsToBuyExtension !== null)
+    : hasOwnExtension === true
+      || (hasOwnExtension === false && wantsToBuyExtension === false)
+      || (hasOwnExtension === false && wantsToBuyExtension === true && Boolean(extensionPaidInfo))
   const lengthStepAnswered = lengthOptions.length === 0 || Boolean(selectedLength) || (wantsCustomLength && customLengthText.trim().length > 1)
 
   return (
@@ -482,7 +551,27 @@ export function BookingPage(props) {
                         </button>
                       </div>
 
-                      {wantsToBuyExtension === true && (
+                      {wantsToBuyExtension === true && extensionPaidInfo && (
+                        <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
+                          <p className="text-sm font-bold uppercase tracking-[0.08em] text-emerald-700">Extensions paid</p>
+                          <p className="mt-2 text-sm text-[#3e2530]">{extensionPaidInfo.summaryText}</p>
+                          <p className="mt-1 text-sm font-bold text-emerald-700">
+                            Paid GHC {Number(extensionPaidInfo.total).toLocaleString()}
+                          </p>
+                          <p className="mt-2 text-xs leading-5 text-[#745f68]">
+                            The salon will have this ready for you to pick up at your appointment.
+                          </p>
+                          <button
+                            type="button"
+                            onClick={function () { setStep(2) }}
+                            className="mt-4 rounded-full bg-[#dc2d83] px-6 py-2.5 text-xs font-bold uppercase tracking-[0.12em] text-white"
+                          >
+                            Continue your booking
+                          </button>
+                        </div>
+                      )}
+
+                      {wantsToBuyExtension === true && !extensionPaidInfo && (
                         <div className="mt-5">
                           {extensionsLoading && <p className="text-sm text-[#745f68]">Loading extensions...</p>}
                           {!extensionsLoading && extensionProducts.length === 0 && (
@@ -491,17 +580,9 @@ export function BookingPage(props) {
                             </p>
                           )}
                           <div className="rounded-xl border border-[#e6c5d3] bg-[#f7e4ec] p-4">
-                            <label className="flex cursor-pointer items-start gap-3">
-                              <input
-                                type="checkbox"
-                                checked={agreedToExtensionPickup}
-                                onChange={function (event) { setAgreedToExtensionPickup(event.target.checked) }}
-                                className="mt-0.5 h-4 w-4 accent-[#dc2d83]"
-                              />
-                              <span className="text-sm text-[#3e2530]">
-                                Choose the extension you would like, the salon will hold it for you at your appointment, no need to pay for it separately or wait for delivery.
-                              </span>
-                            </label>
+                            <p className="text-sm text-[#3e2530]">
+                              Extensions are paid for separately from your service, online, right now. Once paid, the salon will hold your order and you can continue booking your appointment.
+                            </p>
                           </div>
                           <p className="mt-3 text-xs leading-5 text-[#8f707d]">
                             You can pick more than one extension. Tap each one you want, then choose the color or size and how many, if the product has those options.
@@ -600,11 +681,22 @@ export function BookingPage(props) {
                               <p className="mt-2 text-sm font-bold text-[#b32269]">
                                 Total GHC {extensionCartTotal.toLocaleString()}
                               </p>
+                              <button
+                                type="button"
+                                onClick={function () { payForExtensions() }}
+                                disabled={payingExtensions}
+                                className="mt-4 w-full rounded-full bg-[#dc2d83] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white disabled:opacity-50"
+                              >
+                                {payingExtensions ? 'Redirecting to payment...' : 'Pay GHC ' + extensionCartTotal.toLocaleString() + ' now'}
+                              </button>
+                              {extensionPayError && (
+                                <p className="mt-2 text-xs font-semibold text-red-600">{extensionPayError}</p>
+                              )}
                             </div>
                           )}
 
                           <p className="mt-3 text-xs leading-5 text-[#8f707d]">
-                            Not sure exactly how many you will need? The salon will confirm and set the real total price for your service and extensions together once they review your request. If it is not quite enough on the day, more can be bought directly at the salon.
+                            Not sure exactly how many you will need? More can be bought directly at the salon if it is not quite enough on the day.
                           </p>
                         </div>
                       )}
@@ -818,13 +910,13 @@ export function BookingPage(props) {
                       <dd className="text-right">{customLengthText.trim()}</dd>
                     </div>
                   )}
-                  {extensionCartList.length > 0 && (
+                  {extensionPaidInfo && (
                     <div className="flex justify-between gap-4">
-                      <dt>Extensions</dt>
+                      <dt>Extensions (paid)</dt>
                       <dd className="text-right">
-                        {extensionCartSummaryText}
+                        {extensionPaidInfo.summaryText}
                         <br />
-                        GHC {extensionCartTotal.toLocaleString()}
+                        GHC {Number(extensionPaidInfo.total).toLocaleString()}
                       </dd>
                     </div>
                   )}
@@ -841,7 +933,7 @@ export function BookingPage(props) {
                     </dd>
                   </div>
                   <p className="pt-2 text-xs text-white/60">
-                    The salon will confirm one final price covering the service and any extension together before you pay.
+                    The salon will confirm your final service price before you pay for it. Any extensions are already paid for separately.
                   </p>
                 </dl>
               </aside>

@@ -10,6 +10,7 @@ export function PaymentCompletePage() {
   const { token, clearCart } = useAppData()
   const [status, setStatus] = useState<'checking' | 'success' | 'failed'>('checking')
   const [amount, setAmount] = useState<number | null>(null)
+  const [resumeBookingServiceId, setResumeBookingServiceId] = useState('')
   const hasRun = useRef(false)
 
   useEffect(() => {
@@ -34,7 +35,18 @@ export function PaymentCompletePage() {
           const result = await api.verifyPayment(token as string, reference as string)
           if (result.status === 'success') {
             if (result.amount) setAmount(result.amount)
-            if (result.type === 'order') clearCart()
+            if (result.type === 'order') {
+              clearCart()
+              try {
+                const raw = localStorage.getItem('paidExtensionOrder')
+                if (raw) {
+                  const parsed = JSON.parse(raw)
+                  if (parsed && parsed.serviceId) setResumeBookingServiceId(parsed.serviceId)
+                }
+              } catch {
+                // ignore a corrupted or missing marker
+              }
+            }
             setStatus('success')
             return
           }
@@ -73,12 +85,21 @@ export function PaymentCompletePage() {
             ? 'Your payment of GHC ' + amount.toLocaleString() + ' was successful.'
             : 'Your payment was successful.'}
         </p>
-        <a
-          href="#/account"
-          className="mt-8 rounded-full bg-[#dc2d83] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.16em] text-white"
-        >
-          View my account
-        </a>
+        {resumeBookingServiceId ? (
+          <a
+            href={'#/book?service=' + resumeBookingServiceId}
+            className="mt-8 rounded-full bg-[#dc2d83] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.16em] text-white"
+          >
+            Continue your booking
+          </a>
+        ) : (
+          <a
+            href="#/account"
+            className="mt-8 rounded-full bg-[#dc2d83] px-8 py-3.5 text-xs font-bold uppercase tracking-[0.16em] text-white"
+          >
+            View my account
+          </a>
+        )}
       </main>
     )
   }

@@ -724,6 +724,9 @@ export const api = {
   adminPayments(token: string) {
     return request<AdminPayment[]>('/admin/payments', { token })
   },
+  adminDeletePayment(token: string, id: string) {
+    return request<{ removed: boolean }>('/admin/payments/' + id, { token, method: 'DELETE' })
+  },
   adminAnalytics(token: string) {
     return request<AdminAnalytics>('/admin/analytics', { token })
   },
