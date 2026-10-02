@@ -2,6 +2,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import {
   createStaff,
+  deletePayment,
   findCustomerDetails,
   getAnalytics,
   getSettings,
@@ -35,6 +36,12 @@ export async function customer(req, res) {
 
 export async function payments(_req, res) {
   res.json(await listPayments());
+}
+
+export async function removePayment(req, res) {
+  const removed = await deletePayment(req.params.id);
+  if (!removed) throw notFound("Payment not found");
+  res.json({ removed: true });
 }
 
 export async function analytics(_req, res) {
