@@ -5,6 +5,7 @@ import {
   customer,
   customers,
   payments,
+  removePayment,
   saveSettings,
   setStaffStatus,
   showSettings,
