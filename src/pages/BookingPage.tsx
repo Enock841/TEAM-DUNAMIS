@@ -4,7 +4,7 @@ import { formatDuration } from '../data/catalog'
 import { api } from '../lib/api'
 import { ImageUploadField } from '../admin/components/ImageUploadField'
 
-const times = ['09:00 AM', '10:30 AM', '12:00 PM', '02:00 PM', '03:30 PM']
+const times = ['08:00 AM', '10:30 AM', '12:00 PM', '02:00 PM', '03:30 PM']
 const weekdayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 
 export function BookingPage(props) {
