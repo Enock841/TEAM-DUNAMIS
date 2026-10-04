@@ -27,6 +27,7 @@ export function BookingPage(props) {
   const [selectedService, setSelectedService] = useState(serviceFromHash || '')
   const [showServiceList, setShowServiceList] = useState(!serviceFromHash)
   const [selectedCategory, setSelectedCategory] = useState('')
+  const [isOtherRequest, setIsOtherRequest] = useState(false)
   const [hasOwnExtension, setHasOwnExtension] = useState(null)
   const [wantsToBuyExtension, setWantsToBuyExtension] = useState(null)
   const [extensionProducts, setExtensionProducts] = useState([])
@@ -236,7 +237,16 @@ export function BookingPage(props) {
     })
   }, [step, selectedService, calendarYear, calendarMonth])
 
-  function selectService(service) {
+function selectOtherInCategory(categoryId) {
+    const representative = services.find(function (service) { return service.category.id === categoryId })
+    if (!representative) return
+    selectService(representative)
+    setIsOtherRequest(true)
+    setWantsCustomLength(true)
+    setShowServiceList(false)
+  }
+
+    function selectService(service) {
     setSelectedService(service.id)
     setHasOwnExtension(null)
     setWantsToBuyExtension(null)
@@ -434,7 +444,7 @@ export function BookingPage(props) {
                           <button
                             key={service.id}
                             type="button"
-                            onClick={function () { selectService(service); setShowServiceList(false) }}
+                            onClick={function () { selectService(service); setIsOtherRequest(false); setShowServiceList(false) }}
                             className="group flex flex-col overflow-hidden rounded-2xl bg-white text-left shadow-[0_6px_24px_rgba(87,43,61,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_40px_rgba(87,43,61,0.14)]"
                           >
                             <div className="aspect-[4/5] w-full overflow-hidden">
@@ -454,20 +464,30 @@ export function BookingPage(props) {
                           </button>
                         )
                       })}
+                    <button
+                      type="button"
+                      onClick={function () { selectOtherInCategory(selectedCategory) }}
+                      className="flex flex-col items-center justify-center rounded-2xl border-2 border-dashed border-[#dc2d83] bg-[#fff7fa] p-8 text-center transition hover:bg-[#fbe0eb]"
+                    >
+                      <span className="font-serif text-lg text-[#3e2530]">Don't see your style?</span>
+                      <span className="mt-2 text-xs font-bold uppercase tracking-[0.1em] text-[#dc2d83]">Request a custom style</span>
+                    </button>
                   </div>
                 </div>
               )}
               {!showServiceList && activeService && (
                 <div className="mt-7 flex items-center justify-between gap-4 rounded-2xl border border-[#dc2d83] bg-[#fbe0eb] p-5">
                   <span>
-                    <span className="block font-serif text-xl text-[#3e2530]">{activeService.name}</span>
+                    <span className="block font-serif text-xl text-[#3e2530]">{isOtherRequest ? 'Custom style request' : activeService.name}</span>
                     <span className="mt-1 block text-xs text-[#8f707d]">
-                      {activeService.category.name + ' - ' + formatDuration(activeService.durationMinutes)}
+                      {isOtherRequest
+                        ? activeService.category.name + ' - describe what you want below'
+                        : activeService.category.name + ' - ' + formatDuration(activeService.durationMinutes)}
                     </span>
                   </span>
                   <button
                     type="button"
-                    onClick={function () { setShowServiceList(true) }}
+                    onClick={function () { setShowServiceList(true); setIsOtherRequest(false) }}
                     className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.1em] text-[#dc2d83] underline underline-offset-4"
                   >
                     Change service
@@ -475,7 +495,7 @@ export function BookingPage(props) {
                 </div>
               )}
 
-              {selectedService && lengthOptions.length > 0 && (
+              {selectedService && lengthOptions.length > 0 && !isOtherRequest && (
                 <div className="mt-8 rounded-2xl border border-[#e6c5d3] bg-white p-6">
                   <p className="font-serif text-xl text-[#3e2530]">Choose your length</p>
                   <p className="mt-2 text-sm text-[#745f68]">Pricing depends on the length you choose.</p>
@@ -538,6 +558,23 @@ export function BookingPage(props) {
                         </p>
                       </div>
                     )}
+                  </div>
+                </div>
+              )}
+
+              {selectedService && isOtherRequest && (
+                <div className="mt-8 rounded-2xl border border-[#e6c5d3] bg-white p-6">
+                  <p className="font-serif text-xl text-[#3e2530]">Describe what you want</p>
+                  <p className="mt-2 text-sm text-[#745f68]">
+                    Tell us exactly what you are looking for, our team will review this and confirm a real price before your appointment.
+                  </p>
+                  <div className="mt-4">
+                    <textarea
+                      value={customLengthText}
+                      onChange={function (e) { setCustomLengthText(e.target.value) }}
+                      placeholder="Describe exactly what you want, e.g. 32 inch bone straight with curtain bangs"
+                      className="h-24 w-full rounded-xl border border-[#dfbdcb] bg-white p-4 text-sm outline-none focus:border-[#dc2d83]"
+                    />
                   </div>
                 </div>
               )}
