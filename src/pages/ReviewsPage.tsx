@@ -55,7 +55,7 @@ export function ReviewsPage() {
                     <div className="flex gap-0.5">
                       {[1, 2, 3, 4, 5].map(function (n) {
                         const starClass = n <= review.rating ? 'text-[#dc2d83]' : 'text-[#e6d3da]'
-                        return <span key={n} className={starClass}>star</span>
+                        return <span key={n} className={starClass}>&#9733;</span>
                       })}
                     </div>
                     {review.comment && (
