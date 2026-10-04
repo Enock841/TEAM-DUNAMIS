@@ -411,12 +411,12 @@ export function AccountPage(props) {
                               disabled={payingId === booking.id}
                               className="mt-3 rounded-full bg-[#dc2d83] px-5 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white disabled:opacity-50"
                             >
-                              {payingId === booking.id ? 'Redirecting...' : 'Pay deposit, GHC ' + (booking.confirmedPrice / 2) + ' of ' + booking.confirmedPrice}
+                              {payingId === booking.id ? 'Redirecting...' : 'Pay deposit, GHC ' + (booking.depositAmount ?? booking.confirmedPrice / 2) + ' of ' + booking.confirmedPrice}
                             </button>
                           )}
                           {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && !booking.amountPaid && (
                             <p className="mt-2 text-xs leading-5 text-[#8f707d]">
-                              Only half of the total is paid online, right now. The remaining half is paid directly at the salon on the day of your appointment.
+                              Only the deposit amount above is paid online, right now. The rest is paid directly at the salon on the day of your appointment.
                             </p>
                           )}
                           {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && booking.amountPaid > 0 && (
@@ -426,7 +426,7 @@ export function AccountPage(props) {
                           )}
                           {booking.status === 'confirmed' && !booking.isPaid && !booking.amountPaid && (
                             <p className="mt-2 text-xs leading-5 text-[#8f707d]">
-                              This is a deposit, half of your total price. You will pay the remaining balance in person at the salon when your appointment happens.
+                              This is a deposit toward your total price. You will pay the remaining balance in person at the salon when your appointment happens.
                             </p>
                           )}
                           {booking.status === 'confirmed' && !booking.isPaid && !booking.confirmedPrice && (

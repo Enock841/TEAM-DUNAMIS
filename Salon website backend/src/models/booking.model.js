@@ -164,6 +164,7 @@ export async function listBookingsForUser(userId) {
             b.custom_length_status as "customLengthStatus",
             b.confirmed_price::float8 as "confirmedPrice",
             b.amount_paid::float8 as "amountPaid",
+            b.deposit_amount::float8 as "depositAmount",
             (b.confirmed_price is not null and b.amount_paid >= b.confirmed_price) as "isPaid",
             s.name as "serviceName", c.name as "categoryName"
      from bookings b

@@ -168,6 +168,7 @@ export type CustomerBooking = {
   isPaid?: boolean
   confirmedPrice?: number
   amountPaid?: number
+  depositAmount?: number
 }
 
 export type CustomerOrder = {
