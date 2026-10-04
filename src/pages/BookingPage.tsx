@@ -25,6 +25,7 @@ export function BookingPage(props) {
 
   const [step, setStep] = useState(1)
   const [selectedService, setSelectedService] = useState(serviceFromHash || '')
+  const [showServiceList, setShowServiceList] = useState(!serviceFromHash)
   const [hasOwnExtension, setHasOwnExtension] = useState(null)
   const [wantsToBuyExtension, setWantsToBuyExtension] = useState(null)
   const [extensionProducts, setExtensionProducts] = useState([])
@@ -388,6 +389,7 @@ export function BookingPage(props) {
               {catalogLoading && <p className="mt-7">Loading services...</p>}
               {catalogError && <p className="mt-7 text-[#8b435f]">{catalogError}</p>}
 
+              {showServiceList && (
               <div className="mt-7 grid gap-3 md:grid-cols-2">
                 {services.map(function (service) {
                   const selected = selectedService === service.id
@@ -395,7 +397,7 @@ export function BookingPage(props) {
                     ? 'flex items-start justify-between gap-4 rounded-2xl border p-5 text-left transition border-[#dc2d83] bg-[#fbe0eb] shadow-sm'
                     : 'flex items-start justify-between gap-4 rounded-2xl border p-5 text-left transition border-[#ecd8e1] bg-white hover:border-[#dc2d83]'
                   return (
-                    <button key={service.id} type="button" onClick={function () { selectService(service) }} className={cardClass}>
+                    <button key={service.id} type="button" onClick={function () { selectService(service); setShowServiceList(false) }} className={cardClass}>
                       <span>
                         <span className="block font-serif text-lg text-[#3e2530]">{service.name}</span>
                         <span className="mt-1 block text-xs text-[#8f707d]">
@@ -409,6 +411,26 @@ export function BookingPage(props) {
                   )
                 })}
               </div>
+
+              )}
+
+              {!showServiceList && activeService && (
+                <div className="mt-7 flex items-center justify-between gap-4 rounded-2xl border border-[#dc2d83] bg-[#fbe0eb] p-5">
+                  <span>
+                    <span className="block font-serif text-lg text-[#3e2530]">{activeService.name}</span>
+                    <span className="mt-1 block text-xs text-[#8f707d]">
+                      {activeService.category.name + ' - ' + formatDuration(activeService.durationMinutes)}
+                    </span>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={function () { setShowServiceList(true) }}
+                    className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.1em] text-[#dc2d83] underline underline-offset-4"
+                  >
+                    Change service
+                  </button>
+                </div>
+              )}
 
               {selectedService && lengthOptions.length > 0 && (
                 <div className="mt-8 rounded-2xl border border-[#e6c5d3] bg-white p-6">
