@@ -85,6 +85,9 @@ export function PaymentCompletePage() {
             ? 'Your payment of GHC ' + amount.toLocaleString() + ' was successful.'
             : 'Your payment was successful.'}
         </p>
+        <p className="mt-2 text-sm text-[#745f68]">
+          Thank you for shopping with us, we are so excited for you to receive this! Keep an eye on your email, including your spam or junk folder just in case, we will keep you updated every step of the way, from approval to delivery.
+        </p>
         {resumeBookingServiceId ? (
           <a
             href={'#/book?service=' + resumeBookingServiceId}

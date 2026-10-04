@@ -339,7 +339,7 @@ export function BookingPage(props) {
 
       localStorage.removeItem('paidExtensionOrder')
       setSubmitted(true)
-      setMessage('Your booking request was submitted. We will review it and let you know once it is approved with a confirmed price, at which point you can pay from your account.')
+      setMessage('Thank you so much for booking with us, we cannot wait to pamper you! Please keep an eye on your email, including your spam or junk folder just in case, we will let you know there as soon as your appointment is approved with your price. Once it is, just come back to your account to complete payment and secure your slot.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to request this booking.')
     } finally {
