@@ -85,7 +85,7 @@ export function ServicesPage() {
 
       <section className="px-6 py-16 sm:px-10 sm:py-20 lg:px-12 lg:py-24 xl:py-28">
         <div className="mx-auto max-w-7xl">
-          {catalogLoading && <p>Loading salon services…</p>}
+          {catalogLoading && <p>Loading salon servicesâ€¦</p>}
           {catalogError && <p className="text-[#8b435f]">{catalogError}</p>}
           {normalizedSearch && (
             <div className="mb-12 flex flex-col items-center justify-between gap-4 rounded-2xl bg-[#f7e4ec] px-5 py-4 text-center sm:flex-row sm:text-left">
@@ -146,41 +146,40 @@ export function ServicesPage() {
                     className="mt-6 aspect-[4/3] w-full rounded-2xl object-cover lg:aspect-[4/5]"
                   />
                 </div>
-                <div className="divide-y divide-[#ecd6df]">
+                <div className="grid gap-5 sm:grid-cols-2">
                   {visibleServices
                     .filter(
                       (service) => service.category.name === category.name,
                     )
                     .map((service) => (
-                      <article
+                      <a
                         key={service.id}
-                        className="grid gap-5 py-7 first:pt-0 sm:grid-cols-[1fr_auto] sm:items-start"
+                        href={`#/appointments?service=${service.id}`}
+                        className="group flex flex-col overflow-hidden rounded-2xl bg-white text-left shadow-[0_6px_24px_rgba(87,43,61,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_40px_rgba(87,43,61,0.14)]"
                       >
-                        <div>
-                          <h3 className="font-serif text-2xl text-[#3e2530]">
-                            {service.name}
-                          </h3>
-                          <p className="mt-2 max-w-2xl text-sm leading-6 text-[#745f68]">
-                            {service.description}
-                          </p>
-                          <p className="mt-3 text-xs font-bold uppercase tracking-[0.14em] text-[#9a7183]">
-                            {formatDuration(service.durationMinutes)} · Up to{' '}
-                            {service.category.dailyCap} bookings per day
-                          </p>
+                        <div className="aspect-[4/5] w-full overflow-hidden">
+                          {service.images[0] && (
+                            <img
+                              src={service.images[0]}
+                              alt={service.name}
+                              className="h-full w-full object-cover transition duration-500 group-hover:scale-105"
+                            />
+                          )}
                         </div>
-                        <div className="flex items-center gap-5 sm:flex-col sm:items-end">
-                          <p className="font-serif text-xl text-[#3e2530]">
-                            GHC{service.priceMin.toLocaleString()}–
-                            {service.priceMax.toLocaleString()}
-                          </p>
-                          <a
-                            href={`#/appointments?service=${service.id}`}
-                            className="rounded-full bg-[#dc2d83] px-5 py-2 text-[11px] font-bold uppercase tracking-[0.13em] text-white"
-                          >
-                            Book
-                          </a>
+                        <div className="flex flex-1 flex-col justify-between gap-2 p-4">
+                          <div>
+                            <h3 className="block font-serif text-lg text-[#3e2530]">
+                              {service.name}
+                            </h3>
+                            <p className="mt-1 text-xs text-[#8f707d]">
+                              {formatDuration(service.durationMinutes)}
+                            </p>
+                          </div>
+                          <span className="text-sm font-bold text-[#b32269]">
+                            GHC {service.priceMin.toLocaleString()}-{service.priceMax.toLocaleString()}
+                          </span>
                         </div>
-                      </article>
+                      </a>
                     ))}
                 </div>
               </div>
