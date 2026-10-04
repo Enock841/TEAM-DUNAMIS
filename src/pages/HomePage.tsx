@@ -12,6 +12,7 @@ import {
 
 type HomePageProps = {
   onAdd: (product: Product) => void
+  onCreateAccount?: () => void
 }
 
 /* ------------------------------------------------------------------ data */
@@ -303,7 +304,8 @@ function AnnouncementBar() {
 
 /* ---------------------------------------------------------------- HERO */
 
-function HeroBanner() {
+function HeroBanner(props: { onCreateAccount?: () => void }) {
+  const onCreateAccount = props.onCreateAccount
   const [slides, setSlides] = useState<HeroSlide[]>([])
   const [index, setIndex] = useState(0)
   const [paused, setPaused] = useState(false)
@@ -588,6 +590,16 @@ function HeroBanner() {
               Book now
             </a>
           </div>
+
+          {onCreateAccount && (
+            <button
+              type="button"
+              onClick={onCreateAccount}
+              className="mt-4 text-[10px] font-bold uppercase tracking-[0.14em] text-white underline underline-offset-4 sm:text-xs"
+            >
+              New here? Create an account
+            </button>
+          )}
 
           {/* RATING */}
 
@@ -1024,6 +1036,7 @@ function FloatingBook() {
 
 export function HomePage(props: HomePageProps) {
   const onAdd = props.onAdd
+  const onCreateAccount = props.onCreateAccount
   const appData = useAppData()
 
   const products = appData.products
@@ -1197,7 +1210,7 @@ export function HomePage(props: HomePageProps) {
     <>
       <AnnouncementBar />
 
-      <HeroBanner />
+      <HeroBanner onCreateAccount={onCreateAccount} />
 
       {/* -------------------------------------------------------- features */}
 

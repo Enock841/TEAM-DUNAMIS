@@ -1,17 +1,22 @@
-import { useState, type FormEvent } from 'react'
+import { useEffect, useState, type FormEvent } from 'react'
 import { useAppData } from '../context/appData'
 
 type AuthPanelProps = {
   open: boolean
   onClose: () => void
+  initialMode?: 'login' | 'signup'
 }
 
-export function AuthPanel({ open, onClose }: AuthPanelProps) {
+export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
   const { login, register } = useAppData()
   const [confirmPassword, setConfirmPassword] = useState('')
   const [mode, setMode] = useState<'login' | 'signup'>('login')
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
+
+  useEffect(function () {
+    if (open) setMode(initialMode ?? 'login')
+  }, [open, initialMode])
 
   if (!open) return null
 

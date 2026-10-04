@@ -34,6 +34,7 @@ function App() {
   const [locationKey, setLocationKey] = useState(window.location.hash)
   const [cartOpen, setCartOpen] = useState(false)
   const [authOpen, setAuthOpen] = useState(false)
+  const [authMode, setAuthMode] = useState<'login' | 'signup'>('login')
 
   useEffect(() => {
     const syncRoute = () => {
@@ -104,7 +105,15 @@ function App() {
       page = <PaymentCompletePage />
       break
     default:
-      page = <HomePage onAdd={addToCart} />
+      page = (
+        <HomePage
+          onAdd={addToCart}
+          onCreateAccount={() => {
+            setAuthMode('signup')
+            setAuthOpen(true)
+          }}
+        />
+      )
   }
 
   if (route === 'dashboard') {
@@ -136,7 +145,7 @@ function App() {
           {page}
         </div>
         <Footer />
-        <AuthPanel open={authOpen} onClose={() => setAuthOpen(false)} />
+        <AuthPanel open={authOpen} onClose={() => setAuthOpen(false)} initialMode={authMode} />
         <CartDrawer
           items={cart}
           open={cartOpen}
