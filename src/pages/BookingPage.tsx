@@ -26,6 +26,7 @@ export function BookingPage(props) {
   const [step, setStep] = useState(1)
   const [selectedService, setSelectedService] = useState(serviceFromHash || '')
   const [showServiceList, setShowServiceList] = useState(!serviceFromHash)
+  const [selectedCategory, setSelectedCategory] = useState('')
   const [hasOwnExtension, setHasOwnExtension] = useState(null)
   const [wantsToBuyExtension, setWantsToBuyExtension] = useState(null)
   const [extensionProducts, setExtensionProducts] = useState([])
@@ -52,6 +53,14 @@ export function BookingPage(props) {
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   const [agreedToTerms, setAgreedToTerms] = useState(false)
+
+  const categories = useMemo(function () {
+    const map = new Map()
+    services.forEach(function (service) {
+      if (!map.has(service.category.id)) map.set(service.category.id, service.category)
+    })
+    return Array.from(map.values())
+  }, [services])
 
   const activeService = useMemo(function () {
     return services.find(function (service) { return service.id === selectedService })
@@ -389,34 +398,64 @@ export function BookingPage(props) {
               {catalogLoading && <p className="mt-7">Loading services...</p>}
               {catalogError && <p className="mt-7 text-[#8b435f]">{catalogError}</p>}
 
-              {showServiceList && (
-              <div className="mt-7 grid gap-3 md:grid-cols-2">
-                {services.map(function (service) {
-                  const selected = selectedService === service.id
-                  const cardClass = selected
-                    ? 'overflow-hidden rounded-2xl border text-left transition border-[#dc2d83] bg-[#fbe0eb] shadow-sm'
-                    : 'overflow-hidden rounded-2xl border text-left transition border-[#ecd8e1] bg-white hover:border-[#dc2d83]'
-                  return (
-                    <button key={service.id} type="button" onClick={function () { selectService(service); setShowServiceList(false) }} className={cardClass}>
-                      {service.images[0] && (
-                        <img src={service.images[0]} alt={service.name} className="h-48 w-full object-cover sm:h-56" />
-                      )}
-                      <div className="flex items-start justify-between gap-4 p-5">
-                        <span>
-                          <span className="block font-serif text-xl text-[#3e2530]">{service.name}</span>
-                          <span className="mt-1 block text-xs text-[#8f707d]">
-                            {service.category.name + ' - ' + formatDuration(service.durationMinutes)}
-                          </span>
-                        </span>
-                        <span className="whitespace-nowrap text-sm font-bold text-[#b32269]">
-                          {'GHC ' + service.priceMin.toLocaleString() + ' - ' + service.priceMax.toLocaleString()}
-                        </span>
-                      </div>
-                    </button>
-                  )
-                })}
-              </div>
+              {showServiceList && !selectedCategory && (
+                <div className="mt-7 grid gap-4 sm:grid-cols-2">
+                  {categories.map(function (category) {
+                    return (
+                      <button
+                        key={category.id}
+                        type="button"
+                        onClick={function () { setSelectedCategory(category.id) }}
+                        className="group relative h-48 overflow-hidden rounded-2xl text-left sm:h-56"
+                      >
+                        <img src={category.imageUrl} alt={category.name} className="absolute inset-0 h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                        <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent" />
+                        <span className="absolute bottom-5 left-5 font-serif text-2xl text-white">{category.name}</span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )}
 
+              {showServiceList && selectedCategory && (
+                <div className="mt-7">
+                  <button
+                    type="button"
+                    onClick={function () { setSelectedCategory('') }}
+                    className="text-xs font-bold uppercase tracking-[0.1em] text-[#dc2d83] underline underline-offset-4"
+                  >
+                    Back to all categories
+                  </button>
+                  <div className="mt-5 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
+                    {services
+                      .filter(function (service) { return service.category.id === selectedCategory })
+                      .map(function (service) {
+                        return (
+                          <button
+                            key={service.id}
+                            type="button"
+                            onClick={function () { selectService(service); setShowServiceList(false) }}
+                            className="group flex flex-col overflow-hidden rounded-2xl bg-white text-left shadow-[0_6px_24px_rgba(87,43,61,0.08)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_14px_40px_rgba(87,43,61,0.14)]"
+                          >
+                            <div className="aspect-[4/5] w-full overflow-hidden">
+                              {service.images[0] && (
+                                <img src={service.images[0]} alt={service.name} className="h-full w-full object-cover transition duration-500 group-hover:scale-105" />
+                              )}
+                            </div>
+                            <div className="flex flex-1 flex-col justify-between gap-2 p-4">
+                              <div>
+                                <span className="block font-serif text-lg text-[#3e2530]">{service.name}</span>
+                                <span className="mt-1 block text-xs text-[#8f707d]">{formatDuration(service.durationMinutes)}</span>
+                              </div>
+                              <span className="text-sm font-bold text-[#b32269]">
+                                {'GHC ' + service.priceMin.toLocaleString() + ' - ' + service.priceMax.toLocaleString()}
+                              </span>
+                            </div>
+                          </button>
+                        )
+                      })}
+                  </div>
+                </div>
               )}
               {!showServiceList && activeService && (
                 <div className="mt-7 overflow-hidden rounded-2xl border border-[#dc2d83] bg-[#fbe0eb]">
