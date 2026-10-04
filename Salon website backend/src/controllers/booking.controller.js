@@ -11,12 +11,15 @@ import {
   listBookingsForUser,
   markReminderSent,
   rescheduleBooking,
-  updateBookingStatus
+  requestDepositChange,
+  updateBookingStatus,
+  updateDepositAmount
 } from "../models/booking.model.js";
 import { env } from "../config/env.js";
 import { getBookingDetailsForEmail } from "../models/payment.model.js";
 import {
   sendAdminBookingNotification,
+  sendEmail,
   sendBookingApproved,
   sendBookingCancelled,
   sendBookingReceived,
@@ -84,6 +87,14 @@ const codeSchema = z.object({
   code: z.string().min(4).max(10)
 });
 
+const depositRequestSchema = z.object({
+  amount: z.number().positive(),
+  note: z.string().max(300).optional()
+});
+
+const adminDepositSchema = z.object({
+  depositAmount: z.number().positive()
+});
 export async function availability(req, res) {
   const params = z
     .object({ serviceId: z.string().uuid(), date: z.string().date() })
@@ -146,6 +157,29 @@ export async function updateStatus(req, res) {
   res.json({ booking });
 }
 
+export async function requestDeposit(req, res) {
+  const body = depositRequestSchema.parse(req.body);
+  const booking = await requestDepositChange(req.params.id, req.user.id, body.amount, body.note);
+  if (!booking) throw new HttpError(400, "This request cannot be made, either the appointment is not confirmed yet or a payment has already been made");
+
+  const details = await getBookingDetailsForEmail(booking.id);
+  if (details && env.adminEmail) {
+    sendEmail({
+      to: env.adminEmail,
+      subject: "A client requested a different deposit amount",
+      html: `<h2>Deposit change requested</h2><p><strong>${details.customerName}</strong> requested GHC ${body.amount} as their deposit${body.note ? ", with this note: " + body.note : ""}.</p><p>Service: ${details.serviceName}</p>`
+    });
+  }
+
+  res.json({ booking });
+}
+
+export async function adminUpdateDeposit(req, res) {
+  const body = adminDepositSchema.parse(req.body);
+  const booking = await updateDepositAmount(req.params.id, body.depositAmount);
+  if (!booking) throw new HttpError(400, "This deposit cannot be changed, a payment may have already been made");
+  res.json({ booking });
+}
 export async function reschedule(req, res) {
   const body = scheduleSchema.parse(req.body);
   assertNotPast(body.date, body.timeSlot);

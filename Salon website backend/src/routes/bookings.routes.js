@@ -6,7 +6,9 @@ import {
   index,
   mine,
   monthAvailability,
+  adminUpdateDeposit,
   remove,
+  requestDeposit,
   reschedule,
   sendReminders,
   updateStatus,
@@ -47,6 +49,17 @@ router.put(
   asyncHandler(approveCustomLengthRequest)
 );
 router.delete("/:id", requireAuth, requireAdmin, asyncHandler(remove));
+router.put(
+  "/:id/deposit-request",
+  requireAuth,
+  asyncHandler(requestDeposit)
+);
+router.put(
+  "/:id/deposit",
+  requireAuth,
+  requireAdmin,
+  asyncHandler(adminUpdateDeposit)
+);
 router.post("/send-reminders", asyncHandler(sendReminders));
 
 export default router;
