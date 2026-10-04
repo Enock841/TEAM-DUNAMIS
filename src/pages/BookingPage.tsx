@@ -398,6 +398,9 @@ export function BookingPage(props) {
                     : 'flex items-start justify-between gap-4 rounded-2xl border p-5 text-left transition border-[#ecd8e1] bg-white hover:border-[#dc2d83]'
                   return (
                     <button key={service.id} type="button" onClick={function () { selectService(service); setShowServiceList(false) }} className={cardClass}>
+                      {service.images[0] && (
+                        <img src={service.images[0]} alt={service.name} className="h-16 w-16 flex-shrink-0 rounded-xl object-cover" />
+                      )}
                       <span>
                         <span className="block font-serif text-lg text-[#3e2530]">{service.name}</span>
                         <span className="mt-1 block text-xs text-[#8f707d]">
@@ -416,6 +419,9 @@ export function BookingPage(props) {
 
               {!showServiceList && activeService && (
                 <div className="mt-7 flex items-center justify-between gap-4 rounded-2xl border border-[#dc2d83] bg-[#fbe0eb] p-5">
+                  {activeService.images[0] && (
+                    <img src={activeService.images[0]} alt={activeService.name} className="h-16 w-16 flex-shrink-0 rounded-xl object-cover" />
+                  )}
                   <span>
                     <span className="block font-serif text-lg text-[#3e2530]">{activeService.name}</span>
                     <span className="mt-1 block text-xs text-[#8f707d]">
