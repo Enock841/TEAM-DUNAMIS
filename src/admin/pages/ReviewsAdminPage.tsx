@@ -24,6 +24,17 @@ export function ReviewsAdminPage() {
     }
   }
 
+  async function remove(id) {
+    if (!token) return
+    if (!window.confirm('Delete this review? This cannot be undone.')) return
+    try {
+      await api.deleteReview(token, id)
+      await reload()
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'Unable to delete review.')
+    }
+  }
+
   return (
     <>
       <PageHeader
@@ -47,7 +58,7 @@ export function ReviewsAdminPage() {
                   <div className="mt-2 flex gap-0.5">
                     {[1, 2, 3, 4, 5].map((n) => (
                       <span key={n} className={n <= review.rating ? 'text-[#dc2d83]' : 'text-[#e6d3da]'}>
-                        star
+                        Ã¢Ëœâ€¦
                       </span>
                     ))}
                   </div>
@@ -68,16 +79,21 @@ export function ReviewsAdminPage() {
                 <video src={review.mediaUrl} controls className="mt-4 h-48 w-full max-w-sm rounded-2xl object-cover" />
               )}
 
-              {review.status === 'pending' && (
-                <div className="mt-5 flex flex-wrap gap-2 border-t border-[#f0dfe6] pt-5">
-                  <button onClick={() => change(review.id, 'approved')} className="rounded-full border border-emerald-600 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-emerald-700">
-                    Approve
-                  </button>
-                  <button onClick={() => change(review.id, 'rejected')} className="rounded-full border border-red-500 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-red-600">
-                    Reject
-                  </button>
-                </div>
-              )}
+              <div className="mt-5 flex flex-wrap gap-2 border-t border-[#f0dfe6] pt-5">
+                {review.status === 'pending' && (
+                  <>
+                    <button onClick={() => change(review.id, 'approved')} className="rounded-full border border-emerald-600 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-emerald-700">
+                      Approve
+                    </button>
+                    <button onClick={() => change(review.id, 'rejected')} className="rounded-full border border-red-500 px-5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-red-600">
+                      Reject
+                    </button>
+                  </>
+                )}
+                <button onClick={() => remove(review.id)} className="rounded-full border border-[#8f7480] px-5 py-2.5 text-xs font-bold uppercase tracking-[0.1em] text-[#5b4750]">
+                  Delete
+                </button>
+              </div>
             </Panel>
           )
         })}

@@ -433,7 +433,9 @@ export const api = {
       body: JSON.stringify({ status }),
     })
   },
-  async products() {
+  deleteReview(token: string, id: string) {
+    return request<null>(`/reviews/${id}`, { method: 'DELETE', token })
+  },  async products() {
     const data = await request<
       Array<Omit<Product, 'price' | 'image'> & { price: number | string }>
     >('/products')

@@ -5,7 +5,8 @@ import {
   listAllReviews,
   listMyReviewableBookings,
   listMyReviewableOrders,
-  updateReviewStatus
+  updateReviewStatus,
+  deleteReview
 } from "../models/review.model.js";
 import { notFound } from "../utils/httpError.js";
 
@@ -42,4 +43,10 @@ export async function updateStatus(req, res) {
   const review = await updateReviewStatus(req.params.id, body.status);
   if (!review) throw notFound("Review not found");
   res.json({ review });
+}
+
+export async function remove(req, res) {
+  const removed = await deleteReview(req.params.id);
+  if (!removed) throw notFound("Review not found");
+  res.json({ removed: true });
 }

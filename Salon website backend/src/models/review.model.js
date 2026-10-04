@@ -19,7 +19,7 @@ export async function createReview(userId, input) {
 
       const result = await client.query(
         `insert into reviews (order_id, user_id, rating, comment, media_url, media_type, status)
-         values ($1, $2, $3, $4, $5, $6, 'approved')
+         values ($1, $2, $3, $4, $5, $6, 'pending')
          returning id, order_id as "orderId", rating, comment,
                    media_url as "mediaUrl", media_type as "mediaType", status, created_at as "createdAt"`,
         [input.orderId, userId, input.rating, input.comment || "", input.mediaUrl || null, input.mediaType || null]
@@ -40,7 +40,7 @@ export async function createReview(userId, input) {
 
     const result = await client.query(
       `insert into reviews (booking_id, user_id, rating, comment, media_url, media_type, status)
-       values ($1, $2, $3, $4, $5, $6, 'approved')
+       values ($1, $2, $3, $4, $5, $6, 'pending')
        returning id, booking_id as "bookingId", rating, comment,
                  media_url as "mediaUrl", media_type as "mediaType", status, created_at as "createdAt"`,
       [input.bookingId, userId, input.rating, input.comment || "", input.mediaUrl || null, input.mediaType || null]
@@ -107,6 +107,10 @@ export async function updateReviewStatus(id, status) {
   return result.rows[0] || null;
 }
 
+export async function deleteReview(id) {
+  const result = await query(`delete from reviews where id = $1 returning id`, [id]);
+  return result.rows[0] || null;
+}
 export async function listMyReviewableBookings(userId) {
   const result = await query(
     `select b.id as "bookingId", s.name as "serviceName", b.booking_date as date
