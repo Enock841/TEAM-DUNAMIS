@@ -458,27 +458,23 @@ export function BookingPage(props) {
                 </div>
               )}
               {!showServiceList && activeService && (
-                <div className="mt-7 overflow-hidden rounded-2xl border border-[#dc2d83] bg-[#fbe0eb]">
-                  {activeService.images[0] && (
-                    <img src={activeService.images[0]} alt={activeService.name} className="h-56 w-full object-cover" />
-                  )}
-                  <div className="flex items-center justify-between gap-4 p-5">
-                    <span>
-                      <span className="block font-serif text-xl text-[#3e2530]">{activeService.name}</span>
-                      <span className="mt-1 block text-xs text-[#8f707d]">
-                        {activeService.category.name + ' - ' + formatDuration(activeService.durationMinutes)}
-                      </span>
+                <div className="mt-7 flex items-center justify-between gap-4 rounded-2xl border border-[#dc2d83] bg-[#fbe0eb] p-5">
+                  <span>
+                    <span className="block font-serif text-xl text-[#3e2530]">{activeService.name}</span>
+                    <span className="mt-1 block text-xs text-[#8f707d]">
+                      {activeService.category.name + ' - ' + formatDuration(activeService.durationMinutes)}
                     </span>
-                    <button
-                      type="button"
-                      onClick={function () { setShowServiceList(true) }}
-                      className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.1em] text-[#dc2d83] underline underline-offset-4"
-                    >
-                      Change service
-                    </button>
-                  </div>
+                  </span>
+                  <button
+                    type="button"
+                    onClick={function () { setShowServiceList(true) }}
+                    className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.1em] text-[#dc2d83] underline underline-offset-4"
+                  >
+                    Change service
+                  </button>
                 </div>
               )}
+
               {selectedService && lengthOptions.length > 0 && (
                 <div className="mt-8 rounded-2xl border border-[#e6c5d3] bg-white p-6">
                   <p className="font-serif text-xl text-[#3e2530]">Choose your length</p>
