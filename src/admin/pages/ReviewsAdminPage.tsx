@@ -57,9 +57,7 @@ export function ReviewsAdminPage() {
                   <p className="mt-1 text-xs text-[#806b74]">{review.serviceName}</p>
                   <div className="mt-2 flex gap-0.5">
                     {[1, 2, 3, 4, 5].map((n) => (
-                      <span key={n} className={n <= review.rating ? 'text-[#dc2d83]' : 'text-[#e6d3da]'}>
-                        Ã¢Ëœâ€¦
-                      </span>
+                      <span key={n} className={n <= review.rating ? 'text-[#dc2d83]' : 'text-[#e6d3da]'}>★</span>
                     ))}
                   </div>
                 </div>

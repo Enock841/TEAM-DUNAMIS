@@ -165,6 +165,7 @@ export async function listBookingsForUser(userId) {
             b.confirmed_price::float8 as "confirmedPrice",
             b.amount_paid::float8 as "amountPaid",
             b.deposit_amount::float8 as "depositAmount",
+            b.deposit_request_amount::float8 as "depositRequestAmount", b.deposit_request_note as "depositRequestNote",
             (b.confirmed_price is not null and b.amount_paid >= b.confirmed_price) as "isPaid",
             s.name as "serviceName", c.name as "categoryName"
      from bookings b
@@ -187,6 +188,7 @@ export async function listBookings({ date, categoryId }) {
             b.confirmed_price::float8 as "confirmedPrice",
             b.amount_paid::float8 as "amountPaid",
             b.deposit_amount::float8 as "depositAmount",
+            b.deposit_request_amount::float8 as "depositRequestAmount", b.deposit_request_note as "depositRequestNote",
             b.notes,
             b.extension_product_name as "extensionProductName",
             b.extension_quantity as "extensionQuantity",
@@ -239,6 +241,27 @@ export async function updateBookingStatus(id, status, price, depositAmount) {
   return result.rows[0] || null;
 }
 
+export async function requestDepositChange(id, userId, amount, note) {
+  const result = await query(
+    `update bookings
+     set deposit_request_amount = $1, deposit_request_note = $2, updated_at = now()
+     where id = $3 and user_id = $4 and status = 'confirmed' and coalesce(amount_paid, 0) = 0
+     returning id, deposit_request_amount::float8 as "depositRequestAmount", deposit_request_note as "depositRequestNote"`,
+    [amount ?? null, note ?? null, id, userId]
+  );
+  return result.rows[0] || null;
+}
+
+export async function updateDepositAmount(id, depositAmount) {
+  const result = await query(
+    `update bookings
+     set deposit_amount = $1, deposit_request_amount = null, deposit_request_note = null, updated_at = now()
+     where id = $2 and coalesce(amount_paid, 0) = 0
+     returning id, deposit_amount::float8 as "depositAmount"`,
+    [depositAmount, id]
+  );
+  return result.rows[0] || null;
+}
 export async function rescheduleBooking(id, date, timeSlot) {
   const result = await query(
     `update bookings
