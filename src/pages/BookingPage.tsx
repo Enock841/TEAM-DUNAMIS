@@ -394,50 +394,52 @@ export function BookingPage(props) {
                 {services.map(function (service) {
                   const selected = selectedService === service.id
                   const cardClass = selected
-                    ? 'flex items-start justify-between gap-4 rounded-2xl border p-5 text-left transition border-[#dc2d83] bg-[#fbe0eb] shadow-sm'
-                    : 'flex items-start justify-between gap-4 rounded-2xl border p-5 text-left transition border-[#ecd8e1] bg-white hover:border-[#dc2d83]'
+                    ? 'overflow-hidden rounded-2xl border text-left transition border-[#dc2d83] bg-[#fbe0eb] shadow-sm'
+                    : 'overflow-hidden rounded-2xl border text-left transition border-[#ecd8e1] bg-white hover:border-[#dc2d83]'
                   return (
                     <button key={service.id} type="button" onClick={function () { selectService(service); setShowServiceList(false) }} className={cardClass}>
                       {service.images[0] && (
-                        <img src={service.images[0]} alt={service.name} className="h-16 w-16 flex-shrink-0 rounded-xl object-cover" />
+                        <img src={service.images[0]} alt={service.name} className="h-48 w-full object-cover sm:h-56" />
                       )}
-                      <span>
-                        <span className="block font-serif text-lg text-[#3e2530]">{service.name}</span>
-                        <span className="mt-1 block text-xs text-[#8f707d]">
-                          {service.category.name + ' - ' + formatDuration(service.durationMinutes)}
+                      <div className="flex items-start justify-between gap-4 p-5">
+                        <span>
+                          <span className="block font-serif text-xl text-[#3e2530]">{service.name}</span>
+                          <span className="mt-1 block text-xs text-[#8f707d]">
+                            {service.category.name + ' - ' + formatDuration(service.durationMinutes)}
+                          </span>
                         </span>
-                      </span>
-                      <span className="whitespace-nowrap text-sm font-bold text-[#b32269]">
-                        {'GHC ' + service.priceMin.toLocaleString() + ' - ' + service.priceMax.toLocaleString()}
-                      </span>
+                        <span className="whitespace-nowrap text-sm font-bold text-[#b32269]">
+                          {'GHC ' + service.priceMin.toLocaleString() + ' - ' + service.priceMax.toLocaleString()}
+                        </span>
+                      </div>
                     </button>
                   )
                 })}
               </div>
 
               )}
-
               {!showServiceList && activeService && (
-                <div className="mt-7 flex items-center justify-between gap-4 rounded-2xl border border-[#dc2d83] bg-[#fbe0eb] p-5">
+                <div className="mt-7 overflow-hidden rounded-2xl border border-[#dc2d83] bg-[#fbe0eb]">
                   {activeService.images[0] && (
-                    <img src={activeService.images[0]} alt={activeService.name} className="h-16 w-16 flex-shrink-0 rounded-xl object-cover" />
+                    <img src={activeService.images[0]} alt={activeService.name} className="h-56 w-full object-cover" />
                   )}
-                  <span>
-                    <span className="block font-serif text-lg text-[#3e2530]">{activeService.name}</span>
-                    <span className="mt-1 block text-xs text-[#8f707d]">
-                      {activeService.category.name + ' - ' + formatDuration(activeService.durationMinutes)}
+                  <div className="flex items-center justify-between gap-4 p-5">
+                    <span>
+                      <span className="block font-serif text-xl text-[#3e2530]">{activeService.name}</span>
+                      <span className="mt-1 block text-xs text-[#8f707d]">
+                        {activeService.category.name + ' - ' + formatDuration(activeService.durationMinutes)}
+                      </span>
                     </span>
-                  </span>
-                  <button
-                    type="button"
-                    onClick={function () { setShowServiceList(true) }}
-                    className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.1em] text-[#dc2d83] underline underline-offset-4"
-                  >
-                    Change service
-                  </button>
+                    <button
+                      type="button"
+                      onClick={function () { setShowServiceList(true) }}
+                      className="whitespace-nowrap text-xs font-bold uppercase tracking-[0.1em] text-[#dc2d83] underline underline-offset-4"
+                    >
+                      Change service
+                    </button>
+                  </div>
                 </div>
               )}
-
               {selectedService && lengthOptions.length > 0 && (
                 <div className="mt-8 rounded-2xl border border-[#e6c5d3] bg-white p-6">
                   <p className="font-serif text-xl text-[#3e2530]">Choose your length</p>
