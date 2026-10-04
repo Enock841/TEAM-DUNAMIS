@@ -1,4 +1,5 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { loadGooglePlaces } from '../lib/googlePlaces'
 import { useAppData } from '../context/appData'
 import type { Product } from '../data/catalog'
 import { productImage } from '../data/catalog'
@@ -27,6 +28,24 @@ export function CartDrawer({
   const [phone, setPhone] = useState('')
   const [email, setEmail] = useState('')
   const [address, setAddress] = useState('')
+  const addressInputRef = useRef<HTMLInputElement>(null)
+
+  useEffect(function () {
+    if (fulfillmentType !== 'delivery' || !open) return
+    let autocomplete: any
+    loadGooglePlaces().then(function () {
+      const w = window as any
+      if (!addressInputRef.current || !w.google || !w.google.maps || !w.google.maps.places) return
+      autocomplete = new w.google.maps.places.Autocomplete(addressInputRef.current, {
+        componentRestrictions: { country: 'gh' },
+        fields: ['formatted_address'],
+      })
+      autocomplete.addListener('place_changed', function () {
+        const place = autocomplete.getPlace()
+        if (place && place.formatted_address) setAddress(place.formatted_address)
+      })
+    })
+  }, [fulfillmentType, open])
   const [notes, setNotes] = useState('')
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [busy, setBusy] = useState(false)
@@ -276,9 +295,10 @@ export function CartDrawer({
                 />
                 <input
                   type="text"
+                  ref={addressInputRef}
                   value={address}
                   onChange={function (e) { setAddress(e.target.value) }}
-                  placeholder="Your location, e.g. Ayeduase, near the market"
+                  placeholder="Start typing your location, e.g. Ayeduase"
                   className="h-12 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 text-sm outline-none focus:border-[#dc2d83]"
                 />
                 <textarea
