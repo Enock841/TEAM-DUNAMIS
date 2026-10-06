@@ -396,7 +396,7 @@ export function CartDrawer({
             disabled={!items.length || busy || !agreedToTerms}
             className="mt-5 min-h-13 w-full rounded-full bg-[#d92c83] px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] text-white disabled:opacity-40"
           >
-            {busy ? 'Redirecting to payment...' : 'Pay now'}
+            {busy ? 'Redirecting to payment...' : 'Pay with Paystack'}
           </button>
           <button
             type="button"
@@ -404,7 +404,7 @@ export function CartDrawer({
             disabled={!items.length || busy || !agreedToTerms}
             className="mt-3 min-h-13 w-full rounded-full border border-[#d92c83] px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] text-[#d92c83] disabled:opacity-40"
           >
-            Pay with Mobile Money
+            Pay with Mobile Money directly
           </button>
           {momoOrderId && (
             <MomoPaymentModal

@@ -413,7 +413,7 @@ export function AccountPage(props) {
                               disabled={payingId === booking.id}
                               className="mt-3 rounded-full bg-[#dc2d83] px-5 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white disabled:opacity-50"
                             >
-                              {payingId === booking.id ? 'Redirecting...' : 'Pay deposit, GHC ' + (booking.depositAmount ?? booking.confirmedPrice / 2) + ' of ' + booking.confirmedPrice}
+                              {payingId === booking.id ? 'Redirecting...' : 'Pay deposit with Paystack, GHC ' + (booking.depositAmount ?? booking.confirmedPrice / 2) + ' of ' + booking.confirmedPrice}
                             </button>
                           )}
                           {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && !booking.amountPaid && (
@@ -423,7 +423,7 @@ export function AccountPage(props) {
                                 onClick={function () { setMomoBookingId(booking.id) }}
                                 className="mt-2 rounded-full border border-[#dc2d83] px-5 py-2 text-xs font-bold uppercase tracking-[0.12em] text-[#dc2d83]"
                               >
-                                Pay deposit with Mobile Money
+                                Pay deposit with Mobile Money directly
                               </button>
                               {momoBookingId === booking.id && (
                                 <MomoPaymentModal

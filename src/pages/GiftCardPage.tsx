@@ -212,7 +212,7 @@ export function GiftCardPage(props) {
             disabled={busy}
             className="mt-7 min-h-14 w-full rounded-full bg-[#dc2d83] px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-white disabled:opacity-50"
           >
-            {busy ? 'Redirecting to payment...' : 'Buy gift card, GHC ' + (finalAmount || 0)}
+            {busy ? 'Redirecting to payment...' : 'Pay with Paystack, GHC ' + (finalAmount || 0)}
           </button>
           <button
             type="button"
@@ -220,7 +220,7 @@ export function GiftCardPage(props) {
             disabled={busy}
             className="mt-3 min-h-14 w-full rounded-full border border-[#dc2d83] px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-[#dc2d83] disabled:opacity-50"
           >
-            Pay with Mobile Money instead
+            Pay with Mobile Money directly
           </button>
           {momoGiftCardId && (
             <MomoPaymentModal
