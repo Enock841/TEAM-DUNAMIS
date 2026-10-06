@@ -4,6 +4,7 @@ import { useAppData } from '../context/appData'
 import type { Product } from '../data/catalog'
 import { productImage } from '../data/catalog'
 import { api } from '../lib/api'
+import { MomoPaymentModal } from './MomoPaymentModal'
 
 type CartDrawerProps = {
   items: Product[]
@@ -49,6 +50,7 @@ export function CartDrawer({
   const [notes, setNotes] = useState('')
   const [agreedToTerms, setAgreedToTerms] = useState(false)
   const [busy, setBusy] = useState(false)
+  const [momoOrderId, setMomoOrderId] = useState('')
   const [message, setMessage] = useState('')
   const [giftCardCode, setGiftCardCode] = useState('')
   const [appliedGiftCard, setAppliedGiftCard] = useState<{ code: string; balance: number } | null>(null)
@@ -84,7 +86,7 @@ export function CartDrawer({
     }
   }
 
-  async function checkout() {
+  async function checkout(method: 'paystack' | 'momo' = 'paystack') {
     if (fulfillmentType === 'pickup') {
       if (!name.trim()) {
         setMessage('Please fill in your name.')
@@ -135,6 +137,12 @@ export function CartDrawer({
       if (result.order.status === 'paid') {
         onOrderComplete()
         setMessage('Your order is fully covered by your gift card and has been placed.')
+        setBusy(false)
+        return
+      }
+
+      if (method === 'momo') {
+        setMomoOrderId(result.order.id)
         setBusy(false)
         return
       }
@@ -390,7 +398,25 @@ export function CartDrawer({
           >
             {busy ? 'Redirecting to payment...' : 'Pay now'}
           </button>
-          {message && (
+          <button
+            type="button"
+            onClick={function () { checkout('momo') }}
+            disabled={!items.length || busy || !agreedToTerms}
+            className="mt-3 min-h-13 w-full rounded-full border border-[#d92c83] px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] text-[#d92c83] disabled:opacity-40"
+          >
+            Pay with Mobile Money
+          </button>
+          {momoOrderId && (
+            <MomoPaymentModal
+              type="order"
+              refId={momoOrderId}
+              token={token ?? undefined}
+              onClose={function (submitted) {
+                setMomoOrderId('')
+                if (submitted) onOrderComplete()
+              }}
+            />
+          )}          {message && (
             <p className="mt-3 text-sm leading-6 text-[#74485a]" role="status">
               {message}
             </p>

@@ -1,12 +1,33 @@
-import { useState, type ReactNode } from 'react'
+import { useEffect, useState, type ReactNode } from 'react'
 import { FiLogOut, FiMenu, FiX } from 'react-icons/fi'
 import { useAppData } from '../../context/appData'
+import { api } from '../../lib/api'
 import { adminNavigation, currentAdminSection } from '../adminNavigation'
 
 export function AdminShell({ children }: { children: ReactNode }) {
-  const { user, logout } = useAppData()
+  const { user, logout, token } = useAppData()
   const [open, setOpen] = useState(false)
   const active = currentAdminSection()
+  const [waiting, setWaiting] = useState(0)
+
+  useEffect(() => {
+    if (!token) return
+    let current = true
+    function check() {
+      api
+        .adminPayments(token as string)
+        .then((payments) => {
+          if (current) setWaiting(payments.filter((payment) => payment.status === 'awaiting_confirmation').length)
+        })
+        .catch(() => {})
+    }
+    check()
+    const timer = window.setInterval(check, 60000)
+    return () => {
+      current = false
+      window.clearInterval(timer)
+    }
+  }, [token, active])
 
   function signOut() {
     logout()
@@ -52,6 +73,9 @@ export function AdminShell({ children }: { children: ReactNode }) {
             >
               <Icon aria-hidden="true" size={18} />
               {label}
+              {id === 'mobile-money' && waiting > 0 && (
+                <span className="ml-auto rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-bold text-[#3e2130]">{waiting}</span>
+              )}
             </a>
           ))}
         </nav>

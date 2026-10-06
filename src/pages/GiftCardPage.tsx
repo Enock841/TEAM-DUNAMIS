@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useAppData } from '../context/appData'
 import { api } from '../lib/api'
+import { MomoPaymentModal } from '../components/MomoPaymentModal'
 
 const presetAmounts = [50, 100, 200, 500]
 
@@ -20,6 +21,7 @@ export function GiftCardPage(props) {
   const [message, setMessage] = useState('')
   const [momoNumber, setMomoNumber] = useState('')
   const [busy, setBusy] = useState(false)
+  const [momoGiftCardId, setMomoGiftCardId] = useState('')
   const [error, setError] = useState('')
 
   useEffect(() => {
@@ -32,7 +34,7 @@ export function GiftCardPage(props) {
 
   const finalAmount = customAmount ? Number(customAmount) : amount
 
-  async function submit(event) {
+  async function submit(event, method = 'paystack') {
     event.preventDefault()
     if (!token) {
       setError('Sign in or create an account to buy a gift card.')
@@ -47,7 +49,7 @@ export function GiftCardPage(props) {
       setError('Please fill in your name and email.')
       return
     }
-    if (!momoNumber.trim()) {
+    if (method === 'paystack' && !momoNumber.trim()) {
       setError('Please enter a Mobile Money number to pay with.')
       return
     }
@@ -63,6 +65,12 @@ export function GiftCardPage(props) {
         recipientEmail: isGift ? recipientEmail.trim() || undefined : undefined,
         message: message.trim() || undefined,
       })
+
+      if (method === 'momo') {
+        setMomoGiftCardId(result.giftCard.id)
+        setBusy(false)
+        return
+      }
 
       const payment = await api.initiatePayment(token, {
         type: 'gift_card',
@@ -206,7 +214,25 @@ export function GiftCardPage(props) {
           >
             {busy ? 'Redirecting to payment...' : 'Buy gift card, GHC ' + (finalAmount || 0)}
           </button>
-        </form>
+          <button
+            type="button"
+            onClick={function (event) { submit(event, 'momo') }}
+            disabled={busy}
+            className="mt-3 min-h-14 w-full rounded-full border border-[#dc2d83] px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-[#dc2d83] disabled:opacity-50"
+          >
+            Pay with Mobile Money instead
+          </button>
+          {momoGiftCardId && (
+            <MomoPaymentModal
+              type="gift_card"
+              refId={momoGiftCardId}
+              token={token ?? undefined}
+              onClose={function (submitted) {
+                setMomoGiftCardId('')
+                if (submitted) setError('Thank you! Beryl will confirm your payment, and the gift card will be emailed once she does.')
+              }}
+            />
+          )}        </form>
       </div>
     </main>
   )

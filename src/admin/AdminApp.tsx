@@ -4,6 +4,7 @@ import { AnalyticsAdminPage } from './pages/AnalyticsAdminPage'
 import { AppointmentsAdminPage } from './pages/AppointmentsAdminPage'
 import { CustomersAdminPage } from './pages/CustomersAdminPage'
 import { HeroSlidesAdminPage } from './pages/HeroSlidesAdminPage'
+import { MobileMoneyAdminPage } from './pages/MobileMoneyAdminPage'
 import { OrdersAdminPage } from './pages/OrdersAdminPage'
 import { OverviewAdminPage } from './pages/OverviewAdminPage'
 import { PaymentsAdminPage } from './pages/PaymentsAdminPage'
@@ -24,6 +25,7 @@ const pages = {
   reviews: ReviewsAdminPage,
   customers: CustomersAdminPage,
   payments: PaymentsAdminPage,
+  'mobile-money': MobileMoneyAdminPage,
   analytics: AnalyticsAdminPage,
   settings: SettingsAdminPage,
 }

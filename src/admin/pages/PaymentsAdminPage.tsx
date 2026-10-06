@@ -6,13 +6,14 @@ import { useAdminResource } from '../hooks/useAdminResource'
 export function PaymentsAdminPage() {
   const loader = useCallback((token: string) => api.adminPayments(token), [])
   const { data = [], loading, error, setError, reload, token } = useAdminResource(loader)
-  const revenue = data?.filter((item) => item.status === 'success').reduce((sum, item) => sum + Number(item.amount), 0) ?? 0
+  const revenue = data?.filter((item) => item.method !== 'manual_momo' && item.status === 'success').reduce((sum, item) => sum + Number(item.amount), 0) ?? 0
   const [search, setSearch] = useState('')
   const [checking, setChecking] = useState(false)
   const [checkMessage, setCheckMessage] = useState('')
   const [deletingId, setDeletingId] = useState('')
   const pendingCount = (data ?? []).filter((payment) => payment.status === 'pending').length
   const filtered = (data ?? []).filter((payment) => {
+    if (payment.method === 'manual_momo') return false
     const query = search.trim().toLowerCase()
     if (!query) return true
     return (

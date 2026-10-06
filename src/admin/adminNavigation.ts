@@ -7,6 +7,7 @@ import {
   FiPackage,
   FiScissors,
   FiSettings,
+  FiSmartphone,
   FiShoppingBag,
   FiStar,
   FiUsers,
@@ -23,6 +24,7 @@ export const adminNavigation = [
   ['reviews', 'Reviews', FiStar],
   ['customers', 'Customers', FiUsers],
   ['payments', 'Payments', FiCreditCard],
+  ['mobile-money', 'Mobile Money', FiSmartphone],
   ['analytics', 'Analytics', FiBarChart2],
   ['settings', 'Settings', FiSettings],
 ] as const

@@ -11,6 +11,7 @@ import {
 import { productImage } from '../data/catalog'
 import { ReviewMediaField } from '../components/ReviewMediaField'
 import { ImageUploadField } from '../admin/components/ImageUploadField'
+import { MomoPaymentModal } from '../components/MomoPaymentModal'
 
 type AccountPageProps = {
   onRequireAuth: () => void
@@ -163,6 +164,7 @@ export function AccountPage(props) {
   }
 
   const [payingId, setPayingId] = useState('')
+  const [momoBookingId, setMomoBookingId] = useState('')
   const [payMessage, setPayMessage] = useState('')
 
   useEffect(() => {
@@ -413,6 +415,28 @@ export function AccountPage(props) {
                             >
                               {payingId === booking.id ? 'Redirecting...' : 'Pay deposit, GHC ' + (booking.depositAmount ?? booking.confirmedPrice / 2) + ' of ' + booking.confirmedPrice}
                             </button>
+                          )}
+                          {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && !booking.amountPaid && (
+                            <>
+                              <button
+                                type="button"
+                                onClick={function () { setMomoBookingId(booking.id) }}
+                                className="mt-2 rounded-full border border-[#dc2d83] px-5 py-2 text-xs font-bold uppercase tracking-[0.12em] text-[#dc2d83]"
+                              >
+                                Pay deposit with Mobile Money
+                              </button>
+                              {momoBookingId === booking.id && (
+                                <MomoPaymentModal
+                                  type="booking"
+                                  refId={booking.id}
+                                  token={token ?? undefined}
+                                  onClose={function (submitted) {
+                                    setMomoBookingId('')
+                                    if (submitted) setPayMessage('Thank you! Beryl will confirm your Mobile Money payment shortly.')
+                                  }}
+                                />
+                              )}
+                            </>
                           )}
                           {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && !booking.amountPaid && (
                             <p className="mt-2 text-xs leading-5 text-[#8f707d]">

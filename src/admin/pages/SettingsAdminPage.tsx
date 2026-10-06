@@ -33,6 +33,9 @@ export function SettingsAdminPage() {
       phone: String(form.get('phone')),
       address: String(form.get('address')),
       aboutImageUrl,
+      momoNetwork: String(form.get('momoNetwork') ?? ''),
+      momoNumber: String(form.get('momoNumber') ?? '').trim(),
+      momoAccountName: String(form.get('momoAccountName') ?? '').trim(),
       openingHours: Object.fromEntries(days.map((day) => [day, String(form.get(`hours-${day}`))])),
       notifications: {
         bookingEmail: form.get('bookingEmail') === 'on',
@@ -116,7 +119,19 @@ export function SettingsAdminPage() {
             <h2 className="font-serif text-2xl text-[#3e2530]">Payment methods</h2>
             <div className="mt-5 grid gap-3">{[['mobileMoney','Mobile Money'],['cash','Cash'],['card','Card']].map(([key,label]) => <label key={key} className="flex items-center gap-3 text-sm"><input name={key} type="checkbox" defaultChecked={data.paymentMethods[key]} className="h-4 w-4 accent-[#d92c83]" />{label}</label>)}</div>
           </Panel>
-          <div className="xl:col-span-2"><PrimaryButton type="submit">Save all settings</PrimaryButton></div>
+          <Panel>
+            <h2 className="font-serif text-2xl text-[#3e2530]">Mobile Money for customers</h2>
+            <p className="mt-2 text-xs text-[#806b74]">Clients who choose to pay by Mobile Money will be shown this number and name, then send you a screenshot.</p>
+            <div className="mt-5 grid gap-4">
+              <select name="momoNetwork" defaultValue={data.momoNetwork || 'MTN MoMo'} className={fieldClass} aria-label="Mobile Money network">
+                <option>MTN MoMo</option>
+                <option>Telecel Cash</option>
+                <option>AirtelTigo Money</option>
+              </select>
+              <input name="momoNumber" defaultValue={data.momoNumber || ''} placeholder="Mobile Money number" inputMode="tel" className={fieldClass} aria-label="Mobile Money number" />
+              <input name="momoAccountName" defaultValue={data.momoAccountName || ''} placeholder="Name registered on the number" className={fieldClass} aria-label="Mobile Money account name" />
+            </div>
+          </Panel>          <div className="xl:col-span-2"><PrimaryButton type="submit">Save all settings</PrimaryButton></div>
         </form>
       )}
       <div className="mt-8 grid gap-6 xl:grid-cols-2">

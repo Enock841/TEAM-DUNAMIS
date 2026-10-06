@@ -80,10 +80,14 @@ export type AdminCustomer = {
 export type AdminPayment = {
   id: string
   reference: string
-  paymentType: 'booking' | 'order'
+  paymentType: 'booking' | 'order' | 'gift_card'
   amount: number | string
-  status: 'pending' | 'success' | 'failed'
+  status: 'pending' | 'success' | 'failed' | 'awaiting_confirmation'
   momoNumber: string
+  method?: 'paystack' | 'manual_momo'
+  payerName?: string | null
+  claimedAmount?: number | string | null
+  proofImageUrl?: string | null
   createdAt: string
   customer: Pick<User, 'id' | 'name' | 'phone'>
 }
@@ -107,6 +111,9 @@ export type AdminSettings = {
   openingHours: Record<string, string>
   notifications: Record<string, boolean>
   paymentMethods: Record<string, boolean>
+  momoNetwork?: string
+  momoNumber?: string
+  momoAccountName?: string
   aboutImageUrl?: string
   updatedAt?: string
 }
@@ -545,6 +552,51 @@ export const api = {
       method: 'POST',
       token,
       body: JSON.stringify(body),
+    })
+  },
+  manualPaymentQuote(
+    token: string | undefined,
+    body: { type: 'booking' | 'order' | 'gift_card'; refId: string; portion?: 'half' | 'full' },
+  ) {
+    return request<{
+      amount: number
+      momoNetwork: string
+      momoNumber: string
+      momoAccountName: string
+    }>('/payments/manual/quote', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(body),
+    })
+  },
+  submitManualPayment(
+    token: string | undefined,
+    body: {
+      type: 'booking' | 'order' | 'gift_card'
+      refId: string
+      portion?: 'half' | 'full'
+      payerName: string
+      claimedAmount: number
+      proofImageUrl: string
+    },
+  ) {
+    return request<{ paymentReference: string; amount: number; status: string }>('/payments/manual', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(body),
+    })
+  },
+  adminConfirmManualPayment(token: string, reference: string) {
+    return request<{ reference: string; status: string }>('/payments/manual/' + reference + '/confirm', {
+      method: 'PUT',
+      token,
+    })
+  },
+  adminRejectManualPayment(token: string, reference: string, reason?: string) {
+    return request<{ reference: string; status: string }>('/payments/manual/' + reference + '/reject', {
+      method: 'PUT',
+      token,
+      body: JSON.stringify({ reason }),
     })
   },
   verifyPayment(token: string | undefined, reference: string) {
