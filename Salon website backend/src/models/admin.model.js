@@ -45,6 +45,7 @@ export async function listPayments() {
   const result = await query(
     `select p.id, p.reference, p.payment_type as "paymentType",
             p.amount, p.status, p.momo_number as "momoNumber",
+            p.method, p.payer_name as "payerName", p.claimed_amount::float8 as "claimedAmount", p.proof_image_url as "proofImageUrl",
             p.created_at as "createdAt",
             case when u.id is not null
               then json_build_object('id', u.id, 'name', u.name, 'phone', u.phone)
@@ -103,6 +104,7 @@ export async function getSettings() {
     `select business_name as "businessName", phone, address,
             opening_hours as "openingHours", notifications, payment_methods as "paymentMethods",
             about_image_url as "aboutImageUrl",
+            momo_network as "momoNetwork", momo_number as "momoNumber", momo_account_name as "momoAccountName",
             updated_at as "updatedAt"
      from business_settings where id = 1`
   );
@@ -115,11 +117,12 @@ export async function updateSettings(input) {
   const result = await query(
     `update business_settings
      set business_name = $1, phone = $2, address = $3, opening_hours = $4,
-         notifications = $5, payment_methods = $6, about_image_url = $7, updated_at = now()
+         notifications = $5, payment_methods = $6, about_image_url = $7, momo_network = $8, momo_number = $9, momo_account_name = $10, updated_at = now()
      where id = 1
      returning business_name as "businessName", phone, address,
                opening_hours as "openingHours", notifications,
                payment_methods as "paymentMethods", about_image_url as "aboutImageUrl",
+               momo_network as "momoNetwork", momo_number as "momoNumber", momo_account_name as "momoAccountName",
                updated_at as "updatedAt"`,
     [
       merged.businessName,
@@ -128,7 +131,10 @@ export async function updateSettings(input) {
       merged.openingHours,
       merged.notifications,
       merged.paymentMethods,
-      merged.aboutImageUrl || ''
+      merged.aboutImageUrl || '',
+      merged.momoNetwork || '',
+      merged.momoNumber || '',
+      merged.momoAccountName || ''
     ]
   );
   return result.rows[0];

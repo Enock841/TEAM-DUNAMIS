@@ -21,7 +21,10 @@ const settingsSchema = z.object({
   openingHours: z.record(z.string()).optional(),
   notifications: z.record(z.boolean()).optional(),
   paymentMethods: z.record(z.boolean()).optional(),
-  aboutImageUrl: z.string().optional()
+  aboutImageUrl: z.string().optional(),
+  momoNetwork: z.string().max(40).optional(),
+  momoNumber: z.string().max(20).optional(),
+  momoAccountName: z.string().max(120).optional()
 });
 
 export async function customers(_req, res) {

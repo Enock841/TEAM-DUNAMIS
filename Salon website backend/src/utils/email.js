@@ -203,3 +203,51 @@ export function sendBookingReminder(booking) {
     `,
   });
 }
+
+function escapeHtml(value) {
+  return String(value ?? "")
+    .replaceAll("&", "&amp;")
+    .replaceAll("<", "&lt;")
+    .replaceAll(">", "&gt;")
+    .replaceAll('"', "&quot;");
+}
+
+export function sendManualPaymentAdminAlert({ payerName, amount, claimedAmount, type }) {
+  if (!env.adminEmail) return;
+  return sendEmail({
+    to: env.adminEmail,
+    subject: "Mobile Money payment waiting for your confirmation",
+    html: `
+      <h2>Please check your Mobile Money</h2>
+      <p><strong>${escapeHtml(payerName)}</strong> says they sent GHC ${escapeHtml(claimedAmount)} for a ${escapeHtml(String(type).replace("_", " "))} (expected GHC ${escapeHtml(amount)}).</p>
+      <p>Check your Mobile Money messages for this amount, then open the Mobile Money page in the admin dashboard to see their screenshot and confirm or reject it.</p>
+    `,
+  });
+}
+
+export function sendManualPaymentConfirmed(customerEmail, amount) {
+  if (!customerEmail) return;
+  return sendEmail({
+    to: customerEmail,
+    subject: "Your Mobile Money payment is confirmed",
+    html: `
+      <h2>Payment confirmed</h2>
+      <p>We have received your Mobile Money payment of GHC ${escapeHtml(amount)}. Thank you!</p>
+      <p>You can see the update in your account on the website.</p>
+    `,
+  });
+}
+
+export function sendPaymentRejected(customerEmail, amount, reason) {
+  if (!customerEmail) return;
+  return sendEmail({
+    to: customerEmail,
+    subject: "We could not find your Mobile Money payment",
+    html: `
+      <h2>We could not confirm your payment</h2>
+      <p>We were not able to find your Mobile Money payment of GHC ${escapeHtml(amount)}.</p>
+      ${reason ? `<p>Note from the salon: ${escapeHtml(reason)}</p>` : ""}
+      <p>If you did send the money, please contact the salon directly with your payment screenshot, or submit your payment details again.</p>
+    `,
+  });
+}

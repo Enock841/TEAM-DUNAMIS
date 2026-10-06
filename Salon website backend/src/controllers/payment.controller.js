@@ -12,10 +12,17 @@ import {
   getOrderDetailsForEmail,
   getBookingDetailsForEmail,
   getGiftCardForEmail,
-  listPendingPayments
+  listPendingPayments,
+  createManualPayment,
+  findOpenManualPayment,
+  findManualPayment,
+  rejectManualPayment,
+  claimManualPayment,
+  releaseManualPayment
 } from "../models/payment.model.js";
-import { notFound } from "../utils/httpError.js";
-import { sendOrderConfirmation, sendAdminOrderNotification, sendGiftCardEmail } from "../utils/email.js";
+import { HttpError, notFound } from "../utils/httpError.js";
+import { getSettings } from "../models/admin.model.js";
+import { sendOrderConfirmation, sendAdminOrderNotification, sendGiftCardEmail, sendManualPaymentAdminAlert, sendManualPaymentConfirmed, sendPaymentRejected } from "../utils/email.js";
 
 const initiateSchema = z.object({
   type: z.enum(["booking", "order", "gift_card"]),
@@ -189,4 +196,135 @@ export async function settleBookingBalance(req, res) {
   const booking = await markBookingBalanceSettledInPerson(req.params.id);
   if (!booking) throw notFound("Booking not found");
   res.json({ booking });
+}
+
+
+// ---------- Manual Mobile Money payments ----------
+
+const manualQuoteSchema = z.object({
+  type: z.enum(["booking", "order", "gift_card"]),
+  refId: z.string().uuid(),
+  portion: z.enum(["half", "full"]).optional()
+});
+
+const manualSubmitSchema = manualQuoteSchema.extend({
+  payerName: z.string().trim().min(2).max(120),
+  claimedAmount: z.number().positive(),
+  proofImageUrl: z.string().url().max(1000)
+});
+
+async function customerEmailFor(type, refId) {
+  if (type === "order") {
+    const order = await getOrderDetailsForEmail(refId);
+    return order?.customerEmail || null;
+  }
+  if (type === "gift_card") {
+    const giftCard = await getGiftCardForEmail(refId);
+    return giftCard?.purchaserEmail || null;
+  }
+  const booking = await getBookingDetailsForEmail(refId);
+  return booking?.customerEmail || null;
+}
+
+export async function manualQuote(req, res) {
+  const body = manualQuoteSchema.parse(req.body);
+  const userId = req.user ? req.user.id : null;
+  const amount = await findPaymentAmount(body.type, body.refId, userId, body.portion);
+  if (amount === null) throw notFound(`${body.type} not found`);
+
+  const settings = await getSettings();
+  if (!settings?.momoNumber) {
+    throw new HttpError(503, "Mobile Money payment is not set up yet. Please pay with card instead.");
+  }
+
+  res.json({
+    amount,
+    momoNetwork: settings.momoNetwork || "",
+    momoNumber: settings.momoNumber,
+    momoAccountName: settings.momoAccountName || ""
+  });
+}
+
+export async function submitManual(req, res) {
+  const body = manualSubmitSchema.parse(req.body);
+  const userId = req.user ? req.user.id : null;
+  const amount = await findPaymentAmount(body.type, body.refId, userId, body.portion);
+  if (amount === null) throw notFound(`${body.type} not found`);
+
+  const existing = await findOpenManualPayment(body.type, body.refId);
+  if (existing) {
+    throw new HttpError(409, "You have already sent your payment details. Please wait while the salon confirms it.");
+  }
+
+  const reference = `MOMO-${crypto.randomUUID()}`;
+  await createManualPayment({
+    reference,
+    userId,
+    type: body.type,
+    refId: body.refId,
+    amount,
+    payerName: body.payerName,
+    claimedAmount: body.claimedAmount,
+    proofImageUrl: body.proofImageUrl
+  });
+
+  try {
+    sendManualPaymentAdminAlert({
+      payerName: body.payerName,
+      amount,
+      claimedAmount: body.claimedAmount,
+      type: body.type
+    });
+  } catch {
+    // the email is a courtesy, the payment is already saved
+  }
+
+  res.status(201).json({ paymentReference: reference, amount, status: "awaiting_confirmation" });
+}
+
+export async function confirmManual(req, res) {
+  const reference = req.params.reference;
+  const payment = await findManualPayment(reference);
+  if (!payment || payment.method !== "manual_momo") throw notFound("Payment not found");
+
+  const claimed = await claimManualPayment(reference);
+  if (!claimed) throw new HttpError(409, "This payment has already been confirmed or rejected.");
+
+  try {
+    await unlockAndNotify(reference);
+  } catch (error) {
+    await releaseManualPayment(reference);
+    throw error;
+  }
+
+  if (payment.type === "booking") {
+    try {
+      const email = await customerEmailFor(payment.type, payment.refId);
+      sendManualPaymentConfirmed(email, payment.amount);
+    } catch {
+      // email is a courtesy
+    }
+  }
+
+  res.json({ reference, status: "success" });
+}
+
+export async function rejectManual(req, res) {
+  const reference = req.params.reference;
+  const reason = typeof req.body?.reason === "string" ? req.body.reason.trim().slice(0, 300) : "";
+
+  const payment = await findManualPayment(reference);
+  if (!payment || payment.method !== "manual_momo") throw notFound("Payment not found");
+
+  const rejected = await rejectManualPayment(reference);
+  if (!rejected) throw new HttpError(409, "This payment has already been confirmed or rejected.");
+
+  try {
+    const email = await customerEmailFor(payment.type, payment.refId);
+    sendPaymentRejected(email, payment.amount, reason);
+  } catch {
+    // email is a courtesy
+  }
+
+  res.json({ reference, status: "failed" });
 }

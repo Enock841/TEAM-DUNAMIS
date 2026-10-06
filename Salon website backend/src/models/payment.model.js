@@ -213,9 +213,67 @@ export async function listPendingPayments() {
   const result = await query(
     `select reference, payment_type as type, ref_id as "refId", amount, created_at as "createdAt"
      from payments
-     where status = 'pending'
+     where status = 'pending' and method = 'paystack'
        and created_at < now() - interval '90 seconds'
      order by created_at asc`
   );
   return result.rows;
+}
+
+export async function createManualPayment({ reference, userId, type, refId, amount, payerName, claimedAmount, proofImageUrl }) {
+  const result = await query(
+    `insert into payments
+       (reference, user_id, payment_type, ref_id, momo_number, amount, status, method, payer_name, claimed_amount, proof_image_url)
+     values ($1, $2, $3, $4, '', $5, 'awaiting_confirmation', 'manual_momo', $6, $7, $8)
+     returning reference as "paymentReference", amount, status`,
+    [reference, userId, type, refId, amount, payerName, claimedAmount, proofImageUrl]
+  );
+  return result.rows[0];
+}
+
+export async function findOpenManualPayment(type, refId) {
+  const result = await query(
+    `select reference from payments
+     where payment_type = $1 and ref_id = $2 and method = 'manual_momo' and status = 'awaiting_confirmation'
+     limit 1`,
+    [type, refId]
+  );
+  return result.rows[0] || null;
+}
+
+export async function findManualPayment(reference) {
+  const result = await query(
+    `select reference, payment_type as type, ref_id as "refId", amount, status, method
+     from payments where reference = $1`,
+    [reference]
+  );
+  return result.rows[0] || null;
+}
+
+export async function rejectManualPayment(reference) {
+  const result = await query(
+    `update payments set status = 'failed', updated_at = now()
+     where reference = $1 and method = 'manual_momo' and status = 'awaiting_confirmation'
+     returning reference, payment_type as type, ref_id as "refId", amount`,
+    [reference]
+  );
+  return result.rows[0] || null;
+}
+
+export async function claimManualPayment(reference) {
+  const result = await query(
+    `update payments set status = 'success', updated_at = now()
+     where reference = $1 and method = 'manual_momo' and status = 'awaiting_confirmation'
+     returning reference`,
+    [reference]
+  );
+  return result.rows[0] || null;
+}
+
+export async function releaseManualPayment(reference) {
+  await query(
+    `update payments set status = 'awaiting_confirmation', updated_at = now()
+     where reference = $1 and method = 'manual_momo'`,
+    [reference]
+  );
 }

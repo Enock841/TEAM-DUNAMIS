@@ -1,6 +1,10 @@
 import { Router } from "express";
 import {
   initiate,
+  manualQuote,
+  submitManual,
+  confirmManual,
+  rejectManual,
   reconcilePending,
   settleBookingBalance,
   show,
@@ -13,6 +17,10 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 const router = Router();
 
 router.post("/initiate", optionalAuth, asyncHandler(initiate));
+router.post("/manual/quote", optionalAuth, asyncHandler(manualQuote));
+router.post("/manual", optionalAuth, asyncHandler(submitManual));
+router.put("/manual/:reference/confirm", requireAuth, requireAdmin, asyncHandler(confirmManual));
+router.put("/manual/:reference/reject", requireAuth, requireAdmin, asyncHandler(rejectManual));
 router.post("/webhook", asyncHandler(webhook));
 router.get("/:reference/verify", optionalAuth, asyncHandler(verify));
 router.post(
