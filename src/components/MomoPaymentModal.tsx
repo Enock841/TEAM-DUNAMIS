@@ -26,6 +26,7 @@ export function MomoPaymentModal({ type, refId, token, portion, onClose }: MomoP
   const [proofImageUrl, setProofImageUrl] = useState('')
   const [busy, setBusy] = useState(false)
   const [done, setDone] = useState(false)
+  const [agreed, setAgreed] = useState(false)
 
   useEffect(() => {
     let current = true
@@ -49,6 +50,10 @@ export function MomoPaymentModal({ type, refId, token, portion, onClose }: MomoP
 
   async function submit() {
     setError('')
+    if (!agreed) {
+      setError('Please tick the box to agree to the terms before you continue.')
+      return
+    }
     if (payerName.trim().length < 2) {
       setError('Please type the name on your Mobile Money account.')
       return
@@ -112,6 +117,24 @@ export function MomoPaymentModal({ type, refId, token, portion, onClose }: MomoP
               {quote.momoAccountName && <p className="mt-1">Name: <strong>{quote.momoAccountName}</strong></p>}
             </div>
 
+            <div className="mt-4 rounded-2xl border border-amber-300 bg-amber-50 p-4 text-sm text-amber-900">
+              <p className="font-bold">Check the name before you send</p>
+              <p className="mt-1">
+                When you type in the number, your phone will show the name on the account
+                {quote.momoAccountName ? ` (it should say ${quote.momoAccountName})` : ''}. If the name is different, do not complete the transaction.
+              </p>
+              <label className="mt-3 flex items-start gap-3 text-xs leading-5">
+                <input
+                  type="checkbox"
+                  checked={agreed}
+                  onChange={(event) => setAgreed(event.target.checked)}
+                  className="mt-0.5 h-4 w-4 shrink-0 accent-[#dc2d83]"
+                />
+                <span>
+                  I agree to the terms: I will only send money if the name matches. If I send money to a wrong number or name, or leave out any step, the store is not responsible for any money lost.
+                </span>
+              </label>
+            </div>
             <p className="mt-5 text-xs font-bold uppercase tracking-[0.12em] text-[#956f80]">Step 2: tell us you sent it</p>
             <div className="mt-3 grid gap-3">
               <input
@@ -135,7 +158,7 @@ export function MomoPaymentModal({ type, refId, token, portion, onClose }: MomoP
             <button
               type="button"
               onClick={submit}
-              disabled={busy}
+              disabled={busy || !agreed}
               className="mt-5 min-h-12 w-full rounded-full bg-[#d92c83] px-6 py-3 text-xs font-bold uppercase tracking-[0.15em] text-white disabled:opacity-50"
             >
               {busy ? 'Sending...' : 'I have sent the money'}
