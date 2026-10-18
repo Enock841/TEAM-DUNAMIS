@@ -19,6 +19,7 @@ import { ProductDetailPage } from './pages/ProductDetailPage'
 import { PrivacyPage } from './pages/PrivacyPage'
 import { ServicesPage } from './pages/ServicesPage'
 import { ShopPage } from './pages/ShopPage'
+import { ResetPasswordPage } from './pages/ResetPasswordPage'
 import { StaffLoginPage } from './pages/StaffLoginPage'
 import { ReviewsPage } from './pages/ReviewsPage'
 import { TermsPage } from './pages/TermsPage'
@@ -94,6 +95,9 @@ function App() {
       break
     case 'gift-cards':
       page = <GiftCardPage onRequireAuth={() => setAuthOpen(true)} />
+      break
+    case 'reset-password':
+      page = <ResetPasswordPage />
       break
     case 'staff-login':
       page = <StaffLoginPage />

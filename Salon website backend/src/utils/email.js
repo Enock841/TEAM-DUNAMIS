@@ -251,3 +251,17 @@ export function sendPaymentRejected(customerEmail, amount, reason) {
     `,
   });
 }
+
+export function sendPasswordResetEmail(to, name, link) {
+  if (!to) return;
+  return sendEmail({
+    to,
+    subject: "Reset your Beryl's Beauty Mark password",
+    html: `
+      <h2>Reset your password</h2>
+      <p>Hello ${escapeHtml(name)}, we received a request to reset the password on your account.</p>
+      <p><a href="${link}" style="display:inline-block;background:#d92c83;color:#ffffff;padding:12px 24px;border-radius:24px;text-decoration:none;font-weight:bold">Choose a new password</a></p>
+      <p>This link works for one hour. If you did not ask for this, you can ignore this email and your password will stay the same.</p>
+    `,
+  });
+}

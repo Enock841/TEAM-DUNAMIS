@@ -3,6 +3,7 @@ import { currentAdminSection } from './adminNavigation'
 import { AnalyticsAdminPage } from './pages/AnalyticsAdminPage'
 import { AppointmentsAdminPage } from './pages/AppointmentsAdminPage'
 import { CustomersAdminPage } from './pages/CustomersAdminPage'
+import { DaysOffAdminPage } from './pages/DaysOffAdminPage'
 import { HeroSlidesAdminPage } from './pages/HeroSlidesAdminPage'
 import { MobileMoneyAdminPage } from './pages/MobileMoneyAdminPage'
 import { OrdersAdminPage } from './pages/OrdersAdminPage'
@@ -17,6 +18,7 @@ import { ShopTilesAdminPage } from './pages/ShopTilesAdminPage'
 const pages = {
   overview: OverviewAdminPage,
   appointments: AppointmentsAdminPage,
+  'days-off': DaysOffAdminPage,
   homepage: HeroSlidesAdminPage,
   'shop-tiles': ShopTilesAdminPage,
   services: ServicesAdminPage,

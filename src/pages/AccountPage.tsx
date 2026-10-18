@@ -12,6 +12,7 @@ import { productImage } from '../data/catalog'
 import { ReviewMediaField } from '../components/ReviewMediaField'
 import { ImageUploadField } from '../admin/components/ImageUploadField'
 import { MomoPaymentModal } from '../components/MomoPaymentModal'
+import { PAYSTACK_ENABLED } from '../lib/paymentConfig'
 
 type AccountPageProps = {
   onRequireAuth: () => void
@@ -406,7 +407,7 @@ export function AccountPage(props) {
                               Your requested style is being reviewed, we will confirm a price soon.
                             </p>
                           )}
-                          {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && !booking.amountPaid && (
+                          {PAYSTACK_ENABLED && booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && !booking.amountPaid && (
                             <button
                               type="button"
                               onClick={function () { payForBooking(booking.id) }}
@@ -421,9 +422,9 @@ export function AccountPage(props) {
                               <button
                                 type="button"
                                 onClick={function () { setMomoBookingId(booking.id) }}
-                                className="mt-2 rounded-full border border-[#dc2d83] px-5 py-2 text-xs font-bold uppercase tracking-[0.12em] text-[#dc2d83]"
+                                className={PAYSTACK_ENABLED ? "mt-2 rounded-full border border-[#dc2d83] px-5 py-2 text-xs font-bold uppercase tracking-[0.12em] text-[#dc2d83]" : "mt-3 rounded-full bg-[#dc2d83] px-5 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white"}
                               >
-                                Pay deposit with Mobile Money directly
+                                {'Pay deposit with Mobile Money, GHC ' + (booking.depositAmount ?? booking.confirmedPrice / 2)}
                               </button>
                               {momoBookingId === booking.id && (
                                 <MomoPaymentModal

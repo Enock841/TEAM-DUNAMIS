@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import crypto from "node:crypto";
 import jwt from "jsonwebtoken";
 import { z } from "zod";
 import { env } from "../config/env.js";
@@ -9,9 +10,13 @@ import {
   findUserByPhone,
   findUserWithPasswordById,
   updateUserPassword,
-  updateUserProfile
+  updateUserProfile,
+  createPasswordReset,
+  findValidPasswordReset,
+  markPasswordResetUsed
 } from "../models/user.model.js";
 import { HttpError, notFound } from "../utils/httpError.js";
+import { sendPasswordResetEmail } from "../utils/email.js";
 
 const authSchema = z.object({
   name: z.string().min(2).optional(),
@@ -114,4 +119,45 @@ export async function changePassword(req, res) {
   const passwordHash = await bcrypt.hash(body.newPassword, 12);
   await updateUserPassword(user.id, passwordHash);
   res.json({ message: "Password updated successfully" });
+}
+
+const forgotSchema = z.object({
+  identifier: z.string().trim().min(3).max(120)
+});
+
+const resetSchema = z.object({
+  token: z.string().min(20).max(200),
+  newPassword: z.string().regex(strongPasswordRegex, "Password needs at least 8 characters, including a letter and a number")
+});
+
+const FRONTEND_URL = (process.env.FRONTEND_URL || "https://berylsbeautymark-lac.vercel.app").replace(/\/+$/, "");
+
+export async function forgotPassword(req, res) {
+  const body = forgotSchema.parse(req.body);
+  const identifier = body.identifier;
+  const user = identifier.includes("@")
+    ? await findUserByEmail(identifier.toLowerCase())
+    : await findUserByPhone(identifier);
+
+  if (user && user.email && user.is_active !== false) {
+    const token = crypto.randomBytes(32).toString("hex");
+    const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
+    await createPasswordReset(user.id, tokenHash, new Date(Date.now() + 60 * 60 * 1000));
+    sendPasswordResetEmail(user.email, user.name, `${FRONTEND_URL}/#/reset-password?token=${token}`);
+  }
+
+  res.json({ message: "If an account matches, we have emailed a link to reset the password." });
+}
+
+export async function resetPassword(req, res) {
+  const body = resetSchema.parse(req.body);
+  const tokenHash = crypto.createHash("sha256").update(body.token).digest("hex");
+  const reset = await findValidPasswordReset(tokenHash);
+  if (!reset) {
+    throw new HttpError(400, "This reset link is invalid or has expired. Please request a new one.");
+  }
+  const passwordHash = await bcrypt.hash(body.newPassword, 12);
+  await updateUserPassword(reset.userId, passwordHash);
+  await markPasswordResetUsed(reset.id);
+  res.json({ message: "Your password has been changed. You can now sign in." });
 }

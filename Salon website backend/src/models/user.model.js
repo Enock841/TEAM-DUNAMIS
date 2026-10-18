@@ -55,3 +55,24 @@ export async function updateUserPassword(id, passwordHash) {
   );
   return Boolean(result.rowCount);
 }
+
+export async function createPasswordReset(userId, tokenHash, expiresAt) {
+  await query("delete from password_resets where user_id = $1", [userId]);
+  await query(
+    "insert into password_resets (user_id, token_hash, expires_at) values ($1, $2, $3)",
+    [userId, tokenHash, expiresAt]
+  );
+}
+
+export async function findValidPasswordReset(tokenHash) {
+  const result = await query(
+    `select id, user_id as "userId" from password_resets
+     where token_hash = $1 and used_at is null and expires_at > now()`,
+    [tokenHash]
+  );
+  return result.rows[0] || null;
+}
+
+export async function markPasswordResetUsed(id) {
+  await query("update password_resets set used_at = now() where id = $1", [id]);
+}

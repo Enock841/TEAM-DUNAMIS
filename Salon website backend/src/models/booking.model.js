@@ -40,15 +40,24 @@ async function availabilityWithClient(client, serviceId, date) {
   );
   const bookedTimeSlots = takenResult.rows.map(function (r) { return r.time_slot; });
 
-  const slotsRemaining = Math.max(row.daily_cap - row.booked_count, 0);
-  return {
+  const closedResult = await client.query(
+    `select (
+       exists (select 1 from days_off where day = $1::date)
+       or exists (select 1 from closed_weekdays where weekday = extract(dow from $1::date)::int)
+     ) as closed`,
+    [date]
+  );
+  const closed = closedResult.rows[0].closed;
+
+  const slotsRemaining = Math.max(row.daily_cap - row.booked_count, 0);  return {
     date,
     serviceId,
     categoryId: row.category_id,
     dailyCap: row.daily_cap,
     bookedCount: row.booked_count,
     slotsRemaining,
-    available: slotsRemaining > 0,
+    available: !closed && slotsRemaining > 0,
+    closed,
     bookedTimeSlots
   };
 }
@@ -88,14 +97,28 @@ export async function getMonthAvailability(serviceId, year, month) {
     if (row.date) byDate[row.date] = row.booked_count;
   }
 
-  return { dailyCap, bookedByDate: byDate };
-}
+  const closedDatesResult = await query(
+    `select day::text as day from days_off
+     where day >= $1::date and day < ($1::date + interval '1 month')`,
+    [start]
+  );
+  const closedWeekdaysResult = await query("select weekday from closed_weekdays");
+
+  return {
+    dailyCap,
+    bookedByDate: byDate,
+    closedDates: closedDatesResult.rows.map((row) => row.day),
+    closedWeekdays: closedWeekdaysResult.rows.map((row) => row.weekday)
+  };}
 
 export async function createBooking(userId, input) {
   const client = await pool.connect();
   try {
     await client.query("begin");
     const availability = await availabilityWithClient(client, input.serviceId, input.date);
+    if (availability.closed) {
+      throw new HttpError(409, "The salon is closed on this date. Please choose another day.");
+    }
     if (!availability.available) {
       throw new HttpError(
         409,

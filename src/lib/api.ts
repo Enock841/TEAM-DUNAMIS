@@ -316,7 +316,7 @@ export type ServiceLengthOption = {
 export const api = {
   monthAvailability(serviceId: string, year: number, month: number) {
     const query = new URLSearchParams({ serviceId, year: String(year), month: String(month) })
-    return request<{ dailyCap: number; bookedByDate: Record<string, number> }>(
+    return request<{ dailyCap: number; bookedByDate: Record<string, number>; closedDates?: string[]; closedWeekdays?: number[] }>(
       '/bookings/month-availability?' + query,
     )
   },
@@ -472,7 +472,18 @@ export const api = {
       body: JSON.stringify({ name, phone, password, email, area }),
     })
   },
-  me(token: string) {
+  forgotPassword(identifier: string) {
+    return request<{ message: string }>('/auth/forgot-password', {
+      method: 'POST',
+      body: JSON.stringify({ identifier }),
+    })
+  },
+  resetPassword(token: string, newPassword: string) {
+    return request<{ message: string }>('/auth/reset-password', {
+      method: 'POST',
+      body: JSON.stringify({ token, newPassword }),
+    })
+  },  me(token: string) {
     return request<{ user: User }>('/auth/me', { token })
   },
   updateProfile(token: string, body: { name: string; phone: string; avatarUrl?: string }) {
@@ -779,7 +790,26 @@ export const api = {
   adminPayments(token: string) {
     return request<AdminPayment[]>('/admin/payments', { token })
   },
-  adminDeletePayment(token: string, id: string) {
+  adminDaysOff(token: string) {
+    return request<{ days: Array<{ day: string; reason: string | null }>; weekdays: number[] }>('/days-off', { token })
+  },
+  adminAddDayOff(token: string, day: string, reason?: string) {
+    return request<{ day: string; reason: string | null; existingBookings: number }>('/days-off', {
+      method: 'POST',
+      token,
+      body: JSON.stringify({ day, reason }),
+    })
+  },
+  adminRemoveDayOff(token: string, day: string) {
+    return request<{ removed: boolean }>('/days-off/' + day, { method: 'DELETE', token })
+  },
+  adminSetClosedWeekdays(token: string, weekdays: number[]) {
+    return request<{ weekdays: number[] }>('/days-off/weekdays', {
+      method: 'PUT',
+      token,
+      body: JSON.stringify({ weekdays }),
+    })
+  },  adminDeletePayment(token: string, id: string) {
     return request<{ removed: boolean }>('/admin/payments/' + id, { token, method: 'DELETE' })
   },
   adminAnalytics(token: string) {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react'
 import { useAppData } from '../context/appData'
 import { api } from '../lib/api'
 import { MomoPaymentModal } from '../components/MomoPaymentModal'
+import { PAYSTACK_ENABLED } from '../lib/paymentConfig'
 
 const presetAmounts = [50, 100, 200, 500]
 
@@ -97,7 +98,7 @@ export function GiftCardPage(props) {
           </p>
         </div>
 
-        <form onSubmit={submit} className="mt-10 rounded-[1.75rem] border border-[#ebc8d7] bg-white p-6 shadow-[0_20px_55px_rgba(80,34,54,0.08)] sm:p-10">
+        <form onSubmit={function (event) { submit(event, PAYSTACK_ENABLED ? 'paystack' : 'momo') }} className="mt-10 rounded-[1.75rem] border border-[#ebc8d7] bg-white p-6 shadow-[0_20px_55px_rgba(80,34,54,0.08)] sm:p-10">
           <p className="text-sm font-bold uppercase tracking-[0.12em] text-[#765b67]">Choose an amount</p>
           <div className="mt-4 grid grid-cols-4 gap-3">
             {presetAmounts.map(function (value) {
@@ -189,10 +190,10 @@ export function GiftCardPage(props) {
             </div>
           )}
 
-          <label className="mt-6 block">
+          <label className={PAYSTACK_ENABLED ? "mt-6 block" : "hidden"}>
             <span className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-[#765b67]">Mobile Money number to pay with</span>
             <input
-              required
+              required={PAYSTACK_ENABLED}
               type="tel"
               value={momoNumber}
               onChange={function (e) { setMomoNumber(e.target.value) }}
@@ -207,6 +208,7 @@ export function GiftCardPage(props) {
             </p>
           )}
 
+          {PAYSTACK_ENABLED && (
           <button
             type="submit"
             disabled={busy}
@@ -214,13 +216,14 @@ export function GiftCardPage(props) {
           >
             {busy ? 'Redirecting to payment...' : 'Pay with Paystack, GHC ' + (finalAmount || 0)}
           </button>
+          )}
           <button
             type="button"
             onClick={function (event) { submit(event, 'momo') }}
             disabled={busy}
-            className="mt-3 min-h-14 w-full rounded-full border border-[#dc2d83] px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-[#dc2d83] disabled:opacity-50"
+            className={PAYSTACK_ENABLED ? "mt-3 min-h-14 w-full rounded-full border border-[#dc2d83] px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-[#dc2d83] disabled:opacity-50" : "mt-7 min-h-14 w-full rounded-full bg-[#dc2d83] px-6 py-3 text-sm font-bold uppercase tracking-[0.14em] text-white disabled:opacity-50"}
           >
-            Pay with Mobile Money directly
+            {PAYSTACK_ENABLED ? 'Pay with Mobile Money directly' : 'Pay with Mobile Money, GHC ' + (finalAmount || 0)}
           </button>
           {momoGiftCardId && (
             <MomoPaymentModal

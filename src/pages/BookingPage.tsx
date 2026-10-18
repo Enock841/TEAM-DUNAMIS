@@ -3,6 +3,8 @@ import { useAppData } from '../context/appData'
 import { formatDuration } from '../data/catalog'
 import { api } from '../lib/api'
 import { ImageUploadField } from '../admin/components/ImageUploadField'
+import { MomoPaymentModal } from '../components/MomoPaymentModal'
+import { PAYSTACK_ENABLED } from '../lib/paymentConfig'
 
 const times = ['08:00 AM', '10:30 AM', '12:00 PM', '02:00 PM', '03:30 PM']
 const weekdayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
@@ -35,6 +37,7 @@ export function BookingPage(props) {
   const [extensionCart, setExtensionCart] = useState<any>({})
   const [extensionPaidInfo, setExtensionPaidInfo] = useState<any>(null)
   const [payingExtensions, setPayingExtensions] = useState(false)
+  const [momoExtension, setMomoExtension] = useState<any>(null)
   const [extensionPayError, setExtensionPayError] = useState('')
   const [lengthOptions, setLengthOptions] = useState([])
   const [selectedLength, setSelectedLength] = useState(null)
@@ -179,7 +182,7 @@ export function BookingPage(props) {
     return entry.quantity + 'x ' + entry.product.name + variantPart
   }).join('; ')
 
-  async function payForExtensions() {
+  async function payForExtensions(method = 'paystack') {
     if (!token) {
       onRequireAuth()
       return
@@ -206,6 +209,12 @@ export function BookingPage(props) {
         summaryText: extensionCartSummaryText,
         total: extensionCartTotal,
       }
+      if (method === 'momo') {
+        setMomoExtension(marker)
+        setPayingExtensions(false)
+        return
+      }
+
       localStorage.setItem('paidExtensionOrder', JSON.stringify(marker))
 
       if (result.order.status === 'paid') {
@@ -657,10 +666,10 @@ function selectOtherInCategory(categoryId) {
 
                       {wantsToBuyExtension === true && extensionPaidInfo && (
                         <div className="mt-5 rounded-2xl border border-emerald-200 bg-emerald-50 p-5">
-                          <p className="text-sm font-bold uppercase tracking-[0.08em] text-emerald-700">Extensions paid</p>
+                          <p className="text-sm font-bold uppercase tracking-[0.08em] text-emerald-700">Extensions {extensionPaidInfo.pending ? 'ordered' : 'paid'}</p>
                           <p className="mt-2 text-sm text-[#3e2530]">{extensionPaidInfo.summaryText}</p>
                           <p className="mt-1 text-sm font-bold text-emerald-700">
-                            Paid GHC {Number(extensionPaidInfo.total).toLocaleString()}
+                            {extensionPaidInfo.pending ? 'Payment sent, GHC ' : 'Paid GHC '}{Number(extensionPaidInfo.total).toLocaleString()}
                           </p>
                           <p className="mt-2 text-xs leading-5 text-[#745f68]">
                             The salon will have this ready for you to pick up at your appointment.
@@ -785,6 +794,7 @@ function selectOtherInCategory(categoryId) {
                               <p className="mt-2 text-sm font-bold text-[#b32269]">
                                 Total GHC {extensionCartTotal.toLocaleString()}
                               </p>
+                              {PAYSTACK_ENABLED && (
                               <button
                                 type="button"
                                 onClick={function () { payForExtensions() }}
@@ -793,7 +803,31 @@ function selectOtherInCategory(categoryId) {
                               >
                                 {payingExtensions ? 'Redirecting to payment...' : 'Pay GHC ' + extensionCartTotal.toLocaleString() + ' now'}
                               </button>
-                              {extensionPayError && (
+                              )}
+                              <button
+                                type="button"
+                                onClick={function () { payForExtensions('momo') }}
+                                disabled={payingExtensions}
+                                className={PAYSTACK_ENABLED ? "mt-3 w-full rounded-full border border-[#dc2d83] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-[#dc2d83] disabled:opacity-50" : "mt-4 w-full rounded-full bg-[#dc2d83] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white disabled:opacity-50"}
+                              >
+                                {payingExtensions ? 'Please wait...' : PAYSTACK_ENABLED ? 'Pay with Mobile Money directly' : 'Pay GHC ' + extensionCartTotal.toLocaleString() + ' with Mobile Money'}
+                              </button>
+                              {momoExtension && (
+                                <MomoPaymentModal
+                                  type="order"
+                                  refId={momoExtension.orderId}
+                                  token={token ?? undefined}
+                                  onClose={function (submitted) {
+                                    const sent = momoExtension
+                                    setMomoExtension(null)
+                                    if (submitted && sent) {
+                                      const pendingMarker = { ...sent, pending: true }
+                                      localStorage.setItem('paidExtensionOrder', JSON.stringify(pendingMarker))
+                                      setExtensionPaidInfo(pendingMarker)
+                                    }
+                                  }}
+                                />
+                              )}                              {extensionPayError && (
                                 <p className="mt-2 text-xs font-semibold text-red-600">{extensionPayError}</p>
                               )}
                             </div>
@@ -856,10 +890,11 @@ function selectOtherInCategory(categoryId) {
                     const dailyCap = monthData ? monthData.dailyCap : 0
                     const slotsLeft = Math.max(dailyCap - bookedCount, 0)
                     const isFull = dailyCap > 0 && slotsLeft === 0
+                    const isClosed = Boolean(monthData && ((monthData.closedDates && monthData.closedDates.indexOf(iso) !== -1) || (monthData.closedWeekdays && monthData.closedWeekdays.indexOf(dayDate.getDay()) !== -1)))
                     const selected = selectedDate === iso
 
                     let dayClass = 'flex h-11 items-center justify-center rounded-lg text-sm font-semibold transition '
-                    if (isPast || isFull) {
+                    if (isPast || isFull || isClosed) {
                       dayClass += 'cursor-not-allowed bg-[#f3e6ec] text-[#c7a9b6] line-through'
                     } else if (selected) {
                       dayClass += 'bg-[#dc2d83] text-white'
@@ -873,7 +908,7 @@ function selectOtherInCategory(categoryId) {
                       <button
                         key={iso}
                         type="button"
-                        disabled={isPast || isFull}
+                        disabled={isPast || isFull || isClosed}
                         onClick={function () { chooseDate(iso) }}
                         className={dayClass}
                       >
@@ -891,7 +926,7 @@ function selectOtherInCategory(categoryId) {
                     <span className="h-2.5 w-2.5 rounded-full border border-[#e6a94a] bg-[#fdf2e0]" /> Almost full
                   </span>
                   <span className="flex items-center gap-1.5">
-                    <span className="h-2.5 w-2.5 rounded-full bg-[#f3e6ec]" /> Fully booked
+                    <span className="h-2.5 w-2.5 rounded-full bg-[#f3e6ec]" /> Fully booked or closed
                   </span>
                 </div>
               </div>

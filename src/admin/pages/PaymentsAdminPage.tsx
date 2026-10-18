@@ -62,7 +62,7 @@ export function PaymentsAdminPage() {
 
   return (
     <>
-      <PageHeader eyebrow="Payments" title="Transactions" description={`Successful payment revenue: GHC${revenue.toLocaleString()}`} />
+      <PageHeader eyebrow="Paystack" title="Paystack payment history" description={`Card and Paystack payments received so far: GHC${revenue.toLocaleString()}. Mobile Money payments are on their own page.`} />
       {loading && <div className="mt-8"><Notice>Loading payments...</Notice></div>}
       {error && <div className="mt-8"><Notice error>{error}</Notice></div>}
       <div className="mt-8 flex flex-wrap items-center gap-3">

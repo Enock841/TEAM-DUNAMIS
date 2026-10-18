@@ -192,7 +192,15 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
             {message}
           </p>
         )}
-        <button
+        {mode === 'login' && (
+          <a
+            href="#/reset-password"
+            onClick={onClose}
+            className="mt-4 block text-sm font-semibold text-[#9f205f] underline underline-offset-4"
+          >
+            Forgot your password?
+          </a>
+        )}        <button
           type="button"
           onClick={() => {
             setMode(mode === 'login' ? 'signup' : 'login')
