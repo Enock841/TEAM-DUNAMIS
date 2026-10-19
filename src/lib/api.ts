@@ -809,7 +809,13 @@ export const api = {
       token,
       body: JSON.stringify({ weekdays }),
     })
-  },  adminDeletePayment(token: string, id: string) {
+  },  adminNotifications(token: string, customersSince: string) {
+    return request<Record<string, number>>(
+      '/admin/notifications?customersSince=' + encodeURIComponent(customersSince),
+      { token },
+    )
+  },
+  adminDeletePayment(token: string, id: string) {
     return request<{ removed: boolean }>('/admin/payments/' + id, { token, method: 'DELETE' })
   },
   adminAnalytics(token: string) {

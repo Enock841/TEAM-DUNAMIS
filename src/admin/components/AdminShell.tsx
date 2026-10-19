@@ -8,27 +8,47 @@ export function AdminShell({ children }: { children: ReactNode }) {
   const { user, logout, token } = useAppData()
   const [open, setOpen] = useState(false)
   const active = currentAdminSection()
-  const [waiting, setWaiting] = useState(0)
+  const [counts, setCounts] = useState<Record<string, number>>({})
+  const total = Object.values(counts).reduce((sum, value) => sum + value, 0)
 
   useEffect(() => {
     if (!token) return
     let current = true
     function check() {
+      let since = ''
+      try {
+        since = localStorage.getItem('adminCustomersSeen') || ''
+        if (!since || active === 'customers') {
+          since = new Date().toISOString()
+          localStorage.setItem('adminCustomersSeen', since)
+        }
+      } catch {
+        since = new Date().toISOString()
+      }
       api
-        .adminPayments(token as string)
-        .then((payments) => {
-          if (current) setWaiting(payments.filter((payment) => payment.status === 'awaiting_confirmation').length)
+        .adminNotifications(token as string, since)
+        .then((result) => {
+          if (current) setCounts(result)
         })
         .catch(() => {})
     }
     check()
-    const timer = window.setInterval(check, 60000)
+    const timer = window.setInterval(check, 30000)
+    window.addEventListener('focus', check)
     return () => {
       current = false
       window.clearInterval(timer)
+      window.removeEventListener('focus', check)
     }
   }, [token, active])
 
+  useEffect(() => {
+    const base = document.title.replace(/^\(\d+\)\s*/, '')
+    document.title = total > 0 ? '(' + total + ') ' + base : base
+    return () => {
+      document.title = base
+    }
+  }, [total])
   function signOut() {
     logout()
     window.location.hash = '#/'
@@ -44,9 +64,12 @@ export function AdminShell({ children }: { children: ReactNode }) {
           type="button"
           aria-label="Toggle admin navigation"
           onClick={() => setOpen((value) => !value)}
-          className="flex h-10 w-10 items-center justify-center rounded-full border border-[#dfcbd4]"
+          className="relative flex h-10 w-10 items-center justify-center rounded-full border border-[#dfcbd4]"
         >
           {open ? <FiX /> : <FiMenu />}
+          {total > 0 && !open && (
+            <span className="absolute -right-0.5 -top-0.5 h-3 w-3 rounded-full bg-amber-400" />
+          )}
         </button>
       </header>
 
@@ -73,8 +96,8 @@ export function AdminShell({ children }: { children: ReactNode }) {
             >
               <Icon aria-hidden="true" size={18} />
               {label}
-              {id === 'mobile-money' && waiting > 0 && (
-                <span className="ml-auto rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-bold text-[#3e2130]">{waiting}</span>
+              {(counts[id] ?? 0) > 0 && (
+                <span className="ml-auto rounded-full bg-amber-400 px-2 py-0.5 text-[10px] font-bold text-[#3e2130]">{counts[id]}</span>
               )}
             </a>
           ))}

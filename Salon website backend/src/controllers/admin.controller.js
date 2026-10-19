@@ -5,6 +5,7 @@ import {
   deletePayment,
   findCustomerDetails,
   getAnalytics,
+  getNotificationCounts,
   getSettings,
   listCustomers,
   listPayments,
@@ -87,4 +88,10 @@ export async function setStaffStatus(req, res) {
   const member = await updateStaffStatus(req.params.id, body.isActive);
   if (!member) throw notFound("Staff account not found");
   res.json({ staff: member });
+}
+
+export async function notifications(req, res) {
+  const raw = typeof req.query.customersSince === "string" ? req.query.customersSince : "";
+  const since = raw && !Number.isNaN(Date.parse(raw)) ? new Date(raw).toISOString() : null;
+  res.json(await getNotificationCounts(since));
 }

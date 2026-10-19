@@ -167,3 +167,20 @@ export async function updateStaffStatus(id, isActive) {
   );
   return result.rows[0] || null;
 }
+
+export async function getNotificationCounts(customersSince) {
+  const result = await query(
+    `select
+       (select count(*)::int from bookings where status = 'pending')
+       + (select count(*)::int from bookings
+          where status = 'confirmed' and deposit_request_amount is not null and coalesce(amount_paid, 0) = 0) as appointments,
+       (select count(*)::int from orders where status = 'paid') as orders,
+       (select count(*)::int from reviews where status = 'pending') as reviews,
+       (select count(*)::int from payments
+          where method = 'manual_momo' and status = 'awaiting_confirmation') as "mobile-money",
+       (select count(*)::int from users
+          where role = 'customer' and created_at > $1::timestamptz) as customers`,
+    [customersSince]
+  );
+  return result.rows[0];
+}

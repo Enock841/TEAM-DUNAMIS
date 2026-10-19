@@ -4,6 +4,7 @@ import {
   analytics,
   customer,
   customers,
+  notifications,
   payments,
   removePayment,
   saveSettings,
@@ -20,6 +21,7 @@ router.use(requireAuth, requireAdmin);
 router.get("/customers", asyncHandler(customers));
 router.get("/customers/:id", asyncHandler(customer));
 router.get("/payments", asyncHandler(payments));
+router.get("/notifications", asyncHandler(notifications));
 router.delete("/payments/:id", asyncHandler(removePayment));
 router.get("/analytics", asyncHandler(analytics));
 router.get("/settings", asyncHandler(showSettings));
