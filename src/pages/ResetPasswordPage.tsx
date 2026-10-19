@@ -60,7 +60,14 @@ export function ResetPasswordPage() {
 
   return (
     <main className="flex min-h-[620px] items-center justify-center bg-[#f9e8ef] px-5 py-14">
-      <section className="w-full max-w-md rounded-[2rem] border border-[#e7b9cd] bg-[#f8d7e5] p-7 shadow-2xl sm:p-9">
+      <section className="relative w-full max-w-md rounded-[2rem] border border-[#e7b9cd] bg-[#f8d7e5] p-7 shadow-2xl sm:p-9">
+        <a
+          href="#/"
+          aria-label="Close"
+          className="absolute right-5 top-5 flex h-10 w-10 items-center justify-center rounded-full bg-white/45 text-2xl text-[#4d2838]"
+        >
+          x
+        </a>
         <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#d92c83]">Client account</p>
         <h1 className="mt-3 font-serif text-4xl text-[#3e2530]">
           {token ? 'Choose a new password' : 'Forgot your password?'}
@@ -123,6 +130,11 @@ export function ResetPasswordPage() {
           <p className="mt-4 rounded-xl bg-white/50 px-4 py-3 text-sm text-[#8b3157]" role="alert">
             {error}
           </p>
+        )}
+        {!success && (
+          <a href="#/" className="mt-5 mr-5 inline-block text-sm font-semibold text-[#9f205f] underline underline-offset-4">
+            Back to the website
+          </a>
         )}
         {token && !success && (
           <a href="#/reset-password" className="mt-5 inline-block text-sm font-semibold text-[#9f205f] underline underline-offset-4">
