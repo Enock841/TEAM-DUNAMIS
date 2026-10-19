@@ -43,6 +43,8 @@ export type AdminBooking = {
   confirmedPrice?: number
   amountPaid?: number
   depositAmount?: number
+  depositRequestAmount?: number | null
+  depositRequestNote?: string | null
   extensionProductName?: string
   extensionQuantity?: number
   extensionProductPrice?: number
@@ -176,6 +178,8 @@ export type CustomerBooking = {
   confirmedPrice?: number
   amountPaid?: number
   depositAmount?: number
+  depositRequestAmount?: number | null
+  depositRequestNote?: string | null
 }
 
 export type CustomerOrder = {
@@ -623,6 +627,22 @@ export const api = {
     return request<{ booking: unknown }>('/payments/bookings/' + id + '/settle-balance', {
       method: 'PUT',
       token,
+    })
+  },
+  requestDepositChange(token: string, id: string, amount: number, note?: string) {
+    return request<{
+      booking: { id: string; depositRequestAmount: number | null; depositRequestNote: string | null }
+    }>(`/bookings/${id}/deposit-request`, {
+      method: 'PUT',
+      token,
+      body: JSON.stringify({ amount, note }),
+    })
+  },
+  adminSetDeposit(token: string, id: string, depositAmount: number) {
+    return request<{ booking: { id: string; depositAmount: number } }>(`/bookings/${id}/deposit`, {
+      method: 'PUT',
+      token,
+      body: JSON.stringify({ depositAmount }),
     })
   },
   updateBookingStatus(token: string, id: string, status: string, price?: number, depositAmount?: number) {

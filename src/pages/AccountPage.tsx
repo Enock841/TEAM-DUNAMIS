@@ -166,6 +166,9 @@ export function AccountPage(props) {
 
   const [payingId, setPayingId] = useState('')
   const [momoBookingId, setMomoBookingId] = useState('')
+  const [depositFormId, setDepositFormId] = useState('')
+  const [depositDraft, setDepositDraft] = useState({ amount: '', note: '' })
+  const [bookingNotes, setBookingNotes] = useState<Record<string, string>>({})
   const [payMessage, setPayMessage] = useState('')
 
   useEffect(() => {
@@ -193,6 +196,30 @@ export function AccountPage(props) {
     }
   }
 
+  async function submitDepositRequest(booking: CustomerBooking) {
+    if (!token) return
+    const amount = Number(depositDraft.amount)
+    if (!amount || amount <= 0 || (booking.confirmedPrice && amount >= booking.confirmedPrice)) {
+      setBookingNotes(function (notes) { return { ...notes, [booking.id]: 'Please enter an amount above 0 and below the full price.' } })
+      return
+    }
+    try {
+      const result = await api.requestDepositChange(token, booking.id, amount, depositDraft.note.trim() || undefined)
+      setBookings(function (list) {
+        return list.map(function (item) {
+          return item.id === booking.id
+            ? { ...item, depositRequestAmount: result.booking.depositRequestAmount, depositRequestNote: result.booking.depositRequestNote }
+            : item
+        })
+      })
+      setDepositFormId('')
+      setDepositDraft({ amount: '', note: '' })
+      setBookingNotes(function (notes) { return { ...notes, [booking.id]: 'Request sent. Beryl will review it and update your deposit.' } })
+    } catch (err) {
+      const text = err instanceof Error ? err.message : 'Unable to send your request.'
+      setBookingNotes(function (notes) { return { ...notes, [booking.id]: text } })
+    }
+  }
   function openReview(id, type, label) {
     setReviewingId(id)
     setReviewingType(type)
@@ -433,11 +460,71 @@ export function AccountPage(props) {
                                   token={token ?? undefined}
                                   onClose={function (submitted) {
                                     setMomoBookingId('')
-                                    if (submitted) setPayMessage('Thank you! Beryl will confirm your Mobile Money payment shortly.')
+                                    if (submitted) setBookingNotes(function (notes) { return { ...notes, [booking.id]: 'Thank you! Beryl will confirm your Mobile Money payment shortly.' } })
                                   }}
                                 />
                               )}
                             </>
+                          )}
+                          {bookingNotes[booking.id] && (
+                            <p className="mt-3 rounded-lg bg-emerald-50 px-3 py-2 text-xs font-bold text-emerald-700" role="status">
+                              {bookingNotes[booking.id]}
+                            </p>
+                          )}
+                          {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && !booking.amountPaid && (
+                            <div className="mt-3">
+                              {booking.depositRequestAmount != null && (
+                                <p className="rounded-lg bg-[#fdf2e0] px-3 py-2 text-xs font-bold text-[#8a5a1f]">
+                                  You asked for a deposit of GHC {booking.depositRequestAmount}. Beryl will review it and update the amount.
+                                </p>
+                              )}
+                              {depositFormId === booking.id ? (
+                                <div className="mt-2 grid gap-2 rounded-xl bg-white p-3">
+                                  <p className="text-xs text-[#745f68]">Tell Beryl what deposit works for you. The full price is GHC {booking.confirmedPrice}.</p>
+                                  <input
+                                    type="number"
+                                    min="1"
+                                    value={depositDraft.amount}
+                                    onChange={function (e) { setDepositDraft({ ...depositDraft, amount: e.target.value }) }}
+                                    placeholder="Deposit you can pay, GHC"
+                                    className="h-11 rounded-xl border border-[#dfbdcb] px-3 text-sm outline-none focus:border-[#dc2d83]"
+                                  />
+                                  <textarea
+                                    value={depositDraft.note}
+                                    onChange={function (e) { setDepositDraft({ ...depositDraft, note: e.target.value }) }}
+                                    placeholder="Optional note to Beryl"
+                                    className="h-16 rounded-xl border border-[#dfbdcb] p-3 text-sm outline-none focus:border-[#dc2d83]"
+                                  />
+                                  <div className="flex items-center gap-4">
+                                    <button
+                                      type="button"
+                                      onClick={function () { submitDepositRequest(booking) }}
+                                      className="rounded-full bg-[#dc2d83] px-5 py-2 text-xs font-bold uppercase tracking-[0.12em] text-white"
+                                    >
+                                      Send request
+                                    </button>
+                                    <button
+                                      type="button"
+                                      onClick={function () { setDepositFormId('') }}
+                                      className="text-xs font-semibold text-[#816873] underline"
+                                    >
+                                      Cancel
+                                    </button>
+                                  </div>
+                                </div>
+                              ) : (
+                                <button
+                                  type="button"
+                                  onClick={function () {
+                                    setDepositFormId(booking.id)
+                                    setDepositDraft({ amount: booking.depositRequestAmount != null ? String(booking.depositRequestAmount) : '', note: '' })
+                                  }}
+                                  className="mt-2 text-xs font-semibold text-[#9f205f] underline underline-offset-4"
+                                >
+                                  {booking.depositRequestAmount != null ? 'Change my request' : 'Is the deposit too high? Ask for a different amount'}
+                                </button>
+                              )}
+                            </div>
                           )}
                           {booking.status === 'confirmed' && !booking.isPaid && booking.confirmedPrice && !booking.amountPaid && (
                             <p className="mt-2 text-xs leading-5 text-[#8f707d]">

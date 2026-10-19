@@ -24,6 +24,7 @@ export function AppointmentsAdminPage() {
   const [approvingId, setApprovingId] = useState('')
   const [approvalPriceDrafts, setApprovalPriceDrafts] = useState<Record<string, string>>({})
   const [approvalDepositDrafts, setApprovalDepositDrafts] = useState<Record<string, string>>({})
+  const [depositEditDrafts, setDepositEditDrafts] = useState<Record<string, string>>({})
 
   async function checkCode() {
     if (!token || !codeInput.trim()) return
@@ -73,6 +74,30 @@ export function AppointmentsAdminPage() {
     }
   }
 
+  async function saveDeposit(booking: AdminBooking) {
+    if (!token) return
+    const raw = depositEditDrafts[booking.id] ?? (booking.depositRequestAmount != null ? String(booking.depositRequestAmount) : '')
+    const amount = Number(raw)
+    if (!amount || amount <= 0) {
+      setError('Enter a deposit amount above zero.')
+      return
+    }
+    if (booking.confirmedPrice != null && amount > booking.confirmedPrice) {
+      setError('The deposit cannot be more than the full price.')
+      return
+    }
+    try {
+      await api.adminSetDeposit(token, booking.id, amount)
+      setDepositEditDrafts((all) => {
+        const next = { ...all }
+        delete next[booking.id]
+        return next
+      })
+      await reload()
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : 'Unable to change the deposit.')
+    }
+  }
   function extensionTotalFor(booking: AdminBooking) {
     return (booking.extensionProductPrice || 0) * (booking.extensionQuantity || 0)
   }
@@ -271,6 +296,40 @@ export function AppointmentsAdminPage() {
                           >
                             Mark remaining balance as settled in person
                           </button>
+                        )}
+                        {booking.status === 'confirmed' && (booking.amountPaid || 0) === 0 && (
+                          <div className="mt-3 border-t border-[#f0e2e8] pt-3">
+                            <p className="text-xs font-bold uppercase tracking-[0.1em] text-[#76515f]">Deposit</p>
+                            <p className="mt-1 text-xs text-[#745f68]">
+                              Current deposit: GHC {booking.depositAmount ?? booking.confirmedPrice / 2}
+                            </p>
+                            {booking.depositRequestAmount != null && (
+                              <p className="mt-2 rounded-lg bg-[#fdf2e0] px-3 py-2 text-xs font-bold text-[#8a5a1f]">
+                                Client asked for a deposit of GHC {booking.depositRequestAmount}
+                                {booking.depositRequestNote ? ': ' + booking.depositRequestNote : ''}
+                              </p>
+                            )}
+                            <div className="mt-2 flex flex-wrap items-center gap-2">
+                              <input
+                                type="number"
+                                min="1"
+                                placeholder="New deposit, GHC"
+                                value={depositEditDrafts[booking.id] ?? (booking.depositRequestAmount != null ? String(booking.depositRequestAmount) : '')}
+                                onChange={(e) =>
+                                  setDepositEditDrafts((all) => ({ ...all, [booking.id]: e.target.value }))
+                                }
+                                className={fieldClass + ' max-w-[180px]'}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => saveDeposit(booking)}
+                                className="rounded-full bg-[#d92c83] px-4 py-2 text-[10px] font-bold uppercase tracking-[0.1em] text-white"
+                              >
+                                Save deposit
+                              </button>
+                            </div>
+                            <p className="mt-1 text-[10px] text-[#8f707d]">The deposit can only be changed before the client has paid anything.</p>
+                          </div>
                         )}
                       </div>
                     )}
