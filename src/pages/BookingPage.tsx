@@ -934,8 +934,8 @@ function selectOtherInCategory(categoryId) {
               {availability && (
                 <p className="mt-5 text-sm text-[#745f68]">
                   {availability.available
-                    ? availability.slotsRemaining + ' booking spaces remain for this service category.'
-                    : 'This service category is fully booked for the selected date.'}
+                    ? 'Choose a time that suits you below.'
+                    : 'This date is not available. Please choose another day.'}
                 </p>
               )}
               <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">

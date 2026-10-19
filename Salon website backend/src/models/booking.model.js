@@ -56,7 +56,7 @@ async function availabilityWithClient(client, serviceId, date) {
     dailyCap: row.daily_cap,
     bookedCount: row.booked_count,
     slotsRemaining,
-    available: !closed && slotsRemaining > 0,
+    available: !closed,
     closed,
     bookedTimeSlots
   };
@@ -105,7 +105,7 @@ export async function getMonthAvailability(serviceId, year, month) {
   const closedWeekdaysResult = await query("select weekday from closed_weekdays");
 
   return {
-    dailyCap,
+    dailyCap: 0,
     bookedByDate: byDate,
     closedDates: closedDatesResult.rows.map((row) => row.day),
     closedWeekdays: closedWeekdaysResult.rows.map((row) => row.weekday)
