@@ -153,6 +153,7 @@ export async function getMonthAvailability(serviceId, year, month) {
   };}
 
 export async function createBooking(userId, input) {
+  await query("update users set hidden_in_list = false where id = $1 and hidden_in_list = true", [userId]);
   const client = await pool.connect();
   try {
     await client.query("begin");
