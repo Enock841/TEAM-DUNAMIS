@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { api } from '../../lib/api'
-import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
+import { fieldClass, Notice, Panel, PrimaryButton } from '../components/AdminUi'
 import { useAdminResource } from '../hooks/useAdminResource'
 
 function prettyDay(day: string) {
@@ -9,7 +9,7 @@ function prettyDay(day: string) {
   return date.toLocaleDateString(undefined, { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' })
 }
 
-export function ClientLimitsAdminPage() {
+export function ClientLimitsSection() {
   const loader = useCallback((token: string) => api.adminLimits(token), [])
   const { data, setData, loading, error, setError, token } = useAdminResource(loader)
   const [defaultMax, setDefaultMax] = useState('0')
@@ -74,11 +74,10 @@ export function ClientLimitsAdminPage() {
 
   return (
     <>
-      <PageHeader
-        eyebrow="Calendar"
-        title="Client limits"
-        description="Choose how many clients you can take in a day. Set a different number for a particular day when you need to."
-      />
+      <div className="mt-12">
+        <h2 className="font-serif text-3xl text-[#3e2530]">Client limits</h2>
+        <p className="mt-2 text-sm text-[#745f68]">Choose how many clients you can take in a day. Set a different number for a particular day when you need to.</p>
+      </div>
       {loading && <div className="mt-8"><Notice>Loading limits...</Notice></div>}
       {error && <div className="mt-8"><Notice error>{error}</Notice></div>}
       {message && <div className="mt-8"><Notice>{message}</Notice></div>}

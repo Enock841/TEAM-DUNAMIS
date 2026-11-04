@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState, type FormEvent } from 'react'
 import { api } from '../../lib/api'
 import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
 import { useAdminResource } from '../hooks/useAdminResource'
+import { ClientLimitsSection } from './ClientLimitsAdminPage'
 
 function toLabel(minutes: number) {
   const hour24 = Math.floor(minutes / 60)
@@ -65,8 +66,8 @@ export function BookingHoursAdminPage() {
     <>
       <PageHeader
         eyebrow="Calendar"
-        title="Booking hours"
-        description="Choose the times clients can book each day. Bookings already made keep their times."
+        title="Booking hours and limits"
+        description="Choose the times clients can book and how many clients you take each day. Bookings already made keep their times."
       />
       {loading && <div className="mt-8"><Notice>Loading booking hours...</Notice></div>}
       {error && <div className="mt-8"><Notice error>{error}</Notice></div>}
@@ -105,6 +106,7 @@ export function BookingHoursAdminPage() {
           </Panel>
         </form>
       )}
+      <ClientLimitsSection />
     </>
   )
 }
