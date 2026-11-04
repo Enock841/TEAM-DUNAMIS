@@ -24,6 +24,7 @@ export type Availability = {
   slotsRemaining: number
   available: boolean
   full?: boolean
+  customTimes?: string[] | null
   bookedTimeSlots?: string[]
 }
 
@@ -881,6 +882,19 @@ export const api = {
   },
   adminDeleteFeedback(token: string, id: string) {
     return request<{ removed: boolean }>('/feedback/' + id, { method: 'DELETE', token })
+  },
+  adminDaySlots(token: string) {
+    return request<{ days: Array<{ day: string; times: string[] }> }>('/days-off/slots', { token })
+  },
+  adminSetDaySlots(token: string, day: string, times: string[]) {
+    return request<{ day: string; times: string[] }>('/days-off/slots', {
+      method: 'PUT',
+      token,
+      body: JSON.stringify({ day, times }),
+    })
+  },
+  adminRemoveDaySlots(token: string, day: string) {
+    return request<{ removed: boolean }>('/days-off/slots/' + day, { method: 'DELETE', token })
   },
   adminDeletePayment(token: string, id: string) {
     return request<{ removed: boolean }>('/admin/payments/' + id, { token, method: 'DELETE' })

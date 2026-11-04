@@ -3,6 +3,7 @@ import { api } from '../../lib/api'
 import { fieldClass, Notice, PageHeader, Panel, PrimaryButton } from '../components/AdminUi'
 import { useAdminResource } from '../hooks/useAdminResource'
 import { ClientLimitsSection } from './ClientLimitsAdminPage'
+import { SpecialDayTimesSection } from './SpecialDayTimesSection'
 
 function toLabel(minutes: number) {
   const hour24 = Math.floor(minutes / 60)
@@ -107,6 +108,7 @@ export function BookingHoursAdminPage() {
         </form>
       )}
       <ClientLimitsSection />
+      <SpecialDayTimesSection />
     </>
   )
 }

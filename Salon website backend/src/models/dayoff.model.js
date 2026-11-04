@@ -63,6 +63,27 @@ export async function setDayLimit(day, maxClients) {
   return { day, maxClients };
 }
 
+export async function listDaySlots() {
+  const result = await query(
+    `select day::text as day, times from day_slots where day >= current_date order by day`
+  );
+  return result.rows;
+}
+
+export async function setDaySlots(day, times) {
+  await query(
+    `insert into day_slots (day, times) values ($1::date, $2::text[])
+     on conflict (day) do update set times = excluded.times`,
+    [day, times]
+  );
+  return { day, times };
+}
+
+export async function removeDaySlots(day) {
+  const result = await query("delete from day_slots where day = $1::date", [day]);
+  return Boolean(result.rowCount);
+}
+
 export async function removeDayLimit(day) {
   const result = await query("delete from day_limits where day = $1::date", [day]);
   return Boolean(result.rowCount);

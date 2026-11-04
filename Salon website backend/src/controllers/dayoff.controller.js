@@ -7,7 +7,10 @@ import {
   removeDayOff,
   setClosedWeekdays,
   setDayLimit,
-  setDefaultLimit
+  setDefaultLimit,
+  listDaySlots,
+  removeDaySlots,
+  setDaySlots
 } from "../models/dayoff.model.js";
 import { notFound } from "../utils/httpError.js";
 
@@ -43,6 +46,28 @@ export async function saveWeekdays(req, res) {
 
 const defaultLimitSchema = z.object({ maxClients: z.number().int().min(0).max(100) });
 const dayLimitSchema = z.object({ day: z.string().date(), maxClients: z.number().int().min(1).max(100) });
+
+const slotsSchema = z.object({
+  day: z.string().date(),
+  times: z.array(z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/)).min(1).max(40)
+});
+
+export async function slots(_req, res) {
+  res.json({ days: await listDaySlots() });
+}
+
+export async function saveSlots(req, res) {
+  const body = slotsSchema.parse(req.body);
+  const times = [...new Set(body.times)].sort();
+  res.json(await setDaySlots(body.day, times));
+}
+
+export async function removeSlots(req, res) {
+  const day = z.string().date().parse(req.params.day);
+  const removed = await removeDaySlots(day);
+  if (!removed) throw notFound("That day had no special times");
+  res.json({ removed: true });
+}
 
 export async function limits(_req, res) {
   res.json(await listLimits());

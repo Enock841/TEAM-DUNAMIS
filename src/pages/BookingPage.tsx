@@ -6,6 +6,22 @@ import { ImageUploadField } from '../admin/components/ImageUploadField'
 import { MomoPaymentModal } from '../components/MomoPaymentModal'
 import { PAYSTACK_ENABLED } from '../lib/paymentConfig'
 
+function clockLabel(value) {
+  const parts = String(value).split(':')
+  const hour24 = Number(parts[0])
+  const minute = Number(parts[1] || 0)
+  const period = hour24 >= 12 ? 'PM' : 'AM'
+  const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12
+  return String(hour12).padStart(2, '0') + ':' + String(minute).padStart(2, '0') + ' ' + period
+}
+
+function timeOptions(availability, hours) {
+  if (availability && availability.customTimes && availability.customTimes.length > 0) {
+    return availability.customTimes.map(clockLabel)
+  }
+  return buildTimes(hours)
+}
+
 function buildTimes(hours) {
   const toMin = function (value) {
     const parts = String(value).split(':')
@@ -971,7 +987,7 @@ function selectOtherInCategory(categoryId) {
                 </p>
               )}
               <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {buildTimes(bookingHours).map(function (time) {
+                {timeOptions(availability, bookingHours).map(function (time) {
                   const selected = selectedTime === time
                   const isTaken = Boolean(availability && availability.bookedTimeSlots && availability.bookedTimeSlots.indexOf(time) !== -1)
                   const now = new Date()

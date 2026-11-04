@@ -9,8 +9,12 @@ export function errorHandler(err, _req, res, _next) {
     });
   }
   if (err.code === "23505") {
+    const detail = String(err.detail || "") + " " + String(err.constraint || "");
+    let what = "That record";
+    if (/phone/i.test(detail)) what = "An account with that phone number";
+    else if (/email/i.test(detail)) what = "An account with that email";
     return res.status(409).json({
-      error: "An account with that phone number already exists"
+      error: what + " already exists. Please log in instead, or tap Forgot your password to get back in."
     });
   }
   const status = err.status || 500;

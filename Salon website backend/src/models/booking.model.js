@@ -62,6 +62,8 @@ async function availabilityWithClient(client, serviceId, date) {
   const dayCap = limitResult.rows[0].cap;
   const dayBooked = limitResult.rows[0].booked;
   const full = dayCap > 0 && dayBooked >= dayCap;
+  const slotRows = await client.query("select times from day_slots where day = $1::date", [date]);
+  const customTimes = slotRows.rows[0] ? slotRows.rows[0].times : null;
   const slotsRemaining = dayCap > 0 ? Math.max(dayCap - dayBooked, 0) : 0;
 
   return {
@@ -74,6 +76,7 @@ async function availabilityWithClient(client, serviceId, date) {
     available: !closed && !full,
     closed,
     full,
+    customTimes,
     bookedTimeSlots
   };
 }
