@@ -12,7 +12,7 @@ export type AppDataContextValue = {
   wishlistIds: Set<string>
   toggleWishlist: (productId: string) => Promise<void>
   login: (phone: string, password: string) => Promise<User>
-  register: (name: string, phone: string, password: string, email?: string, area?: string) => Promise<User>
+  register: (name: string, phone: string, password: string | undefined, email?: string, area?: string) => Promise<User>
   updateProfile: (name: string, phone: string, avatarUrl?: string) => Promise<User>
   changePassword: (
     currentPassword: string,

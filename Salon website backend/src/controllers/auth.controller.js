@@ -32,7 +32,7 @@ const strongPasswordRegex = /^(?=.*[A-Za-z])(?=.*\d).{8,}$/;
 const registerSchema = z.object({
   name: z.string().min(2),
   phone: z.string().regex(ghanaPhoneRegex, "Enter a valid Ghanaian phone number, e.g. 024 123 4567"),
-  password: z.string().regex(strongPasswordRegex, "Password needs at least 8 characters, including a letter and a number"),
+  password: z.string().regex(strongPasswordRegex, "Password needs at least 8 characters, including a letter and a number").optional(),
   email: z.string().email(),
   area: z.string().max(120).optional()
 });
@@ -70,7 +70,7 @@ function signToken(user) {
 
 export async function register(req, res) {
   const body = registerSchema.parse(req.body);
-  const passwordHash = await bcrypt.hash(body.password, 12);
+  const passwordHash = await bcrypt.hash(body.password || crypto.randomBytes(24).toString("hex"), 12);
   const user = await createCustomer({
     name: body.name,
     phone: body.phone,

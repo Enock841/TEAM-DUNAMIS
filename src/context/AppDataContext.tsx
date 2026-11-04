@@ -156,7 +156,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     return result.user
   }
 
-  async function register(name: string, phone: string, password: string, email?: string, area?: string) {
+  async function register(name: string, phone: string, password: string | undefined, email?: string, area?: string) {
     const result = await api.register(name, phone, password, email, area)
     saveSession(result.user, result.token)
     return result.user

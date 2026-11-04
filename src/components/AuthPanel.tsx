@@ -9,7 +9,7 @@ type AuthPanelProps = {
 
 export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
   const { login, register } = useAppData()
-  const [confirmPassword, setConfirmPassword] = useState('')
+
   const [mode, setMode] = useState<'login' | 'signup'>('login')
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
@@ -30,16 +30,10 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
       if (mode === 'login') {
         await login(String(form.get('phone')), String(form.get('password')))
       } else {
-        const password = String(form.get('password'))
-        if (password !== confirmPassword) {
-          setMessage('Passwords do not match.')
-          setBusy(false)
-          return
-        }
         await register(
           String(form.get('name')),
           String(form.get('phone')),
-          password,
+          undefined,
           String(form.get('email') || ''),
           String(form.get('area') || ''),
         )
@@ -77,7 +71,7 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
         <p className="mt-3 text-sm leading-6 text-[#765c68]">
           {mode === 'login'
             ? 'Access bookings, order history and saved services.'
-            : 'Create your profile for faster bookings and personalised care.'}
+            : 'No password needed. Just your name, phone number and email.'}
         </p>
 
         <form onSubmit={submit} className="mt-7 space-y-4">
@@ -139,34 +133,17 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
               className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#d92c83]"
             />
           </label>
-          <label className="block">
-            <span className="mb-2 block text-xs font-bold uppercase tracking-[0.12em]">
-              Password
-            </span>
-            <input
-              required
-              name="password"
-              type="password"
-              minLength={mode === 'signup' ? 8 : 6}
-              pattern={mode === 'signup' ? '(?=.*[A-Za-z])(?=.*\\d).{8,}' : undefined}
-              title={mode === 'signup' ? 'At least 8 characters, including a letter and a number' : undefined}
-              autoComplete={mode === 'login' ? 'current-password' : 'new-password'}
-              className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#d92c83]"
-            />
-          </label>
-          {mode === 'signup' && (
+          {mode === 'login' && (
             <label className="block">
               <span className="mb-2 block text-xs font-bold uppercase tracking-[0.12em]">
-                Confirm password
+                Password
               </span>
               <input
                 required
-                name="confirmPassword"
+                name="password"
                 type="password"
-                minLength={8}
-                autoComplete="new-password"
-                value={confirmPassword}
-                onChange={(event) => setConfirmPassword(event.target.value)}
+                minLength={6}
+                autoComplete="current-password"
                 className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#d92c83]"
               />
             </label>

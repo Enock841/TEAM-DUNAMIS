@@ -478,7 +478,7 @@ export const api = {
       body: JSON.stringify({ phone, password }),
     })
   },
-  register(name: string, phone: string, password: string, email?: string, area?: string) {
+  register(name: string, phone: string, password: string | undefined, email?: string, area?: string) {
     return request<AuthResponse>('/auth/register', {
       method: 'POST',
       body: JSON.stringify({ name, phone, password, email, area }),
