@@ -144,6 +144,8 @@ export async function forgotPassword(req, res) {
     const tokenHash = crypto.createHash("sha256").update(token).digest("hex");
     await createPasswordReset(user.id, tokenHash, new Date(Date.now() + 60 * 60 * 1000));
     sendPasswordResetEmail(user.email, user.name, `${FRONTEND_URL}/#/reset-password?token=${token}`);
+  } else {
+    console.log("Password reset skipped: no active account with an email matched this request");
   }
 
   res.json({ message: "If an account matches, we have emailed a link to reset the password." });

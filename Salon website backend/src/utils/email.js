@@ -27,6 +27,8 @@ export async function sendEmail({ to, subject, html }) {
     if (!response.ok) {
       const errorText = await response.text();
       console.error("Failed to send email:", subject, response.status, errorText);
+    } else {
+      console.log("Email accepted by SendGrid:", subject, response.status);
     }
   } catch (error) {
     console.error("Failed to send email:", subject, error.message);
