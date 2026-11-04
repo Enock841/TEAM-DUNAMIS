@@ -14,7 +14,7 @@ export function errorHandler(err, _req, res, _next) {
     if (/phone/i.test(detail)) what = "An account with that phone number";
     else if (/email/i.test(detail)) what = "An account with that email";
     return res.status(409).json({
-      error: what + " already exists. Please log in instead, or tap Forgot your password to get back in."
+      error: what + " already exists. Please log in with your phone number and email instead."
     });
   }
   const status = err.status || 500;

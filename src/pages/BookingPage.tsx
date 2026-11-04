@@ -436,7 +436,7 @@ function selectOtherInCategory(categoryId) {
 
       localStorage.removeItem('paidExtensionOrder')
       setSubmitted(true)
-      setMessage(guestResult && guestResult.existingAccount ? 'Thank you! Your booking request is in. We already have an account with your details, so please log in (or tap Forgot your password) to see your booking and pay your deposit once Beryl approves it. We will also email you as soon as it is approved.' : 'Thank you so much for booking with us, we cannot wait to pamper you! Please keep an eye on your email, including your spam or junk folder just in case, we will let you know there as soon as your appointment is approved with your price. Once it is, just come back to your account to complete payment and secure your slot.')
+      setMessage(guestResult && guestResult.existingAccount ? 'Thank you! Your booking request is in. We already have an account with your details, so please log in with your phone number and email to see your booking and pay your deposit once Beryl approves it. We will also email you as soon as it is approved.' : 'Thank you so much for booking with us, we cannot wait to pamper you! Please keep an eye on your email, including your spam or junk folder just in case, we will let you know there as soon as your appointment is approved with your price. Once it is, just come back to your account to complete payment and secure your slot.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to request this booking.')
     } finally {

@@ -8,10 +8,9 @@ type AuthPanelProps = {
 }
 
 export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
-  const { login, loginWithEmail, register } = useAppData()
+  const { loginWithEmail, register } = useAppData()
 
   const [mode, setMode] = useState<'login' | 'signup'>('login')
-  const [passwordLogin, setPasswordLogin] = useState(false)
   const [message, setMessage] = useState('')
   const [busy, setBusy] = useState(false)
 
@@ -29,8 +28,7 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
 
     try {
       if (mode === 'login') {
-        if (passwordLogin) await login(String(form.get('phone')), String(form.get('password')))
-        else await loginWithEmail(String(form.get('phone')), String(form.get('email')))
+        await loginWithEmail(String(form.get('phone')), String(form.get('email')))
       } else {
         await register(
           String(form.get('name')),
@@ -135,7 +133,7 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
               className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#d92c83]"
             />
           </label>
-          {mode === 'login' && !passwordLogin && (
+          {mode === 'login' && (
             <label className="block">
               <span className="mb-2 block text-xs font-bold uppercase tracking-[0.12em]">
                 Email
@@ -149,21 +147,7 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
               />
             </label>
           )}
-          {mode === 'login' && passwordLogin && (
-            <label className="block">
-              <span className="mb-2 block text-xs font-bold uppercase tracking-[0.12em]">
-                Password
-              </span>
-              <input
-                required
-                name="password"
-                type="password"
-                minLength={6}
-                autoComplete="current-password"
-                className="h-13 w-full rounded-xl border border-[#d99eb7] bg-white px-4 outline-none focus:border-[#d92c83]"
-              />
-            </label>
-          )}
+
           <button
             type="submit"
             disabled={busy}
@@ -176,15 +160,7 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
                 : 'Create account'}
           </button>
         </form>
-        {mode === 'login' && (
-          <button
-            type="button"
-            onClick={() => { setPasswordLogin(!passwordLogin); setMessage('') }}
-            className="mt-4 block text-sm font-semibold text-[#9f205f] underline underline-offset-4"
-          >
-            {passwordLogin ? 'Log in with phone and email instead' : 'Staff or have a password? Log in with password'}
-          </button>
-        )}
+
 
         {message && (
           <p
@@ -194,15 +170,7 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
             {message}
           </p>
         )}
-        {mode === 'login' && passwordLogin && (
-          <a
-            href="#/reset-password"
-            onClick={onClose}
-            className="mt-4 block text-sm font-semibold text-[#9f205f] underline underline-offset-4"
-          >
-            Forgot your password?
-          </a>
-        )}        <button
+        <button
           type="button"
           onClick={() => {
             setMode(mode === 'login' ? 'signup' : 'login')
