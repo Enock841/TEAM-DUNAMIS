@@ -10,7 +10,7 @@ export async function listCustomers() {
      from users u
      left join bookings b on b.user_id = u.id
      left join orders o on o.user_id = u.id
-     where u.role = 'customer' and u.is_active = true
+     where u.role = 'customer' and u.is_active = true and u.hidden_in_list = false
      group by u.id
      order by u.created_at desc`
   );
@@ -60,9 +60,7 @@ export async function listPayments() {
 
 export async function deactivateCustomer(id) {
   const result = await query(
-    `update users
-     set is_active = false, name = 'Deleted client', phone = 'deleted-' || id::text,
-         email = null, area = null, avatar_url = null, password_hash = 'deleted', updated_at = now()
+    `update users set hidden_in_list = true, updated_at = now()
      where id = $1 and role = 'customer' returning id`,
     [id]
   );

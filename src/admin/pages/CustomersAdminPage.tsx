@@ -19,7 +19,7 @@ export function CustomersAdminPage() {
 
   async function remove(customer: AdminCustomer) {
     if (!token) return
-    if (!window.confirm('Delete ' + customer.name + '? They will be removed from your customer list and can no longer log in. Their past bookings and orders stay in your records.')) return
+    if (!window.confirm('Delete ' + customer.name + '? Their name will be removed from this list. Their account, bookings and orders are not affected.')) return
     try {
       await api.adminDeleteCustomer(token, customer.id)
       setSelected(null)
