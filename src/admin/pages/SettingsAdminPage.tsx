@@ -13,6 +13,7 @@ export function SettingsAdminPage() {
   const [staff, setStaff] = useState<AdminStaff[]>([])
   const [message, setMessage] = useState('')
   const [aboutImageUrl, setAboutImageUrl] = useState('')
+  const [testResult, setTestResult] = useState<{ ok: boolean; message: string } | null>(null)
 
   useEffect(() => {
     if (data) setAboutImageUrl(data.aboutImageUrl || '')
@@ -21,6 +22,13 @@ export function SettingsAdminPage() {
   useEffect(() => {
     if (token) api.adminStaff(token).then(setStaff).catch((reason) => setError(reason instanceof Error ? reason.message : 'Unable to load staff.'))
   }, [token, setError])
+
+  async function sendTest() {
+    if (!token) return
+    setTestResult({ ok: true, message: 'Sending test email...' })
+    try { setTestResult(await api.adminTestEmail(token)) }
+    catch (reason) { setTestResult({ ok: false, message: reason instanceof Error ? reason.message : 'Unable to send the test.' }) }
+  }
 
   async function save(event: FormEvent<HTMLFormElement>) {
     event.preventDefault()
@@ -149,6 +157,12 @@ export function SettingsAdminPage() {
         <Panel>
           <h2 className="font-serif text-2xl text-[#3e2530]">Staff accounts</h2>
           <div className="mt-5 space-y-3">{staff.map((member) => <div key={member.id} className="flex items-center justify-between rounded-xl bg-[#fbf4f7] p-3"><div><strong className="text-sm">{member.name}</strong><span className="block text-xs text-[#806b74]">{member.phone}{member.email ? " - " + member.email : ""}</span></div><button onClick={() => toggle(member)} className={`text-xs font-bold ${member.isActive ? 'text-red-600' : 'text-emerald-700'}`}>{member.isActive ? 'Deactivate' : 'Activate'}</button></div>)}</div>
+        </Panel>
+        <Panel>
+          <h2 className="font-serif text-2xl text-[#3e2530]">Check email sending</h2>
+          <p className="mt-2 text-sm text-[#806b74]">Sends a test email to the admin address and shows exactly what happens.</p>
+          <div className="mt-5"><PrimaryButton type="button" onClick={sendTest}>Send test email</PrimaryButton></div>
+          {testResult && <div className="mt-4"><Notice error={!testResult.ok}>{testResult.message}</Notice></div>}
         </Panel>
         <Panel>
           <h2 className="font-serif text-2xl text-[#3e2530]">Add administrator</h2>

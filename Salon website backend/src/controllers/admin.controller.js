@@ -1,4 +1,5 @@
 import bcrypt from "bcryptjs";
+import { env } from "../config/env.js";
 import { z } from "zod";
 import {
   createStaff,
@@ -60,6 +61,39 @@ export async function removePayment(req, res) {
 
 export async function analytics(_req, res) {
   res.json(await getAnalytics());
+}
+
+export async function testEmail(_req, res) {
+  const to = env.adminEmail;
+  const from = env.gmailUser;
+  const problems = [];
+  if (!env.sendgridApiKey) problems.push("SENDGRID_API_KEY is missing in Render.");
+  if (!from) problems.push("GMAIL_USER (the sender address) is missing in Render.");
+  if (!to) problems.push("ADMIN_EMAIL is missing in Render.");
+  if (problems.length) {
+    res.json({ ok: false, message: problems.join(" ") });
+    return;
+  }
+  try {
+    const response = await fetch("https://api.sendgrid.com/v3/mail/send", {
+      method: "POST",
+      headers: { Authorization: "Bearer " + env.sendgridApiKey, "Content-Type": "application/json" },
+      body: JSON.stringify({
+        personalizations: [{ to: [{ email: to }] }],
+        from: { email: from, name: "Beryl's Beauty Mark" },
+        subject: "Test email from Beryl's Beauty Mark",
+        content: [{ type: "text/html", value: "<p>This is a test. If you can read this, booking alerts can reach you.</p>" }]
+      })
+    });
+    if (response.ok) {
+      res.json({ ok: true, message: "SendGrid accepted the test email for " + to + " (sent from " + from + "). Check that inbox, including Spam and Promotions." });
+      return;
+    }
+    const text = await response.text();
+    res.json({ ok: false, message: "SendGrid refused it (status " + response.status + "): " + text.slice(0, 400) });
+  } catch (error) {
+    res.json({ ok: false, message: "Could not reach SendGrid: " + error.message });
+  }
 }
 
 export async function showSettings(_req, res) {

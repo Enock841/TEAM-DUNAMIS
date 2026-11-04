@@ -11,7 +11,8 @@ import {
   saveSettings,
   setStaffStatus,
   showSettings,
-  staff
+  staff,
+  testEmail
 } from "../controllers/admin.controller.js";
 import { requireAdmin, requireAuth } from "../middleware/auth.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
@@ -22,6 +23,7 @@ router.use(requireAuth, requireAdmin);
 router.get("/customers", asyncHandler(customers));
 router.get("/customers/:id", asyncHandler(customer));
 router.delete("/customers/:id", asyncHandler(removeCustomer));
+router.post("/test-email", asyncHandler(testEmail));
 router.get("/payments", asyncHandler(payments));
 router.get("/notifications", asyncHandler(notifications));
 router.delete("/payments/:id", asyncHandler(removePayment));

@@ -826,6 +826,9 @@ export const api = {
   deleteProduct(token: string, id: string) {
     return request<null>(`/products/${id}`, { method: 'DELETE', token })
   },
+  adminTestEmail(token: string) {
+    return request<{ ok: boolean; message: string }>('/admin/test-email', { method: 'POST', token })
+  },
   adminCustomers(token: string) {
     return request<AdminCustomer[]>('/admin/customers', { token })
   },
