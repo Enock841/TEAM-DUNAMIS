@@ -89,6 +89,8 @@ export function BookingPage(props) {
   const [bookingHours, setBookingHours] = useState({ start: '08:00', end: '18:00', interval: 60 })
   const [notes, setNotes] = useState('')
   const [contactEmail, setContactEmail] = useState(user ? user.email || '' : '')
+  const [guestName, setGuestName] = useState('')
+  const [guestPhone, setGuestPhone] = useState('')
   const [submitted, setSubmitted] = useState(false)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
@@ -386,17 +388,26 @@ function selectOtherInCategory(categoryId) {
   }, [calendarYear, calendarMonth])
 
   async function requestBooking() {
-    if (!token) {
-      setMessage('Sign in or create a client account to complete your booking.')
-      onRequireAuth()
-      return
-    }
     if (busy || submitted) return
+    if (!token) {
+      if (guestName.trim().length < 2) {
+        setMessage('Please enter your name.')
+        return
+      }
+      if (!/^(0|\+233)[0-9]{9}$/.test(guestPhone.replace(/[\s-]/g, ''))) {
+        setMessage('Enter a valid Ghanaian phone number, for example 024 123 4567.')
+        return
+      }
+      if (!/^\S+@\S+\.\S+$/.test(contactEmail.trim())) {
+        setMessage('Please enter your email so we can send you booking updates.')
+        return
+      }
+    }
 
     setBusy(true)
     setMessage('')
     try {
-      await api.createBooking(token, {
+      const bookingBody = {
         serviceId: selectedService,
         date: selectedDate,
         timeSlot: selectedTime,
@@ -409,11 +420,23 @@ function selectOtherInCategory(categoryId) {
           ? extensionPaidInfo.summaryText + ' (paid separately, order ' + extensionPaidInfo.orderId.slice(0, 8) + ')'
           : undefined,
         extensionProductPrice: extensionPaidInfo ? extensionPaidInfo.total : undefined,
-      })
+      }
+      let guestResult: any = null
+      if (token) {
+        await api.createBooking(token, bookingBody)
+      } else {
+        guestResult = await api.createGuestBooking({
+          ...bookingBody,
+          name: guestName.trim(),
+          phone: guestPhone.replace(/[\s-]/g, ''),
+          contactEmail: contactEmail.trim(),
+        })
+        if (guestResult.token && guestResult.user) appData.saveSession(guestResult.user, guestResult.token)
+      }
 
       localStorage.removeItem('paidExtensionOrder')
       setSubmitted(true)
-      setMessage('Thank you so much for booking with us, we cannot wait to pamper you! Please keep an eye on your email, including your spam or junk folder just in case, we will let you know there as soon as your appointment is approved with your price. Once it is, just come back to your account to complete payment and secure your slot.')
+      setMessage(guestResult && guestResult.existingAccount ? 'Thank you! Your booking request is in. We already have an account with your details, so please log in (or tap Forgot your password) to see your booking and pay your deposit once Beryl approves it. We will also email you as soon as it is approved.' : 'Thank you so much for booking with us, we cannot wait to pamper you! Please keep an eye on your email, including your spam or junk folder just in case, we will let you know there as soon as your appointment is approved with your price. Once it is, just come back to your account to complete payment and secure your slot.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to request this booking.')
     } finally {
@@ -1025,9 +1048,30 @@ function selectOtherInCategory(categoryId) {
                     <p className="mt-1 text-sm text-[#745f68]">{user.phone}</p>
                   </div>
                 ) : (
-                  <p className="mt-7 rounded-2xl bg-[#f7e4ec] p-5 text-sm leading-7 text-[#745f68]">
-                    You will be asked to sign in before the request is submitted.
-                  </p>
+                  <div className="mt-7 grid gap-4 rounded-2xl border border-[#e6c5d3] bg-white p-5">
+                    <p className="text-sm leading-6 text-[#745f68]">No account or password needed. Just tell us who you are.</p>
+                    <label className="block">
+                      <span className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-[#765b67]">Your name</span>
+                      <input
+                        value={guestName}
+                        onChange={function (event) { setGuestName(event.target.value) }}
+                        placeholder="Full name"
+                        autoComplete="name"
+                        className="h-13 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 outline-none focus:border-[#dc2d83] focus:ring-4 focus:ring-[#dc2d83]/10"
+                      />
+                    </label>
+                    <label className="block">
+                      <span className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-[#765b67]">Phone number</span>
+                      <input
+                        type="tel"
+                        value={guestPhone}
+                        onChange={function (event) { setGuestPhone(event.target.value) }}
+                        placeholder="024 123 4567"
+                        autoComplete="tel"
+                        className="h-13 w-full rounded-xl border border-[#dfbdcb] bg-white px-4 outline-none focus:border-[#dc2d83] focus:ring-4 focus:ring-[#dc2d83]/10"
+                      />
+                    </label>
+                  </div>
                 )}
                 <label className="mt-5 block">
                   <span className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-[#765b67]">

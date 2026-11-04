@@ -529,6 +529,20 @@ export const api = {
       body: JSON.stringify(body),
     })
   },
+  createGuestBooking(
+    body: { name: string; phone: string; contactEmail: string; serviceId: string; date: string; timeSlot: string; referenceImageUrl?: string; lengthLabel?: string; customLengthRequest?: string; notes?: string; extensionProductName?: string; extensionProductPrice?: number },
+  ) {
+    return request<{
+      booking: { id: string; status: string; confirmationCode: string }
+      accountCreated: boolean
+      existingAccount: boolean
+      user?: { id: string; name: string; phone: string; role: string; email: string | null; area: string | null; avatarUrl: string | null }
+      token?: string
+    }>('/bookings/guest', {
+      method: 'POST',
+      body: JSON.stringify(body),
+    })
+  },
   verifyBookingCode(token: string, code: string) {
     return request<{
       booking: {

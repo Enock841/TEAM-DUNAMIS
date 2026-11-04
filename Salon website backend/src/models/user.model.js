@@ -15,6 +15,11 @@ export async function findUserByPhone(phone) {
   return result.rows[0] || null;
 }
 
+export async function findUserByPhoneVariants(phones) {
+  const result = await query("select * from users where phone = any($1::text[]) limit 1", [phones]);
+  return result.rows[0] || null;
+}
+
 export async function findUserByEmail(email) {
   const result = await query("select * from users where lower(email) = lower($1)", [email]);
   return result.rows[0] || null;

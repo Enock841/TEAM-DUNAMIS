@@ -50,7 +50,7 @@ const passwordSchema = z.object({
   newPassword: z.string().min(6)
 });
 
-function publicUser(user) {
+export function publicUser(user) {
   return {
     id: user.id,
     name: user.name,
@@ -62,7 +62,7 @@ function publicUser(user) {
   };
 }
 
-function signToken(user) {
+export function signToken(user) {
   return jwt.sign({ id: user.id, role: user.role }, env.jwtSecret, {
     expiresIn: "2h"
   });

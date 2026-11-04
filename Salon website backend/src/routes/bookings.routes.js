@@ -3,6 +3,7 @@ import {
   approveCustomLengthRequest,
   availability,
   create,
+  guestCreate,
   index,
   mine,
   monthAvailability,
@@ -22,6 +23,7 @@ const router = Router();
 router.get("/availability", asyncHandler(availability));
 router.get("/month-availability", asyncHandler(monthAvailability));
 router.post("/", requireAuth, asyncHandler(create));
+router.post("/guest", asyncHandler(guestCreate));
 router.get("/me", requireAuth, asyncHandler(mine));
 router.get("/", requireAuth, requireAdmin, asyncHandler(index));
 router.post(

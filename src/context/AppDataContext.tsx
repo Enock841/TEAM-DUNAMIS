@@ -201,6 +201,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     toggleWishlist,
     login,
     register,
+    saveSession,
     updateProfile,
     changePassword,
     logout,

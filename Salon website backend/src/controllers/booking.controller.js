@@ -1,4 +1,8 @@
+import bcrypt from "bcryptjs";
+import crypto from "node:crypto";
 import { z } from "zod";
+import { publicUser, signToken } from "./auth.controller.js";
+import { createCustomer, findUserByEmail, findUserByPhoneVariants } from "../models/user.model.js";
 import {
   approveCustomLength,
   createBooking,
@@ -112,6 +116,68 @@ export async function create(req, res) {
     sendAdminBookingNotification(details);
   }
   res.status(201).json({ booking });
+}
+
+const guestBookingSchema = createBookingSchema.extend({
+  name: z.string().trim().min(2).max(80),
+  phone: z.string().regex(/^(0|\+233)[0-9]{9}$/, "Enter a valid Ghanaian phone number, e.g. 024 123 4567"),
+  contactEmail: z.string().email()
+});
+
+const guestAttempts = new Map();
+
+function guestLimited(key) {
+  const now = Date.now();
+  const hourAgo = now - 60 * 60 * 1000;
+  const hits = (guestAttempts.get(key) || []).filter((time) => time > hourAgo);
+  if (hits.length >= 10) {
+    guestAttempts.set(key, hits);
+    return true;
+  }
+  hits.push(now);
+  guestAttempts.set(key, hits);
+  return false;
+}
+
+function phoneVariants(phone) {
+  const local = phone.replace(/^\+233/, "0");
+  return [local, "+233" + local.slice(1)];
+}
+
+export async function guestCreate(req, res) {
+  const forwarded = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+  if (guestLimited(forwarded || req.ip || "unknown")) {
+    throw new HttpError(429, "Too many booking requests from this connection. Please try again later.");
+  }
+  const body = guestBookingSchema.parse(req.body);
+  assertNotPast(body.date, body.timeSlot);
+  const { name, phone, ...bookingBody } = body;
+
+  let user = await findUserByPhoneVariants(phoneVariants(phone));
+  if (!user) user = await findUserByEmail(body.contactEmail.toLowerCase());
+  let created = false;
+  if (!user) {
+    const passwordHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), 12);
+    user = await createCustomer({ name, phone, passwordHash, email: body.contactEmail.toLowerCase() });
+    created = true;
+  }
+
+  const guestNote = "Booked without signing in: " + name + ", " + phone + ".";
+  const booking = await createBooking(user.id, {
+    ...bookingBody,
+    notes: bookingBody.notes ? guestNote + " " + bookingBody.notes : guestNote
+  });
+  const details = await getBookingDetailsForEmail(booking.id);
+  if (details) {
+    sendBookingReceived(details);
+    sendAdminBookingNotification(details);
+  }
+  res.status(201).json({
+    booking,
+    accountCreated: created,
+    existingAccount: !created,
+    ...(created ? { user: publicUser(user), token: signToken(user) } : {})
+  });
 }
 
 export async function mine(req, res) {
