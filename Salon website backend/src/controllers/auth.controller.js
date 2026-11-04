@@ -8,7 +8,9 @@ import {
   findUserByEmail,
   findUserById,
   findUserByPhone,
+  findUserByPhoneVariants,
   findUserWithPasswordById,
+  setCustomerEmailIfEmpty,
   updateUserPassword,
   updateUserProfile,
   createPasswordReset,
@@ -86,9 +88,47 @@ export async function login(req, res) {
   const identifier = body.phone.trim();
   const user = identifier.includes("@")
     ? await findUserByEmail(identifier.toLowerCase())
-    : await findUserByPhone(identifier);
+    : await findUserByAnyPhoneFormat(identifier);
   if (!user || !(await bcrypt.compare(body.password, user.password_hash))) {
     throw new HttpError(401, "Invalid login or password");
+  }
+  res.json({ user: publicUser(user), token: signToken(user) });
+}
+
+const emailLoginSchema = z.object({
+  phone: z.string().trim().min(7).max(20),
+  email: z.string().trim().email()
+});
+
+const emailLoginAttempts = new Map();
+
+function emailLoginLimited(key) {
+  const now = Date.now();
+  const hourAgo = now - 60 * 60 * 1000;
+  const hits = (emailLoginAttempts.get(key) || []).filter((time) => time > hourAgo);
+  if (hits.length >= 20) {
+    emailLoginAttempts.set(key, hits);
+    return true;
+  }
+  hits.push(now);
+  emailLoginAttempts.set(key, hits);
+  return false;
+}
+
+export async function loginWithEmail(req, res) {
+  const forwarded = String(req.headers["x-forwarded-for"] || "").split(",")[0].trim();
+  if (emailLoginLimited(forwarded || req.ip || "unknown")) {
+    throw new HttpError(429, "Too many attempts. Please try again later.");
+  }
+  const body = emailLoginSchema.parse(req.body);
+  let user = await findUserByAnyPhoneFormat(body.phone);
+  const notFound = new HttpError(401, "We could not find an account with that phone number and email.");
+  if (!user || user.role !== "customer" || user.is_active === false) throw notFound;
+  if (!user.email) {
+    user = await setCustomerEmailIfEmpty(user.id, body.email.toLowerCase());
+    if (!user) throw notFound;
+  } else if (user.email.toLowerCase() !== body.email.toLowerCase()) {
+    throw notFound;
   }
   res.json({ user: publicUser(user), token: signToken(user) });
 }
@@ -121,6 +161,12 @@ export async function changePassword(req, res) {
   res.json({ message: "Password updated successfully" });
 }
 
+function findUserByAnyPhoneFormat(identifier) {
+  const cleaned = identifier.replace(/[\s-]/g, "");
+  const local = cleaned.replace(/^\+233/, "0");
+  return findUserByPhoneVariants([identifier, cleaned, local, "+233" + local.slice(1)]);
+}
+
 const forgotSchema = z.object({
   identifier: z.string().trim().min(3).max(120)
 });
@@ -137,7 +183,7 @@ export async function forgotPassword(req, res) {
   const identifier = body.identifier;
   const user = identifier.includes("@")
     ? await findUserByEmail(identifier.toLowerCase())
-    : await findUserByPhone(identifier);
+    : await findUserByAnyPhoneFormat(identifier);
 
   if (user && user.email && user.is_active !== false) {
     const token = crypto.randomBytes(32).toString("hex");

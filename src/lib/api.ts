@@ -472,6 +472,12 @@ export const api = {
     >('/services')
     return data.map(normalizeService)
   },
+  loginWithEmail(phone: string, email: string) {
+    return request<AuthResponse>('/auth/login-email', {
+      method: 'POST',
+      body: JSON.stringify({ phone, email }),
+    })
+  },
   login(phone: string, password: string) {
     return request<AuthResponse>('/auth/login', {
       method: 'POST',

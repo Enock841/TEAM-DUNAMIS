@@ -20,6 +20,14 @@ export async function findUserByPhoneVariants(phones) {
   return result.rows[0] || null;
 }
 
+export async function setCustomerEmailIfEmpty(id, email) {
+  const result = await query(
+    "update users set email = $2, updated_at = now() where id = $1 and (email is null or email = '') returning *",
+    [id, email]
+  );
+  return result.rows[0] || null;
+}
+
 export async function findUserByEmail(email) {
   const result = await query("select * from users where lower(email) = lower($1)", [email]);
   return result.rows[0] || null;

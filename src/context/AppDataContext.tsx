@@ -150,6 +150,12 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setUser(nextUser)
   }
 
+  async function loginWithEmail(phone: string, email: string) {
+    const result = await api.loginWithEmail(phone, email)
+    saveSession(result.user, result.token)
+    return result.user
+  }
+
   async function login(phone: string, password: string) {
     const result = await api.login(phone, password)
     saveSession(result.user, result.token)
@@ -200,6 +206,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     wishlistIds,
     toggleWishlist,
     login,
+    loginWithEmail,
     register,
     saveSession,
     updateProfile,
