@@ -3,6 +3,7 @@ import { AuthPanel } from './components/AuthPanel'
 import { AdminRoute } from './components/AdminRoute'
 import { AdminApp } from './admin/AdminApp'
 import { CartDrawer } from './components/CartDrawer'
+import { FeedbackWidget } from './components/FeedbackWidget'
 import { Footer } from './components/Footer'
 import { Header } from './components/Header'
 import { PaymentVerifier } from './components/PaymentVerifier'
@@ -149,6 +150,7 @@ function App() {
           {page}
         </div>
         <Footer />
+        <FeedbackWidget />
         <AuthPanel open={authOpen} onClose={() => setAuthOpen(false)} initialMode={authMode} />
         <CartDrawer
           items={cart}

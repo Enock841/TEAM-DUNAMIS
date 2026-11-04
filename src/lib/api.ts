@@ -862,6 +862,26 @@ export const api = {
   adminRemoveDayLimit(token: string, day: string) {
     return request<{ removed: boolean }>('/days-off/limits/' + day, { method: 'DELETE', token })
   },
+  submitFeedback(
+    body: { rating: number; message?: string; name?: string; contact?: string; page?: string },
+    token?: string | null,
+  ) {
+    return request<{ ok: boolean; id: string }>('/feedback', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(body),
+    })
+  },
+  adminFeedback(token: string) {
+    return request<{
+      items: Array<{ id: string; rating: number; message: string; name: string; contact: string; page: string; createdAt: string }>
+      total: number
+      average: number
+    }>('/feedback', { token })
+  },
+  adminDeleteFeedback(token: string, id: string) {
+    return request<{ removed: boolean }>('/feedback/' + id, { method: 'DELETE', token })
+  },
   adminDeletePayment(token: string, id: string) {
     return request<{ removed: boolean }>('/admin/payments/' + id, { token, method: 'DELETE' })
   },

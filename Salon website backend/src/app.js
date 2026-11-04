@@ -10,6 +10,7 @@ import bookingRoutes from "./routes/bookings.routes.js";
 import businessInfoRoutes from "./routes/businessInfo.routes.js";
 import categoryRoutes from "./routes/categories.routes.js";
 import dayOffRoutes from "./routes/dayoff.routes.js";
+import feedbackRoutes from "./routes/feedback.routes.js";
 import giftCardRoutes from "./routes/giftCards.routes.js";
 import productVariantRoutes from "./routes/productVariants.routes.js";
 import wishlistRoutes from "./routes/wishlist.routes.js";
@@ -55,6 +56,7 @@ app.use("/api/products", productRoutes);
 app.use("/api/orders", orderRoutes);
 app.use("/api/payments", paymentRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/feedback", feedbackRoutes);
 
 app.use((_req, res) => {
   res.status(404).json({ error: "Route not found" });

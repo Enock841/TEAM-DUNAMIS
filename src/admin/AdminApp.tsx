@@ -5,6 +5,7 @@ import { AppointmentsAdminPage } from './pages/AppointmentsAdminPage'
 import { BookingHoursAdminPage } from './pages/BookingHoursAdminPage'
 import { CustomersAdminPage } from './pages/CustomersAdminPage'
 import { DaysOffAdminPage } from './pages/DaysOffAdminPage'
+import { FeedbackAdminPage } from './pages/FeedbackAdminPage'
 import { HeroSlidesAdminPage } from './pages/HeroSlidesAdminPage'
 import { MobileMoneyAdminPage } from './pages/MobileMoneyAdminPage'
 import { OrdersAdminPage } from './pages/OrdersAdminPage'
@@ -27,6 +28,7 @@ const pages = {
   products: ProductsAdminPage,
   orders: OrdersAdminPage,
   reviews: ReviewsAdminPage,
+  feedback: FeedbackAdminPage,
   customers: CustomersAdminPage,
   payments: PaymentsAdminPage,
   'mobile-money': MobileMoneyAdminPage,
