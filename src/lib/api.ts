@@ -116,6 +116,9 @@ export type AdminSettings = {
   momoNetwork?: string
   momoNumber?: string
   momoAccountName?: string
+  bookingStartTime?: string
+  bookingEndTime?: string
+  bookingIntervalMinutes?: number
   aboutImageUrl?: string
   updatedAt?: string
 }
@@ -305,6 +308,9 @@ export type BusinessInfo = {
   address: string
   openingHours: Record<string, string>
   aboutImageUrl?: string
+  bookingStartTime?: string
+  bookingEndTime?: string
+  bookingIntervalMinutes?: number
 }
 
 export type ServiceLengthOption = {

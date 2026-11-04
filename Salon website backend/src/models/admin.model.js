@@ -105,6 +105,7 @@ export async function getSettings() {
             opening_hours as "openingHours", notifications, payment_methods as "paymentMethods",
             about_image_url as "aboutImageUrl",
             momo_network as "momoNetwork", momo_number as "momoNumber", momo_account_name as "momoAccountName",
+            booking_start_time as "bookingStartTime", booking_end_time as "bookingEndTime", booking_interval_minutes as "bookingIntervalMinutes",
             updated_at as "updatedAt"
      from business_settings where id = 1`
   );
@@ -117,12 +118,14 @@ export async function updateSettings(input) {
   const result = await query(
     `update business_settings
      set business_name = $1, phone = $2, address = $3, opening_hours = $4,
-         notifications = $5, payment_methods = $6, about_image_url = $7, momo_network = $8, momo_number = $9, momo_account_name = $10, updated_at = now()
+         notifications = $5, payment_methods = $6, about_image_url = $7, momo_network = $8, momo_number = $9, momo_account_name = $10,
+         booking_start_time = $11, booking_end_time = $12, booking_interval_minutes = $13, updated_at = now()
      where id = 1
      returning business_name as "businessName", phone, address,
                opening_hours as "openingHours", notifications,
                payment_methods as "paymentMethods", about_image_url as "aboutImageUrl",
                momo_network as "momoNetwork", momo_number as "momoNumber", momo_account_name as "momoAccountName",
+               booking_start_time as "bookingStartTime", booking_end_time as "bookingEndTime", booking_interval_minutes as "bookingIntervalMinutes",
                updated_at as "updatedAt"`,
     [
       merged.businessName,
@@ -134,7 +137,10 @@ export async function updateSettings(input) {
       merged.aboutImageUrl || '',
       merged.momoNetwork || '',
       merged.momoNumber || '',
-      merged.momoAccountName || ''
+      merged.momoAccountName || '',
+      merged.bookingStartTime || '08:00',
+      merged.bookingEndTime || '18:00',
+      Number(merged.bookingIntervalMinutes) || 60
     ]
   );
   return result.rows[0];

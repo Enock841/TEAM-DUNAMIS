@@ -11,7 +11,10 @@ router.get("/", asyncHandler(async (_req, res) => {
     phone: settings.phone,
     address: settings.address,
     openingHours: settings.openingHours,
-    aboutImageUrl: settings.aboutImageUrl
+    aboutImageUrl: settings.aboutImageUrl,
+    bookingStartTime: settings.bookingStartTime,
+    bookingEndTime: settings.bookingEndTime,
+    bookingIntervalMinutes: settings.bookingIntervalMinutes
   });
 }));
 

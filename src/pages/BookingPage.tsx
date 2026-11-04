@@ -6,7 +6,26 @@ import { ImageUploadField } from '../admin/components/ImageUploadField'
 import { MomoPaymentModal } from '../components/MomoPaymentModal'
 import { PAYSTACK_ENABLED } from '../lib/paymentConfig'
 
-const times = ['08:00 AM', '09:00 AM', '10:00 AM', '11:00 AM', '12:00 PM', '01:00 PM', '02:00 PM', '03:00 PM', '04:00 PM', '05:00 PM', '06:00 PM']
+function buildTimes(hours) {
+  const toMin = function (value) {
+    const parts = String(value).split(':')
+    return Number(parts[0]) * 60 + Number(parts[1] || 0)
+  }
+  let start = toMin(hours.start)
+  let end = toMin(hours.end)
+  let step = Number(hours.interval) || 60
+  if (isNaN(start) || isNaN(end) || end < start) { start = 8 * 60; end = 18 * 60 }
+  if (step < 15) step = 60
+  const list = []
+  for (let minutes = start; minutes <= end; minutes += step) {
+    const hour24 = Math.floor(minutes / 60)
+    const minute = minutes % 60
+    const period = hour24 >= 12 ? 'PM' : 'AM'
+    const hour12 = hour24 % 12 === 0 ? 12 : hour24 % 12
+    list.push(String(hour12).padStart(2, '0') + ':' + String(minute).padStart(2, '0') + ' ' + period)
+  }
+  return list
+}
 const weekdayLabels = ['S', 'M', 'T', 'W', 'T', 'F', 'S']
 
 export function BookingPage(props) {
@@ -51,6 +70,7 @@ export function BookingPage(props) {
   const [selectedDate, setSelectedDate] = useState('')
   const [selectedTime, setSelectedTime] = useState('')
   const [availability, setAvailability] = useState(null)
+  const [bookingHours, setBookingHours] = useState({ start: '08:00', end: '18:00', interval: 60 })
   const [notes, setNotes] = useState('')
   const [contactEmail, setContactEmail] = useState(user ? user.email || '' : '')
   const [submitted, setSubmitted] = useState(false)
@@ -71,6 +91,16 @@ export function BookingPage(props) {
   }, [selectedService, services])
 
   const hasHandledServiceFromHash = useRef(false)
+
+  useEffect(function () {
+    api.businessInfo().then(function (info) {
+      setBookingHours({
+        start: info.bookingStartTime || '08:00',
+        end: info.bookingEndTime || '18:00',
+        interval: info.bookingIntervalMinutes || 60,
+      })
+    }).catch(function () {})
+  }, [])
 
   useEffect(function () {
     if (hasHandledServiceFromHash.current) return
@@ -939,7 +969,7 @@ function selectOtherInCategory(categoryId) {
                 </p>
               )}
               <div className="mt-8 grid grid-cols-2 gap-3 sm:grid-cols-3">
-                {times.map(function (time) {
+                {buildTimes(bookingHours).map(function (time) {
                   const selected = selectedTime === time
                   const isTaken = Boolean(availability && availability.bookedTimeSlots && availability.bookedTimeSlots.indexOf(time) !== -1)
                   const now = new Date()

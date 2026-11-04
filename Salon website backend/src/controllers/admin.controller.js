@@ -25,7 +25,10 @@ const settingsSchema = z.object({
   aboutImageUrl: z.string().optional(),
   momoNetwork: z.string().max(40).optional(),
   momoNumber: z.string().max(20).optional(),
-  momoAccountName: z.string().max(120).optional()
+  momoAccountName: z.string().max(120).optional(),
+  bookingStartTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional(),
+  bookingEndTime: z.string().regex(/^([01]\d|2[0-3]):[0-5]\d$/).optional(),
+  bookingIntervalMinutes: z.number().int().min(15).max(240).optional()
 });
 
 export async function customers(_req, res) {
