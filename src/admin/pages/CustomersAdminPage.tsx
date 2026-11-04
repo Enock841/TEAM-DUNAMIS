@@ -7,7 +7,7 @@ type Details = Awaited<ReturnType<typeof api.adminCustomer>>
 
 export function CustomersAdminPage() {
   const loader = useCallback((token: string) => api.adminCustomers(token), [])
-  const { data = [], loading, error, token } = useAdminResource(loader)
+  const { data = [], loading, error, token, reload } = useAdminResource(loader)
   const [selected, setSelected] = useState<Details | null>(null)
   const [detailError, setDetailError] = useState('')
 
@@ -15,6 +15,17 @@ export function CustomersAdminPage() {
     if (!token) return
     try { setSelected(await api.adminCustomer(token, customer.id)); setDetailError('') }
     catch (reason) { setDetailError(reason instanceof Error ? reason.message : 'Unable to load customer.') }
+  }
+
+  async function remove(customer: AdminCustomer) {
+    if (!token) return
+    if (!window.confirm('Delete ' + customer.name + '? They will be removed from your customer list and can no longer log in. Their past bookings and orders stay in your records.')) return
+    try {
+      await api.adminDeleteCustomer(token, customer.id)
+      setSelected(null)
+      setDetailError('')
+      reload()
+    } catch (reason) { setDetailError(reason instanceof Error ? reason.message : 'Unable to delete customer.') }
   }
 
   return (
@@ -27,7 +38,7 @@ export function CustomersAdminPage() {
         <Panel className="overflow-x-auto">
           <table className="w-full min-w-[620px] text-left text-sm">
             <thead className="text-xs uppercase text-[#8f7480]"><tr><th className="pb-3">Customer</th><th>Bookings</th><th>Orders</th><th>Spent</th><th></th></tr></thead>
-            <tbody>{data?.map((customer) => <tr key={customer.id} className="border-t border-[#f0e2e8]"><td className="py-4"><strong>{customer.name}</strong><span className="block text-xs text-[#806b74]">{customer.phone}</span></td><td>{customer.bookingCount}</td><td>{customer.orderCount}</td><td>GHC{Number(customer.totalSpent).toLocaleString()}</td><td><button onClick={() => open(customer)} className="font-bold text-[#a52261]">View</button></td></tr>)}</tbody>
+            <tbody>{data?.map((customer) => <tr key={customer.id} className="border-t border-[#f0e2e8]"><td className="py-4"><strong>{customer.name}</strong><span className="block text-xs text-[#806b74]">{customer.phone}</span></td><td>{customer.bookingCount}</td><td>{customer.orderCount}</td><td>GHC{Number(customer.totalSpent).toLocaleString()}</td><td><button onClick={() => open(customer)} className="font-bold text-[#a52261]">View</button><button onClick={() => remove(customer)} className="ml-4 font-bold text-[#b42318]">Delete</button></td></tr>)}</tbody>
           </table>
         </Panel>
         <Panel>

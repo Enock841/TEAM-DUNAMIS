@@ -58,6 +58,17 @@ export async function listPayments() {
   return result.rows;
 }
 
+export async function deactivateCustomer(id) {
+  const result = await query(
+    `update users
+     set is_active = false, name = 'Deleted client', phone = 'deleted-' || id::text,
+         email = null, area = null, avatar_url = null, password_hash = 'deleted', updated_at = now()
+     where id = $1 and role = 'customer' returning id`,
+    [id]
+  );
+  return result.rows[0] || null;
+}
+
 export async function deletePayment(id) {
   const result = await query(`delete from payments where id = $1 returning id`, [id]);
   return result.rows[0] || null;

@@ -6,6 +6,7 @@ import {
   customers,
   notifications,
   payments,
+  removeCustomer,
   removePayment,
   saveSettings,
   setStaffStatus,
@@ -20,6 +21,7 @@ const router = Router();
 router.use(requireAuth, requireAdmin);
 router.get("/customers", asyncHandler(customers));
 router.get("/customers/:id", asyncHandler(customer));
+router.delete("/customers/:id", asyncHandler(removeCustomer));
 router.get("/payments", asyncHandler(payments));
 router.get("/notifications", asyncHandler(notifications));
 router.delete("/payments/:id", asyncHandler(removePayment));

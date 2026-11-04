@@ -809,6 +809,9 @@ export const api = {
   adminCustomers(token: string) {
     return request<AdminCustomer[]>('/admin/customers', { token })
   },
+  adminDeleteCustomer(token: string, id: string) {
+    return request<{ removed: boolean }>('/admin/customers/' + id, { method: 'DELETE', token })
+  },
   adminCustomer(token: string, id: string) {
     return request<AdminCustomer & {
       bookings: CustomerBooking[]
