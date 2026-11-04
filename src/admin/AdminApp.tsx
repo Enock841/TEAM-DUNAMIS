@@ -4,6 +4,7 @@ import { AnalyticsAdminPage } from './pages/AnalyticsAdminPage'
 import { AppointmentsAdminPage } from './pages/AppointmentsAdminPage'
 import { BookingHoursAdminPage } from './pages/BookingHoursAdminPage'
 import { CustomersAdminPage } from './pages/CustomersAdminPage'
+import { ClientLimitsAdminPage } from './pages/ClientLimitsAdminPage'
 import { DaysOffAdminPage } from './pages/DaysOffAdminPage'
 import { HeroSlidesAdminPage } from './pages/HeroSlidesAdminPage'
 import { MobileMoneyAdminPage } from './pages/MobileMoneyAdminPage'
@@ -20,6 +21,7 @@ const pages = {
   overview: OverviewAdminPage,
   appointments: AppointmentsAdminPage,
   'days-off': DaysOffAdminPage,
+  'client-limits': ClientLimitsAdminPage,
   'booking-hours': BookingHoursAdminPage,
   homepage: HeroSlidesAdminPage,
   'shop-tiles': ShopTilesAdminPage,

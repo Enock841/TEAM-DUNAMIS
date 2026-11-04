@@ -917,7 +917,7 @@ function selectOtherInCategory(categoryId) {
                     const dayDate = new Date(calendarYear, calendarMonth - 1, day)
                     const isPast = dayDate < new Date(today.getFullYear(), today.getMonth(), today.getDate())
                     const bookedCount = monthData && monthData.bookedByDate[iso] ? monthData.bookedByDate[iso] : 0
-                    const dailyCap = monthData ? monthData.dailyCap : 0
+                    const dailyCap = monthData ? (monthData.dayLimits && monthData.dayLimits[iso] != null ? monthData.dayLimits[iso] : monthData.dailyCap) : 0
                     const slotsLeft = Math.max(dailyCap - bookedCount, 0)
                     const isFull = dailyCap > 0 && slotsLeft === 0
                     const isClosed = Boolean(monthData && ((monthData.closedDates && monthData.closedDates.indexOf(iso) !== -1) || (monthData.closedWeekdays && monthData.closedWeekdays.indexOf(dayDate.getDay()) !== -1)))
@@ -965,6 +965,8 @@ function selectOtherInCategory(categoryId) {
                 <p className="mt-5 text-sm text-[#745f68]">
                   {availability.available
                     ? 'Choose a time that suits you below.'
+                    : availability.full
+                    ? 'This day is fully booked. Please choose another day.'
                     : 'This date is not available. Please choose another day.'}
                 </p>
               )}

@@ -1,5 +1,14 @@
 import { z } from "zod";
-import { addDayOff, listDaysOff, removeDayOff, setClosedWeekdays } from "../models/dayoff.model.js";
+import {
+  addDayOff,
+  listDaysOff,
+  listLimits,
+  removeDayLimit,
+  removeDayOff,
+  setClosedWeekdays,
+  setDayLimit,
+  setDefaultLimit
+} from "../models/dayoff.model.js";
 import { notFound } from "../utils/httpError.js";
 
 const daySchema = z.object({
@@ -30,4 +39,28 @@ export async function remove(req, res) {
 export async function saveWeekdays(req, res) {
   const body = weekdaysSchema.parse(req.body);
   res.json({ weekdays: await setClosedWeekdays([...new Set(body.weekdays)]) });
+}
+
+const defaultLimitSchema = z.object({ maxClients: z.number().int().min(0).max(100) });
+const dayLimitSchema = z.object({ day: z.string().date(), maxClients: z.number().int().min(1).max(100) });
+
+export async function limits(_req, res) {
+  res.json(await listLimits());
+}
+
+export async function saveDefaultLimit(req, res) {
+  const body = defaultLimitSchema.parse(req.body);
+  res.json({ maxClients: await setDefaultLimit(body.maxClients) });
+}
+
+export async function saveDayLimit(req, res) {
+  const body = dayLimitSchema.parse(req.body);
+  res.json(await setDayLimit(body.day, body.maxClients));
+}
+
+export async function removeDayLimitHandler(req, res) {
+  const day = z.string().date().parse(req.params.day);
+  const removed = await removeDayLimit(day);
+  if (!removed) throw notFound("That day had no special limit");
+  res.json({ removed: true });
 }

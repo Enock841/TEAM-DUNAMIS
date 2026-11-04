@@ -19,6 +19,7 @@ export const adminNavigation = [
   ['overview', 'Overview', FiGrid],
   ['appointments', 'Appointments', FiCalendar],
   ['days-off', 'Days off', FiSlash],
+  ['client-limits', 'Client limits', FiUsers],
   ['booking-hours', 'Booking hours', FiClock],
   ['homepage', 'Homepage', FiImage],
   ['shop-tiles', 'Shop tiles', FiPackage],

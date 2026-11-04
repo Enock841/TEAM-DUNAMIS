@@ -23,6 +23,7 @@ export type Availability = {
   bookedCount: number
   slotsRemaining: number
   available: boolean
+  full?: boolean
   bookedTimeSlots?: string[]
 }
 
@@ -326,7 +327,7 @@ export type ServiceLengthOption = {
 export const api = {
   monthAvailability(serviceId: string, year: number, month: number) {
     const query = new URLSearchParams({ serviceId, year: String(year), month: String(month) })
-    return request<{ dailyCap: number; bookedByDate: Record<string, number>; closedDates?: string[]; closedWeekdays?: number[] }>(
+    return request<{ dailyCap: number; bookedByDate: Record<string, number>; dayLimits?: Record<string, number>; closedDates?: string[]; closedWeekdays?: number[] }>(
       '/bookings/month-availability?' + query,
     )
   },
@@ -840,6 +841,26 @@ export const api = {
       '/admin/notifications?customersSince=' + encodeURIComponent(customersSince),
       { token },
     )
+  },
+  adminLimits(token: string) {
+    return request<{ defaultMax: number; days: Array<{ day: string; maxClients: number }> }>('/days-off/limits', { token })
+  },
+  adminSetDefaultLimit(token: string, maxClients: number) {
+    return request<{ maxClients: number }>('/days-off/limits/default', {
+      method: 'PUT',
+      token,
+      body: JSON.stringify({ maxClients }),
+    })
+  },
+  adminSetDayLimit(token: string, day: string, maxClients: number) {
+    return request<{ day: string; maxClients: number }>('/days-off/limits', {
+      method: 'PUT',
+      token,
+      body: JSON.stringify({ day, maxClients }),
+    })
+  },
+  adminRemoveDayLimit(token: string, day: string) {
+    return request<{ removed: boolean }>('/days-off/limits/' + day, { method: 'DELETE', token })
   },
   adminDeletePayment(token: string, id: string) {
     return request<{ removed: boolean }>('/admin/payments/' + id, { token, method: 'DELETE' })

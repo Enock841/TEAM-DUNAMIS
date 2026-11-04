@@ -49,15 +49,31 @@ async function availabilityWithClient(client, serviceId, date) {
   );
   const closed = closedResult.rows[0].closed;
 
-  const slotsRemaining = Math.max(row.daily_cap - row.booked_count, 0);  return {
+  const limitResult = await client.query(
+    `select coalesce(
+              (select max_clients from day_limits where day = $1::date),
+              (select max_clients_per_day from business_settings where id = 1),
+              0
+            ) as cap,
+            (select count(*)::int from bookings
+              where booking_date = $1::date and status in ('pending', 'confirmed')) as booked`,
+    [date]
+  );
+  const dayCap = limitResult.rows[0].cap;
+  const dayBooked = limitResult.rows[0].booked;
+  const full = dayCap > 0 && dayBooked >= dayCap;
+  const slotsRemaining = dayCap > 0 ? Math.max(dayCap - dayBooked, 0) : 0;
+
+  return {
     date,
     serviceId,
     categoryId: row.category_id,
-    dailyCap: row.daily_cap,
-    bookedCount: row.booked_count,
+    dailyCap: dayCap,
+    bookedCount: dayBooked,
     slotsRemaining,
-    available: !closed,
+    available: !closed && !full,
     closed,
+    full,
     bookedTimeSlots
   };
 }
@@ -104,9 +120,31 @@ export async function getMonthAvailability(serviceId, year, month) {
   );
   const closedWeekdaysResult = await query("select weekday from closed_weekdays");
 
+  const totalsResult = await query(
+    `select booking_date::text as date, count(*)::int as booked_count
+     from bookings
+     where status in ('pending', 'confirmed')
+       and booking_date >= $1::date
+       and booking_date < ($1::date + interval '1 month')
+     group by booking_date`,
+    [start]
+  );
+  const totals = {};
+  for (const row of totalsResult.rows) totals[row.date] = row.booked_count;
+  const limitRows = await query(
+    `select day::text as day, max_clients from day_limits
+     where day >= $1::date and day < ($1::date + interval '1 month')`,
+    [start]
+  );
+  const dayLimits = {};
+  for (const row of limitRows.rows) dayLimits[row.day] = row.max_clients;
+  const defaultResult = await query("select max_clients_per_day from business_settings where id = 1");
+  const defaultLimit = defaultResult.rows[0]?.max_clients_per_day ?? 0;
+
   return {
-    dailyCap: 0,
-    bookedByDate: byDate,
+    dailyCap: defaultLimit,
+    bookedByDate: totals,
+    dayLimits,
     closedDates: closedDatesResult.rows.map((row) => row.day),
     closedWeekdays: closedWeekdaysResult.rows.map((row) => row.weekday)
   };}
@@ -122,7 +160,7 @@ export async function createBooking(userId, input) {
     if (!availability.available) {
       throw new HttpError(
         409,
-        "Daily booking cap reached for this service category",
+        "This day is fully booked. Please choose another day.",
         availability
       );
     }
