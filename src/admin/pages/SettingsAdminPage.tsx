@@ -36,9 +36,6 @@ export function SettingsAdminPage() {
       momoNetwork: String(form.get('momoNetwork') ?? ''),
       momoNumber: String(form.get('momoNumber') ?? '').trim(),
       momoAccountName: String(form.get('momoAccountName') ?? '').trim(),
-      bookingStartTime: String(form.get('bookingStartTime') || '08:00'),
-      bookingEndTime: String(form.get('bookingEndTime') || '18:00'),
-      bookingIntervalMinutes: Number(form.get('bookingIntervalMinutes')) || 60,
       openingHours: Object.fromEntries(days.map((day) => [day, String(form.get(`hours-${day}`))])),
       notifications: {
         bookingEmail: form.get('bookingEmail') === 'on',
@@ -51,10 +48,7 @@ export function SettingsAdminPage() {
         card: form.get('card') === 'on',
       },
     }
-    if (body.bookingStartTime && body.bookingEndTime && body.bookingStartTime >= body.bookingEndTime) {
-      setError('Closing time must be later than opening time.')
-      return
-    }
+
     try { const saved = await api.updateAdminSettings(token, body); setData(saved); setMessage('Settings saved.') }
     catch (reason) { setError(reason instanceof Error ? reason.message : 'Unable to save settings.') }
   }
@@ -137,26 +131,6 @@ export function SettingsAdminPage() {
               </select>
               <input name="momoNumber" defaultValue={data.momoNumber || ''} placeholder="Mobile Money number" inputMode="tel" className={fieldClass} aria-label="Mobile Money number" />
               <input name="momoAccountName" defaultValue={data.momoAccountName || ''} placeholder="Name registered on the number" className={fieldClass} aria-label="Mobile Money account name" />
-            </div>
-          </Panel>
-          <Panel>
-            <h2 className="font-serif text-2xl text-[#3e2530]">Booking hours</h2>
-            <p className="mt-2 text-xs text-[#806b74]">Clients can only book times between these hours. Pick how far apart the appointment times are.</p>
-            <div className="mt-5 grid gap-4">
-              <label className="grid gap-1 text-xs font-bold uppercase tracking-[0.1em] text-[#76515f]">First appointment
-                <input name="bookingStartTime" type="time" defaultValue={data.bookingStartTime || '08:00'} className={fieldClass} />
-              </label>
-              <label className="grid gap-1 text-xs font-bold uppercase tracking-[0.1em] text-[#76515f]">Last appointment
-                <input name="bookingEndTime" type="time" defaultValue={data.bookingEndTime || '18:00'} className={fieldClass} />
-              </label>
-              <label className="grid gap-1 text-xs font-bold uppercase tracking-[0.1em] text-[#76515f]">Time between appointments
-                <select name="bookingIntervalMinutes" defaultValue={String(data.bookingIntervalMinutes || 60)} className={fieldClass}>
-                  <option value="30">Every 30 minutes</option>
-                  <option value="60">Every 1 hour</option>
-                  <option value="90">Every 1 hour 30 minutes</option>
-                  <option value="120">Every 2 hours</option>
-                </select>
-              </label>
             </div>
           </Panel>
           <div className="xl:col-span-2"><PrimaryButton type="submit">Save all settings</PrimaryButton></div>

@@ -2,6 +2,7 @@ import { AdminShell } from './components/AdminShell'
 import { currentAdminSection } from './adminNavigation'
 import { AnalyticsAdminPage } from './pages/AnalyticsAdminPage'
 import { AppointmentsAdminPage } from './pages/AppointmentsAdminPage'
+import { BookingHoursAdminPage } from './pages/BookingHoursAdminPage'
 import { CustomersAdminPage } from './pages/CustomersAdminPage'
 import { DaysOffAdminPage } from './pages/DaysOffAdminPage'
 import { HeroSlidesAdminPage } from './pages/HeroSlidesAdminPage'
@@ -19,6 +20,7 @@ const pages = {
   overview: OverviewAdminPage,
   appointments: AppointmentsAdminPage,
   'days-off': DaysOffAdminPage,
+  'booking-hours': BookingHoursAdminPage,
   homepage: HeroSlidesAdminPage,
   'shop-tiles': ShopTilesAdminPage,
   services: ServicesAdminPage,

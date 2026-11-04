@@ -1,6 +1,7 @@
 import {
   FiBarChart2,
   FiCalendar,
+  FiClock,
   FiCreditCard,
   FiGrid,
   FiImage,
@@ -18,6 +19,7 @@ export const adminNavigation = [
   ['overview', 'Overview', FiGrid],
   ['appointments', 'Appointments', FiCalendar],
   ['days-off', 'Days off', FiSlash],
+  ['booking-hours', 'Booking hours', FiClock],
   ['homepage', 'Homepage', FiImage],
   ['shop-tiles', 'Shop tiles', FiPackage],
   ['services', 'Services', FiScissors],
