@@ -121,7 +121,7 @@ export async function create(req, res) {
 const guestBookingSchema = createBookingSchema.extend({
   name: z.string().trim().min(2).max(80),
   phone: z.string().regex(/^(0|\+233)[0-9]{9}$/, "Enter a valid Ghanaian phone number, e.g. 024 123 4567"),
-  contactEmail: z.string().email()
+  contactEmail: z.string().email().optional().or(z.literal(""))
 });
 
 const guestAttempts = new Map();
@@ -154,11 +154,11 @@ export async function guestCreate(req, res) {
   const { name, phone, ...bookingBody } = body;
 
   let user = await findUserByPhoneVariants(phoneVariants(phone));
-  if (!user) user = await findUserByEmail(body.contactEmail.toLowerCase());
+  if (!user && body.contactEmail) user = await findUserByEmail(body.contactEmail.toLowerCase());
   let created = false;
   if (!user) {
     const passwordHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), 12);
-    user = await createCustomer({ name, phone, passwordHash, email: body.contactEmail.toLowerCase() });
+    user = await createCustomer({ name, phone, passwordHash, email: body.contactEmail ? body.contactEmail.toLowerCase() : null });
     created = true;
   }
 

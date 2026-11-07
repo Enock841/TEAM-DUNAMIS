@@ -35,7 +35,7 @@ const registerSchema = z.object({
   name: z.string().min(2),
   phone: z.string().regex(ghanaPhoneRegex, "Enter a valid Ghanaian phone number, e.g. 024 123 4567"),
   password: z.string().regex(strongPasswordRegex, "Password needs at least 8 characters, including a letter and a number").optional(),
-  email: z.string().email(),
+  email: z.string().email().optional().or(z.literal("")),
   area: z.string().max(120).optional()
 });
 
@@ -97,7 +97,7 @@ export async function login(req, res) {
 
 const emailLoginSchema = z.object({
   phone: z.string().trim().min(7).max(20),
-  email: z.string().trim().email()
+  email: z.string().trim().email().optional().or(z.literal(""))
 });
 
 const emailLoginAttempts = new Map();
@@ -124,10 +124,15 @@ export async function loginWithEmail(req, res) {
   let user = await findUserByAnyPhoneFormat(body.phone);
   const notFound = new HttpError(401, "We could not find an account with that phone number and email.");
   if (!user || user.role !== "customer" || user.is_active === false) throw notFound;
+  const typedEmail = (body.email || "").toLowerCase();
   if (!user.email) {
-    user = await setCustomerEmailIfEmpty(user.id, body.email.toLowerCase());
-    if (!user) throw notFound;
-  } else if (user.email.toLowerCase() !== body.email.toLowerCase()) {
+    if (typedEmail) {
+      user = await setCustomerEmailIfEmpty(user.id, typedEmail);
+      if (!user) throw notFound;
+    }
+  } else if (!typedEmail) {
+    throw new HttpError(401, "Please enter the email you used when you signed up or booked.");
+  } else if (user.email.toLowerCase() !== typedEmail) {
     throw notFound;
   }
   res.json({ user: publicUser(user), token: signToken(user) });

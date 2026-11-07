@@ -472,7 +472,7 @@ export const api = {
     >('/services')
     return data.map(normalizeService)
   },
-  loginWithEmail(phone: string, email: string) {
+  loginWithEmail(phone: string, email?: string) {
     return request<AuthResponse>('/auth/login-email', {
       method: 'POST',
       body: JSON.stringify({ phone, email }),
@@ -536,7 +536,7 @@ export const api = {
     })
   },
   createGuestBooking(
-    body: { name: string; phone: string; contactEmail: string; serviceId: string; date: string; timeSlot: string; referenceImageUrl?: string; lengthLabel?: string; customLengthRequest?: string; notes?: string; extensionProductName?: string; extensionProductPrice?: number },
+    body: { name: string; phone: string; contactEmail?: string; serviceId: string; date: string; timeSlot: string; referenceImageUrl?: string; lengthLabel?: string; customLengthRequest?: string; notes?: string; extensionProductName?: string; extensionProductPrice?: number },
   ) {
     return request<{
       booking: { id: string; status: string; confirmationCode: string }

@@ -398,8 +398,8 @@ function selectOtherInCategory(categoryId) {
         setMessage('Enter a valid Ghanaian phone number, for example 024 123 4567.')
         return
       }
-      if (!/^\S+@\S+\.\S+$/.test(contactEmail.trim())) {
-        setMessage('Please enter your email so we can send you booking updates.')
+      if (contactEmail.trim() && !/^\S+@\S+\.\S+$/.test(contactEmail.trim())) {
+        setMessage('That email does not look right. Fix it, or leave it empty.')
         return
       }
     }
@@ -429,14 +429,14 @@ function selectOtherInCategory(categoryId) {
           ...bookingBody,
           name: guestName.trim(),
           phone: guestPhone.replace(/[\s-]/g, ''),
-          contactEmail: contactEmail.trim(),
+          contactEmail: contactEmail.trim() || undefined,
         })
         if (guestResult.token && guestResult.user) appData.saveSession(guestResult.user, guestResult.token)
       }
 
       localStorage.removeItem('paidExtensionOrder')
       setSubmitted(true)
-      setMessage(guestResult && guestResult.existingAccount ? 'Thank you! Your booking request is in. We already have an account with your details, so please log in with your phone number and email to see your booking and pay your deposit once Beryl approves it. We will also email you as soon as it is approved.' : 'Thank you so much for booking with us, we cannot wait to pamper you! Please keep an eye on your email, including your spam or junk folder just in case, we will let you know there as soon as your appointment is approved with your price. Once it is, just come back to your account to complete payment and secure your slot.')
+      setMessage(!contactEmail.trim() ? 'Thank you! Your booking request is in. Since you did not give an email, Beryl will contact you on your phone number once it is approved. You can also log in with your phone number to check on it.' : guestResult && guestResult.existingAccount ? 'Thank you! Your booking request is in. We already have an account with your details, so please log in with your phone number and email to see your booking and pay your deposit once Beryl approves it. We will also email you as soon as it is approved.' : 'Thank you so much for booking with us, we cannot wait to pamper you! Please keep an eye on your email, including your spam or junk folder just in case, we will let you know there as soon as your appointment is approved with your price. Once it is, just come back to your account to complete payment and secure your slot.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to request this booking.')
     } finally {
@@ -1075,7 +1075,7 @@ function selectOtherInCategory(categoryId) {
                 )}
                 <label className="mt-5 block">
                   <span className="mb-2 block text-xs font-bold uppercase tracking-[0.12em] text-[#765b67]">
-                    Email for booking updates
+                    Email for booking updates (optional)
                   </span>
                   <input
                     type="email"

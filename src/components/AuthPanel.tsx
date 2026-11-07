@@ -28,7 +28,7 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
 
     try {
       if (mode === 'login') {
-        await loginWithEmail(String(form.get('phone')), String(form.get('email')))
+        await loginWithEmail(String(form.get('phone')), String(form.get('email') || '') || undefined)
       } else {
         await register(
           String(form.get('name')),
@@ -92,10 +92,9 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
           {mode === 'signup' && (
             <label className="block">
               <span className="mb-2 block text-xs font-bold uppercase tracking-[0.12em]">
-                Email
+                Email, optional
               </span>
               <input
-                required
                 name="email"
                 type="email"
                 autoComplete="email"
@@ -136,10 +135,9 @@ export function AuthPanel({ open, onClose, initialMode }: AuthPanelProps) {
           {mode === 'login' && (
             <label className="block">
               <span className="mb-2 block text-xs font-bold uppercase tracking-[0.12em]">
-                Email
+                Email, if you gave one
               </span>
               <input
-                required
                 name="email"
                 type="email"
                 autoComplete="email"

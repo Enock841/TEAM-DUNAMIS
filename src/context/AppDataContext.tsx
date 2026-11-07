@@ -150,7 +150,7 @@ export function AppDataProvider({ children }: { children: ReactNode }) {
     setUser(nextUser)
   }
 
-  async function loginWithEmail(phone: string, email: string) {
+  async function loginWithEmail(phone: string, email?: string) {
     const result = await api.loginWithEmail(phone, email)
     saveSession(result.user, result.token)
     return result.user
