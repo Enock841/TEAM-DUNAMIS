@@ -1,6 +1,8 @@
 import { pool, query } from "../config/db.js";
 import { HttpError } from "../utils/httpError.js";
 
+const BOOKING_DEPOSIT = Number(process.env.BOOKING_DEPOSIT || 50);
+
 function generateConfirmationCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
   let code = "";
@@ -171,14 +173,32 @@ export async function createBooking(userId, input) {
 
     const code = generateConfirmationCode();
 
+    let exactPrice = null;
+    if (!input.customLengthRequest) {
+      if (input.lengthLabel) {
+        const lengthPrice = await client.query(
+          "select price_min from service_length_options where service_id = $1 and label = $2 limit 1",
+          [input.serviceId, input.lengthLabel]
+        );
+        if (lengthPrice.rows[0]) exactPrice = Number(lengthPrice.rows[0].price_min);
+      }
+      if (exactPrice == null) {
+        const servicePrice = await client.query("select price_min from services where id = $1", [input.serviceId]);
+        if (servicePrice.rows[0]) exactPrice = Number(servicePrice.rows[0].price_min);
+      }
+    }
+    const priced = exactPrice != null && exactPrice > 0;
+    const depositAmount = priced ? Math.min(BOOKING_DEPOSIT, exactPrice) : null;
+
     const result = await client.query(
       `insert into bookings (
          user_id, service_id, booking_date, time_slot, status,
          reference_image_url, length_label, confirmation_code,
          custom_length_request, custom_length_status, notes, contact_email,
-         extension_product_id, extension_product_name, extension_quantity, extension_product_price
+         extension_product_id, extension_product_name, extension_quantity, extension_product_price,
+         confirmed_price, deposit_amount
        )
-       values ($1, $2, $3, $4, 'pending', $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+       values ($1, $2, $3, $4, $16, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15, $17, $18)
        returning id, user_id as "userId", service_id as "serviceId",
                  booking_date as date, time_slot as "timeSlot", status,
                  reference_image_url as "referenceImageUrl", length_label as "lengthLabel",
@@ -190,6 +210,8 @@ export async function createBooking(userId, input) {
                  extension_product_name as "extensionProductName",
                  extension_quantity as "extensionQuantity",
                  extension_product_price as "extensionProductPrice",
+                 confirmed_price::float8 as "confirmedPrice",
+                 deposit_amount::float8 as "depositAmount",
                  created_at as "createdAt"`,
       [
         userId,
@@ -206,7 +228,10 @@ export async function createBooking(userId, input) {
         input.extensionProductId || null,
         input.extensionProductName || null,
         input.extensionQuantity || null,
-        input.extensionProductPrice || null
+        input.extensionProductPrice || null,
+        priced ? "confirmed" : "pending",
+        priced ? exactPrice : null,
+        depositAmount
       ]
     );
     await client.query("commit");

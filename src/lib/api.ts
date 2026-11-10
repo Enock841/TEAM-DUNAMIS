@@ -529,7 +529,7 @@ export const api = {
     token: string,
     body: { serviceId: string; date: string; timeSlot: string; referenceImageUrl?: string; lengthLabel?: string; customLengthRequest?: string; notes?: string; contactEmail?: string; extensionProductId?: string; extensionProductName?: string; extensionQuantity?: number; extensionProductPrice?: number },
   ) {
-    return request<{ booking: { id: string; status: string; confirmationCode: string } }>('/bookings', {
+    return request<{ booking: { id: string; status: string; confirmationCode: string; confirmedPrice?: number | null; depositAmount?: number | null } }>('/bookings', {
       method: 'POST',
       token,
       body: JSON.stringify(body),
@@ -539,7 +539,7 @@ export const api = {
     body: { name: string; phone: string; contactEmail?: string; serviceId: string; date: string; timeSlot: string; referenceImageUrl?: string; lengthLabel?: string; customLengthRequest?: string; notes?: string; extensionProductName?: string; extensionProductPrice?: number },
   ) {
     return request<{
-      booking: { id: string; status: string; confirmationCode: string }
+      booking: { id: string; status: string; confirmationCode: string; confirmedPrice?: number | null; depositAmount?: number | null }
       accountCreated: boolean
       existingAccount: boolean
       user?: { id: string; name: string; phone: string; role: string; email: string | null; area: string | null; avatarUrl: string | null }

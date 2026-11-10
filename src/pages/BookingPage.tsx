@@ -92,6 +92,9 @@ export function BookingPage(props) {
   const [guestName, setGuestName] = useState('')
   const [guestPhone, setGuestPhone] = useState('')
   const [submitted, setSubmitted] = useState(false)
+  const [createdBooking, setCreatedBooking] = useState<{ id: string; total: number; deposit: number; token: string } | null>(null)
+  const [depositMomoOpen, setDepositMomoOpen] = useState(false)
+  const [depositSent, setDepositSent] = useState(false)
   const [busy, setBusy] = useState(false)
   const [message, setMessage] = useState('')
   const [agreedToTerms, setAgreedToTerms] = useState(false)
@@ -422,8 +425,11 @@ function selectOtherInCategory(categoryId) {
         extensionProductPrice: extensionPaidInfo ? extensionPaidInfo.total : undefined,
       }
       let guestResult: any = null
+      let madeBooking: any = null
+      let payToken = token || ''
       if (token) {
-        await api.createBooking(token, bookingBody)
+        const made = await api.createBooking(token, bookingBody)
+        madeBooking = made.booking
       } else {
         guestResult = await api.createGuestBooking({
           ...bookingBody,
@@ -431,12 +437,20 @@ function selectOtherInCategory(categoryId) {
           phone: guestPhone.replace(/[\s-]/g, ''),
           contactEmail: contactEmail.trim() || undefined,
         })
-        if (guestResult.token && guestResult.user) appData.saveSession(guestResult.user, guestResult.token)
+        madeBooking = guestResult.booking
+        if (guestResult.token && guestResult.user) {
+          appData.saveSession(guestResult.user, guestResult.token)
+          payToken = guestResult.token
+        }
+      }
+      const priced = madeBooking && madeBooking.confirmedPrice && madeBooking.depositAmount && payToken
+      if (priced) {
+        setCreatedBooking({ id: madeBooking.id, total: madeBooking.confirmedPrice, deposit: madeBooking.depositAmount, token: payToken })
       }
 
       localStorage.removeItem('paidExtensionOrder')
       setSubmitted(true)
-      setMessage(!contactEmail.trim() ? 'Thank you! Your booking request is in. Since you did not give an email, Beryl will contact you on your phone number once it is approved. You can also log in with your phone number to check on it.' : guestResult && guestResult.existingAccount ? 'Thank you! Your booking request is in. We already have an account with your details, so please log in with your phone number and email to see your booking and pay your deposit once Beryl approves it. We will also email you as soon as it is approved.' : 'Thank you so much for booking with us, we cannot wait to pamper you! Please keep an eye on your email, including your spam or junk folder just in case, we will let you know there as soon as your appointment is approved with your price. Once it is, just come back to your account to complete payment and secure your slot.')
+      setMessage(priced ? 'Your slot is reserved! The total is GHC ' + madeBooking.confirmedPrice.toLocaleString() + '. Pay the GHC ' + madeBooking.depositAmount.toLocaleString() + ' deposit below to secure it, and the remaining GHC ' + (madeBooking.confirmedPrice - madeBooking.depositAmount).toLocaleString() + ' is paid at the salon on the day.' : !contactEmail.trim() ? 'Thank you! Your booking request is in. Since you did not give an email, Beryl will contact you on your phone number once it is approved. You can also log in with your phone number to check on it.' : guestResult && guestResult.existingAccount ? 'Thank you! Your booking request is in. We already have an account with your details, so please log in with your phone number and email to see your booking and pay your deposit once Beryl approves it. We will also email you as soon as it is approved.' : 'Thank you so much for booking with us, we cannot wait to pamper you! Please keep an eye on your email, including your spam or junk folder just in case, we will let you know there as soon as your appointment is approved with your price. Once it is, just come back to your account to complete payment and secure your slot.')
     } catch (error) {
       setMessage(error instanceof Error ? error.message : 'Unable to request this booking.')
     } finally {
@@ -536,7 +550,7 @@ function selectOtherInCategory(categoryId) {
                                 <span className="mt-1 block text-xs text-[#8f707d]">{formatDuration(service.durationMinutes)}</span>
                               </div>
                               <span className="text-sm font-bold text-[#b32269]">
-                                {'GHC ' + service.priceMin.toLocaleString() + ' - ' + service.priceMax.toLocaleString()}
+                                {'GHC ' + service.priceMin.toLocaleString()}
                               </span>
                             </div>
                           </button>
@@ -599,7 +613,7 @@ function selectOtherInCategory(categoryId) {
                           <div className="flex items-center justify-between p-4">
                             <span className="font-semibold text-[#3e2530]">{option.label}</span>
                             <span className="text-sm font-bold text-[#b32269]">
-                              {'GHC ' + option.priceMin.toLocaleString() + ' - ' + option.priceMax.toLocaleString()}
+                              {'GHC ' + option.priceMin.toLocaleString()}
                             </span>
                           </div>
                         </button>
@@ -1152,19 +1166,19 @@ function selectOtherInCategory(categoryId) {
                     </div>
                   )}
                   <div className="flex justify-between gap-4 border-t border-white/15 pt-3">
-                    <dt>Service price range</dt>
+                    <dt>Service price</dt>
                     <dd>
                       {wantsCustomLength
                         ? 'To be confirmed'
                         : selectedLength
-                        ? 'GHC ' + selectedLength.priceMin.toLocaleString() + ' - ' + selectedLength.priceMax.toLocaleString()
+                        ? 'GHC ' + selectedLength.priceMin.toLocaleString()
                         : activeService
-                        ? 'GHC ' + activeService.priceMin.toLocaleString() + ' - ' + activeService.priceMax.toLocaleString()
+                        ? 'GHC ' + activeService.priceMin.toLocaleString()
                         : ''}
                     </dd>
                   </div>
                   <p className="pt-2 text-xs text-white/60">
-                    The salon will confirm your final service price before you pay for it. Any extensions are already paid for separately.
+                    You pay a GHC 50 deposit right after you book to secure your slot. The rest is paid at the salon on the day. Any extensions are already paid for separately.
                   </p>
                 </dl>
               </aside>
@@ -1205,10 +1219,43 @@ function selectOtherInCategory(categoryId) {
                 disabled={busy || submitted || !agreedToTerms}
                 className="rounded-full bg-[#dc2d83] px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white disabled:opacity-50"
               >
-                {busy ? 'Submitting...' : submitted ? 'Request submitted' : 'Request booking'}
+                {busy ? 'Submitting...' : submitted ? 'Booking made' : 'Book now'}
               </button>
             )}
           </div>
+          {createdBooking && (
+            <div className="mt-6 rounded-2xl border border-[#e6c5d3] bg-[#f7e4ec] p-5">
+              <p className="font-serif text-xl text-[#3e2530]">Pay your deposit to secure your slot</p>
+              <p className="mt-2 text-sm leading-6 text-[#745f68]">
+                {'Total GHC ' + createdBooking.total.toLocaleString() + '. Deposit GHC ' + createdBooking.deposit.toLocaleString() + ' now, and GHC ' + (createdBooking.total - createdBooking.deposit).toLocaleString() + ' at the salon on the day.'}
+              </p>
+              {depositSent ? (
+                <p className="mt-4 rounded-lg bg-emerald-50 px-3 py-2 text-sm font-bold text-emerald-700" role="status">
+                  Thank you! Beryl will confirm your Mobile Money payment shortly.
+                </p>
+              ) : (
+                <button
+                  type="button"
+                  onClick={function () { setDepositMomoOpen(true) }}
+                  className="mt-4 rounded-full bg-[#dc2d83] px-6 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white"
+                >
+                  {'Pay GHC ' + createdBooking.deposit.toLocaleString() + ' deposit with Mobile Money'}
+                </button>
+              )}
+              <p className="mt-3 text-xs text-[#745f68]">You can also pay later from your account page, but your slot is only secure once the deposit is paid.</p>
+              {depositMomoOpen && (
+                <MomoPaymentModal
+                  type="booking"
+                  refId={createdBooking.id}
+                  token={createdBooking.token}
+                  onClose={function (sent) {
+                    setDepositMomoOpen(false)
+                    if (sent) setDepositSent(true)
+                  }}
+                />
+              )}
+            </div>
+          )}
         </section>
       </div>
     </main>

@@ -176,7 +176,7 @@ export function ServicesPage() {
                             </p>
                           </div>
                           <span className="text-sm font-bold text-[#b32269]">
-                            GHC {service.priceMin.toLocaleString()}-{service.priceMax.toLocaleString()}
+                            GHC {Number(service.priceMin).toLocaleString()}
                           </span>
                         </div>
                       </a>

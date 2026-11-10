@@ -112,7 +112,8 @@ export async function create(req, res) {
   const booking = await createBooking(req.user.id, body);
   const details = await getBookingDetailsForEmail(booking.id);
   if (details) {
-    sendBookingReceived(details);
+    if (details.status === "confirmed") sendBookingApproved(details);
+    else sendBookingReceived(details);
     sendAdminBookingNotification(details);
   }
   res.status(201).json({ booking });
@@ -154,9 +155,16 @@ export async function guestCreate(req, res) {
   const { name, phone, ...bookingBody } = body;
 
   let user = await findUserByPhoneVariants(phoneVariants(phone));
-  if (!user && body.contactEmail) user = await findUserByEmail(body.contactEmail.toLowerCase());
   let created = false;
-  if (!user) {
+  if (user) {
+    const typedEmail = (body.contactEmail || "").toLowerCase();
+    if (user.role !== "customer" || user.is_active === false) {
+      throw new HttpError(409, "This phone number cannot be used for a booking here. Please use a different number.");
+    }
+    if (user.email && user.email.toLowerCase() !== typedEmail) {
+      throw new HttpError(409, "We already have a client with this phone number. Please type the email you used before, so we know it is you.");
+    }
+  } else {
     const passwordHash = await bcrypt.hash(crypto.randomBytes(24).toString("hex"), 12);
     user = await createCustomer({ name, phone, passwordHash, email: body.contactEmail ? body.contactEmail.toLowerCase() : null });
     created = true;
@@ -169,14 +177,16 @@ export async function guestCreate(req, res) {
   });
   const details = await getBookingDetailsForEmail(booking.id);
   if (details) {
-    sendBookingReceived(details);
+    if (details.status === "confirmed") sendBookingApproved(details);
+    else sendBookingReceived(details);
     sendAdminBookingNotification(details);
   }
   res.status(201).json({
     booking,
     accountCreated: created,
     existingAccount: !created,
-    ...(created ? { user: publicUser(user), token: signToken(user) } : {})
+    user: publicUser(user),
+    token: signToken(user)
   });
 }
 

@@ -41,8 +41,8 @@ export function ServicesAdminPage() {
       description: String(form.get('description')),
       categoryId: String(form.get('categoryId')),
       durationMinutes: Math.round(Number(form.get('durationHours')) * 60),
-      priceMin: Number(form.get('priceMin')),
-      priceMax: Number(form.get('priceMax')),
+      priceMin: Number(form.get('price')),
+      priceMax: Number(form.get('price')),
       images: imageUrl ? [imageUrl] : [],
     }
     try {
@@ -164,8 +164,7 @@ export function ServicesAdminPage() {
             <div className="md:col-span-2">
               <ImageUploadField label="Service photo" value={imageUrl} onChange={setImageUrl} />
             </div>
-            <input name="priceMin" required type="number" min="0" defaultValue={editing ? editing.priceMin : ''} placeholder="Minimum price" className={fieldClass} />
-            <input name="priceMax" required type="number" min="0" defaultValue={editing ? editing.priceMax : ''} placeholder="Maximum price" className={fieldClass} />
+            <input name="price" required type="number" min="0" defaultValue={editing ? editing.priceMin : ''} placeholder="Price (GHC)" className={fieldClass} />
             <div className="flex gap-3 md:col-span-2">
               <PrimaryButton type="submit">Save service</PrimaryButton>
               <button type="button" onClick={function () { setShowForm(false) }} className="text-sm">Cancel</button>
@@ -185,7 +184,7 @@ export function ServicesAdminPage() {
                 <div className="min-w-0 flex-1">
                   <p className="font-serif text-xl text-[#3e2530]">{service.name}</p>
                   <p className="mt-1 text-xs text-[#8f7480]">
-                    {service.category.name + ' - ' + formatDuration(service.durationMinutes) + ' - GHC ' + service.priceMin + '-' + service.priceMax}
+                    {service.category.name + ' - ' + formatDuration(service.durationMinutes) + ' - GHC ' + service.priceMin}
                   </p>
                   <div className="mt-4 flex flex-wrap gap-4 text-xs font-bold uppercase">
                     <button onClick={function () { openForm(service) }} className="text-[#a52261]">Edit</button>
@@ -207,7 +206,7 @@ export function ServicesAdminPage() {
                       <div key={option.id} className="flex items-center justify-between gap-3 border-b border-[#f0dfe6] py-2 text-sm last:border-0">
                         <span className="flex items-center gap-3">
                           {option.imageUrl && <img src={option.imageUrl} alt="" className="h-10 w-10 rounded-lg object-cover" />}
-                          {option.label + ': GHC ' + option.priceMin + ' - ' + option.priceMax}
+                          {option.label + ': GHC ' + option.priceMin}
                         </span>
                         <button onClick={function () { removeLength(service.id, option.id) }} className="text-xs font-bold text-red-600">
                           Remove
@@ -224,16 +223,9 @@ export function ServicesAdminPage() {
                     />
                     <input
                       value={draft.priceMin}
-                      onChange={function (e) { updateLengthForm(service.id, 'priceMin', e.target.value) }}
+                      onChange={function (e) { updateLengthForm(service.id, 'priceMin', e.target.value); updateLengthForm(service.id, 'priceMax', e.target.value) }}
                       type="number"
-                      placeholder="Min price"
-                      className={fieldClass}
-                    />
-                    <input
-                      value={draft.priceMax}
-                      onChange={function (e) { updateLengthForm(service.id, 'priceMax', e.target.value) }}
-                      type="number"
-                      placeholder="Max price"
+                      placeholder="Price (GHC)"
                       className={fieldClass}
                     />
                     <button
