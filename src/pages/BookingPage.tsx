@@ -76,6 +76,8 @@ export function BookingPage(props) {
   const [extensionPayError, setExtensionPayError] = useState('')
   const [lengthOptions, setLengthOptions] = useState([])
   const [selectedLength, setSelectedLength] = useState(null)
+  const [sizeOptions, setSizeOptions] = useState([])
+  const [selectedSize, setSelectedSize] = useState(null)
   const [wantsCustomLength, setWantsCustomLength] = useState(false)
   const [customLengthText, setCustomLengthText] = useState('')
   const [referenceImageUrl, setReferenceImageUrl] = useState('')
@@ -318,11 +320,16 @@ function selectOtherInCategory(categoryId) {
     setSelectedTime('')
     setAvailability(null)
     setSelectedLength(null)
+    setSelectedSize(null)
+    setSizeOptions([])
     setLengthOptions([])
     setWantsCustomLength(false)
     setCustomLengthText('')
     api.serviceLengthOptions(service.id).then(function (options) {
       setLengthOptions(options)
+    })
+    api.lengthSizeOptions(service.id).then(function (sizes) {
+      setSizeOptions(sizes)
     })
   }
 
@@ -415,6 +422,7 @@ function selectOtherInCategory(categoryId) {
         date: selectedDate,
         timeSlot: selectedTime,
         lengthLabel: selectedLength ? selectedLength.label : undefined,
+        sizeLabel: selectedSize ? selectedSize.label : undefined,
         referenceImageUrl: referenceImageUrl || undefined,
         customLengthRequest: wantsCustomLength && customLengthText.trim() ? customLengthText.trim() : undefined,
         notes: notes.trim() || undefined,
@@ -463,6 +471,8 @@ function selectOtherInCategory(categoryId) {
     : hasOwnExtension === true
       || (hasOwnExtension === false && wantsToBuyExtension === false)
       || (hasOwnExtension === false && wantsToBuyExtension === true && Boolean(extensionPaidInfo))
+  const sizesForSelectedLength = selectedLength && !wantsCustomLength ? sizeOptions.filter(function (size) { return size.lengthOptionId === selectedLength.id }) : []
+  const sizeStepAnswered = sizesForSelectedLength.length === 0 || Boolean(selectedSize)
   const lengthStepAnswered = lengthOptions.length === 0 || Boolean(selectedLength) || (wantsCustomLength && customLengthText.trim().length > 1)
 
   return (
@@ -603,6 +613,7 @@ function selectOtherInCategory(categoryId) {
                           type="button"
                           onClick={function () {
                             setSelectedLength(option)
+                            setSelectedSize(null)
                             setWantsCustomLength(false)
                           }}
                           className={optionClass}
@@ -621,12 +632,35 @@ function selectOtherInCategory(categoryId) {
                     })}
                   </div>
 
+                  {sizesForSelectedLength.length > 0 && (
+                    <div className="mt-5 border-t border-[#ecd8e1] pt-5">
+                      <p className="font-serif text-lg text-[#3e2530]">Choose your size</p>
+                      <div className="mt-3 flex flex-wrap gap-3">
+                        {sizesForSelectedLength.map(function (size) {
+                          const picked = selectedSize && selectedSize.id === size.id
+                          return (
+                            <button
+                              key={size.id}
+                              type="button"
+                              onClick={function () { setSelectedSize(size) }}
+                              className={picked ? 'rounded-xl border border-[#dc2d83] bg-[#fbe0eb] px-4 py-3 text-left' : 'rounded-xl border border-[#ecd8e1] bg-white px-4 py-3 text-left hover:border-[#dc2d83]'}
+                            >
+                              <span className="block font-semibold text-[#3e2530]">{size.label}</span>
+                              <span className="block text-sm font-bold text-[#b32269]">{'GHC ' + size.price.toLocaleString()}</span>
+                            </button>
+                          )
+                        })}
+                      </div>
+                    </div>
+                  )}
+
                   <div className="mt-5 border-t border-[#ecd8e1] pt-5">
                     <button
                       type="button"
                       onClick={function () {
                         setWantsCustomLength(!wantsCustomLength)
                         setSelectedLength(null)
+                        setSelectedSize(null)
                       }}
                       className={
                         wantsCustomLength
@@ -1149,6 +1183,12 @@ function selectOtherInCategory(categoryId) {
                       <dd>{selectedLength.label}</dd>
                     </div>
                   )}
+                  {selectedSize && !wantsCustomLength && (
+                    <div className="flex justify-between gap-4">
+                      <dt>Size</dt>
+                      <dd>{selectedSize.label}</dd>
+                    </div>
+                  )}
                   {wantsCustomLength && customLengthText.trim() && (
                     <div className="flex justify-between gap-4">
                       <dt>Requested style</dt>
@@ -1171,14 +1211,14 @@ function selectOtherInCategory(categoryId) {
                       {wantsCustomLength
                         ? 'To be confirmed'
                         : selectedLength
-                        ? 'GHC ' + selectedLength.priceMin.toLocaleString()
+                        ? 'GHC ' + (selectedSize ? selectedSize.price : selectedLength.priceMin).toLocaleString()
                         : activeService
                         ? 'GHC ' + activeService.priceMin.toLocaleString()
                         : ''}
                     </dd>
                   </div>
                   <p className="pt-2 text-xs text-white/60">
-                    You pay a GHC 50 deposit right after you book to secure your slot. The rest is paid at the salon on the day. Any extensions are already paid for separately.
+                    You pay half of the price as a deposit right after you book to secure your slot. The other half is paid at the salon on the day. Any extensions are already paid for separately.
                   </p>
                 </dl>
               </aside>
@@ -1205,7 +1245,7 @@ function selectOtherInCategory(categoryId) {
                 type="button"
                 onClick={function () { setStep(function (current) { return Math.min(3, current + 1) }) }}
                 disabled={
-                  (step === 1 && (!selectedService || !extensionStepAnswered || !lengthStepAnswered || (wantsCustomLength && !referenceImageUrl))) ||
+                  (step === 1 && (!selectedService || !extensionStepAnswered || !lengthStepAnswered || !sizeStepAnswered || (wantsCustomLength && !referenceImageUrl))) ||
                   (step === 2 && (!selectedDate || !selectedTime))
                 }
                 className="rounded-full bg-[#dc2d83] px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:opacity-40"

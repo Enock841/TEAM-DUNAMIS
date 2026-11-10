@@ -1,7 +1,7 @@
 import { pool, query } from "../config/db.js";
 import { HttpError } from "../utils/httpError.js";
 
-const BOOKING_DEPOSIT = Number(process.env.BOOKING_DEPOSIT || 50);
+const DEPOSIT_SHARE = 0.5;
 
 function generateConfirmationCode() {
   const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
@@ -177,10 +177,21 @@ export async function createBooking(userId, input) {
     if (!input.customLengthRequest) {
       if (input.lengthLabel) {
         const lengthPrice = await client.query(
-          "select price_min from service_length_options where service_id = $1 and label = $2 limit 1",
+          "select id, price_min from service_length_options where service_id = $1 and label = $2 limit 1",
           [input.serviceId, input.lengthLabel]
         );
-        if (lengthPrice.rows[0]) exactPrice = Number(lengthPrice.rows[0].price_min);
+        if (lengthPrice.rows[0]) {
+          exactPrice = Number(lengthPrice.rows[0].price_min);
+          const sizes = await client.query(
+            "select label, price from length_size_options where length_option_id = $1",
+            [lengthPrice.rows[0].id]
+          );
+          if (sizes.rows.length > 0) {
+            const chosen = sizes.rows.find((row) => row.label === input.sizeLabel);
+            if (!chosen) throw new HttpError(400, "Please choose a size for this length.");
+            exactPrice = Number(chosen.price);
+          }
+        }
       }
       if (exactPrice == null) {
         const servicePrice = await client.query("select price_min from services where id = $1", [input.serviceId]);
@@ -188,7 +199,7 @@ export async function createBooking(userId, input) {
       }
     }
     const priced = exactPrice != null && exactPrice > 0;
-    const depositAmount = priced ? Math.min(BOOKING_DEPOSIT, exactPrice) : null;
+    const depositAmount = priced ? Math.round(exactPrice * DEPOSIT_SHARE * 100) / 100 : null;
 
     const result = await client.query(
       `insert into bookings (
@@ -223,7 +234,7 @@ export async function createBooking(userId, input) {
         code,
         input.customLengthRequest || null,
         input.customLengthRequest ? "pending" : null,
-        input.notes || null,
+        input.sizeLabel ? "Size: " + input.sizeLabel + (input.notes ? ". " + input.notes : "") : input.notes || null,
         input.contactEmail || null,
         input.extensionProductId || null,
         input.extensionProductName || null,

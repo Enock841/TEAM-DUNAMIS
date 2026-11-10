@@ -325,6 +325,14 @@ export type ServiceLengthOption = {
   imageUrl?: string
 }
 
+export type LengthSizeOption = {
+  id: string
+  lengthOptionId: string
+  label: string
+  price: number
+  sortOrder: number
+}
+
 export const api = {
   monthAvailability(serviceId: string, year: number, month: number) {
     const query = new URLSearchParams({ serviceId, year: String(year), month: String(month) })
@@ -364,6 +372,19 @@ export const api = {
       token,
       body: JSON.stringify(body),
     })
+  },
+  lengthSizeOptions(serviceId: string) {
+    return request<LengthSizeOption[]>('/length-size-options/service/' + serviceId)
+  },
+  createLengthSizeOption(token: string, body: { lengthOptionId: string; label: string; price: number }) {
+    return request<{ size: LengthSizeOption }>('/length-size-options', {
+      method: 'POST',
+      token,
+      body: JSON.stringify(body),
+    })
+  },
+  deleteLengthSizeOption(token: string, id: string) {
+    return request<null>('/length-size-options/' + id, { method: 'DELETE', token })
   },
   deleteServiceLengthOption(token: string, id: string) {
     return request<null>('/service-length-options/' + id, { method: 'DELETE', token })
@@ -527,7 +548,7 @@ export const api = {
   },
   createBooking(
     token: string,
-    body: { serviceId: string; date: string; timeSlot: string; referenceImageUrl?: string; lengthLabel?: string; customLengthRequest?: string; notes?: string; contactEmail?: string; extensionProductId?: string; extensionProductName?: string; extensionQuantity?: number; extensionProductPrice?: number },
+    body: { serviceId: string; date: string; timeSlot: string; referenceImageUrl?: string; lengthLabel?: string; sizeLabel?: string; customLengthRequest?: string; notes?: string; contactEmail?: string; extensionProductId?: string; extensionProductName?: string; extensionQuantity?: number; extensionProductPrice?: number },
   ) {
     return request<{ booking: { id: string; status: string; confirmationCode: string; confirmedPrice?: number | null; depositAmount?: number | null } }>('/bookings', {
       method: 'POST',
@@ -536,7 +557,7 @@ export const api = {
     })
   },
   createGuestBooking(
-    body: { name: string; phone: string; contactEmail?: string; serviceId: string; date: string; timeSlot: string; referenceImageUrl?: string; lengthLabel?: string; customLengthRequest?: string; notes?: string; extensionProductName?: string; extensionProductPrice?: number },
+    body: { name: string; phone: string; contactEmail?: string; serviceId: string; date: string; timeSlot: string; referenceImageUrl?: string; lengthLabel?: string; sizeLabel?: string; customLengthRequest?: string; notes?: string; extensionProductName?: string; extensionProductPrice?: number },
   ) {
     return request<{
       booking: { id: string; status: string; confirmationCode: string; confirmedPrice?: number | null; depositAmount?: number | null }

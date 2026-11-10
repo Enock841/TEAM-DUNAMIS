@@ -19,6 +19,8 @@ export function ServicesAdminPage() {
 
   const [lengthsByService, setLengthsByService] = useState({})
   const [lengthForms, setLengthForms] = useState({})
+  const [sizesByService, setSizesByService] = useState({})
+  const [sizeForms, setSizeForms] = useState({})
 
   const loadCategories = useCallback(function () {
     return api.categories().then(setCategories)
@@ -81,6 +83,10 @@ export function ServicesAdminPage() {
 
     try {
       const options = await api.serviceLengthOptions(serviceId)
+      const sizes = await api.lengthSizeOptions(serviceId)
+      setSizesByService(function (current) {
+        return { ...current, [serviceId]: sizes }
+      })
       setLengthsByService(function (current) {
         return { ...current, [serviceId]: options }
       })
@@ -124,6 +130,51 @@ export function ServicesAdminPage() {
       setMessage('Length option added.')
     } catch (reason) {
       setMessage(reason instanceof Error ? reason.message : 'Unable to add length.')
+    }
+  }
+
+  function updateSizeForm(lengthId, field, value) {
+    setSizeForms(function (current) {
+      const existing = current[lengthId] || { label: '', price: '' }
+      return { ...current, [lengthId]: { ...existing, [field]: value } }
+    })
+  }
+
+  async function reloadSizes(serviceId) {
+    const sizes = await api.lengthSizeOptions(serviceId)
+    setSizesByService(function (current) {
+      return { ...current, [serviceId]: sizes }
+    })
+  }
+
+  async function addSize(serviceId, lengthId) {
+    if (!token) return
+    const draft = sizeForms[lengthId]
+    if (!draft || !draft.label || draft.price === '' || draft.price === undefined) {
+      setMessage('Fill in a size name and a price before adding a size.')
+      return
+    }
+    try {
+      await api.createLengthSizeOption(token, { lengthOptionId: lengthId, label: draft.label, price: Number(draft.price) })
+      setSizeForms(function (current) {
+        const next = { ...current }
+        delete next[lengthId]
+        return next
+      })
+      await reloadSizes(serviceId)
+      setMessage('Size added.')
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : 'Unable to add size.')
+    }
+  }
+
+  async function removeSize(serviceId, sizeId) {
+    if (!token || !window.confirm('Remove this size?')) return
+    try {
+      await api.deleteLengthSizeOption(token, sizeId)
+      await reloadSizes(serviceId)
+    } catch (reason) {
+      setMessage(reason instanceof Error ? reason.message : 'Unable to remove size.')
     }
   }
 
@@ -176,6 +227,7 @@ export function ServicesAdminPage() {
       <div className="mt-8 grid gap-4 lg:grid-cols-2">
         {services.map(function (service) {
           const lengths = lengthsByService[service.id]
+          const sizes = sizesByService[service.id] || []
           const draft = lengthForms[service.id] || { label: '', priceMin: '', priceMax: '', imageUrl: '' }
           return (
             <Panel key={service.id}>
@@ -203,7 +255,8 @@ export function ServicesAdminPage() {
                   )}
                   {lengths.map(function (option) {
                     return (
-                      <div key={option.id} className="flex items-center justify-between gap-3 border-b border-[#f0dfe6] py-2 text-sm last:border-0">
+                      <div key={option.id} className="border-b border-[#f0dfe6] py-2 text-sm last:border-0">
+                        <div className="flex items-center justify-between gap-3">
                         <span className="flex items-center gap-3">
                           {option.imageUrl && <img src={option.imageUrl} alt="" className="h-10 w-10 rounded-lg object-cover" />}
                           {option.label + ': GHC ' + option.priceMin}
@@ -211,6 +264,38 @@ export function ServicesAdminPage() {
                         <button onClick={function () { removeLength(service.id, option.id) }} className="text-xs font-bold text-red-600">
                           Remove
                         </button>
+                        </div>
+                        <div className="ml-4 mt-2 text-xs">
+                          {sizes.filter(function (size) { return size.lengthOptionId === option.id }).map(function (size) {
+                            return (
+                              <div key={size.id} className="flex items-center justify-between gap-3 py-1">
+                                <span>{'Size ' + size.label + ': GHC ' + size.price}</span>
+                                <button onClick={function () { removeSize(service.id, size.id) }} className="font-bold text-red-600">Remove</button>
+                              </div>
+                            )
+                          })}
+                          <div className="mt-1 grid gap-2 sm:grid-cols-3">
+                            <input
+                              value={(sizeForms[option.id] || { label: '' }).label}
+                              onChange={function (e) { updateSizeForm(option.id, 'label', e.target.value) }}
+                              placeholder="Size, e.g. Medium"
+                              className={fieldClass}
+                            />
+                            <input
+                              value={(sizeForms[option.id] || { price: '' }).price}
+                              onChange={function (e) { updateSizeForm(option.id, 'price', e.target.value) }}
+                              type="number"
+                              placeholder="Price (GHC)"
+                              className={fieldClass}
+                            />
+                            <button
+                              onClick={function () { addSize(service.id, option.id) }}
+                              className="rounded-full border border-[#dc2d83] px-4 py-2 text-xs font-bold uppercase text-[#dc2d83]"
+                            >
+                              Add size
+                            </button>
+                          </div>
+                        </div>
                       </div>
                     )
                   })}

@@ -57,6 +57,7 @@ const createBookingSchema = z.object({
   timeSlot: z.string().min(3).max(20),
   referenceImageUrl: z.string().optional(),
   lengthLabel: z.string().optional(),
+  sizeLabel: z.string().max(60).optional(),
   customLengthRequest: z.string().min(2).max(300).optional(),
   notes: z.string().max(500).optional(),
   contactEmail: z.string().email().optional(),
