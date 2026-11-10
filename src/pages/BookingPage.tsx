@@ -710,7 +710,7 @@ function selectOtherInCategory(categoryId) {
                   <p className="font-serif text-xl text-[#3e2530]">Reference photo</p>
                   <p className="mt-2 text-sm text-[#745f68]">
                     {wantsCustomLength
-                      ? 'Required, since your preferred style is not one of our listed options, a photo of the look you want helps the stylist prepare properly for your appointment.'
+                      ? 'Optional, but since your preferred style is not one of our listed options, a photo of the look you want helps the stylist prepare properly for your appointment.'
                       : "Optional, you've already chosen a style from our photos. Add one only if you want to show the stylist a specific variation."}
                   </p>
                   <div className="mt-4">
@@ -1245,7 +1245,7 @@ function selectOtherInCategory(categoryId) {
                 type="button"
                 onClick={function () { setStep(function (current) { return Math.min(3, current + 1) }) }}
                 disabled={
-                  (step === 1 && (!selectedService || !extensionStepAnswered || !lengthStepAnswered || !sizeStepAnswered || (wantsCustomLength && !referenceImageUrl))) ||
+                  (step === 1 && (!selectedService || !extensionStepAnswered || !lengthStepAnswered || !sizeStepAnswered )) ||
                   (step === 2 && (!selectedDate || !selectedTime))
                 }
                 className="rounded-full bg-[#dc2d83] px-7 py-3 text-xs font-bold uppercase tracking-[0.14em] text-white disabled:cursor-not-allowed disabled:opacity-40"
